@@ -8,8 +8,8 @@
     <p class="text-muted mb-0">{{ $rawMaterial->category_label }} | {{ $rawMaterial->unit }}</p>
   </div>
   <div class="d-flex gap-2">
-    <a href="{{ route('bahan-baku.receipt',$rawMaterial) }}" class="btn btn-success"><i class="bi bi-box-arrow-in-down me-2"></i>Input Penerimaan</a>
-    <a href="{{ route('bahan-baku.edit',$rawMaterial) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
+    <a href="{{ url('bahan-baku/'.$rawMaterial->id.'/receipt') }}" class="btn btn-success"><i class="bi bi-box-arrow-in-down me-2"></i>Input Penerimaan</a>
+    <a href="{{ url('bahan-baku/'.$rawMaterial->id.'/edit') }}" class="btn btn-outline-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
   </div>
 </div>
 <div class="row g-3 mb-4">

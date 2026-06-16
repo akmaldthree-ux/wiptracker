@@ -2,7 +2,7 @@
 @section('title', isset($station) ? 'Edit Stasiun' : 'Tambah Stasiun')
 @section('content')
 <div class="mb-4">
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.stasiun.index') }}">Master Stasiun</a></li><li class="breadcrumb-item active">{{ isset($station) ? 'Edit' : 'Tambah' }}</li></ol></nav>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.stasiun.index') }}">Master Stasiun</a></li><li class="breadcrumb-item active">{{ $station->exists ? 'Edit' : 'Tambah' }}</li></ol></nav>
     <h4 class="mb-0 fw-bold">{{ isset($station) ? 'Edit Stasiun' : 'Tambah Stasiun Baru' }}</h4>
 </div>
 
@@ -10,9 +10,9 @@
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
-                <form action="{{ isset($station) ? route('master.stasiun.update', $station) : route('master.stasiun.store') }}" method="POST">
+                <form action="{{ $station->exists ? route('master.stasiun.update', ['stasiun' => $station->id]) : route('master.stasiun.store') }}" method="POST">
                     @csrf
-                    @if(isset($station)) @method('PUT') @endif
+                    @if($station->exists) @method('PUT') @endif
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-8">

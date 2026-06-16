@@ -2,7 +2,7 @@
 @section('title', isset($size) ? 'Edit Ukuran' : 'Tambah Ukuran')
 @section('content')
 <div class="mb-4">
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.ukuran.index') }}">Master Ukuran</a></li><li class="breadcrumb-item active">{{ isset($size) ? 'Edit' : 'Tambah' }}</li></ol></nav>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.ukuran.index') }}">Master Ukuran</a></li><li class="breadcrumb-item active">{{ $size->exists ? 'Edit' : 'Tambah' }}</li></ol></nav>
     <h4 class="mb-0 fw-bold">{{ isset($size) ? 'Edit Ukuran' : 'Tambah Ukuran Baru' }}</h4>
 </div>
 
@@ -10,9 +10,9 @@
     <div class="col-lg-5">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
-                <form action="{{ isset($size) ? route('master.ukuran.update', $size) : route('master.ukuran.store') }}" method="POST">
+                <form action="{{ $size->exists ? route('master.ukuran.update', ['ukuran' => $size->id]) : route('master.ukuran.store') }}" method="POST">
                     @csrf
-                    @if(isset($size)) @method('PUT') @endif
+                    @if($size->exists) @method('PUT') @endif
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Kode Ukuran <span class="text-danger">*</span></label>

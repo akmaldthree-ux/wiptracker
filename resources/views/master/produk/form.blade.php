@@ -1,18 +1,18 @@
 @extends('layouts.app')
-@section('title', isset($product) ? 'Edit Produk' : 'Tambah Produk')
+@section('title', $product->exists ? 'Edit Produk' : 'Tambah Produk')
 @section('content')
 <div class="mb-4">
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.produk.index') }}">Master Produk</a></li><li class="breadcrumb-item active">{{ isset($product) ? 'Edit' : 'Tambah' }}</li></ol></nav>
-    <h4 class="mb-0 fw-bold">{{ isset($product) ? 'Edit Produk' : 'Tambah Produk Baru' }}</h4>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.produk.index') }}">Master Produk</a></li><li class="breadcrumb-item active">{{ $product->exists ? 'Edit' : 'Tambah' }}</li></ol></nav>
+    <h4 class="mb-0 fw-bold">{{ $product->exists ? 'Edit Produk' : 'Tambah Produk Baru' }}</h4>
 </div>
 
 <div class="row justify-content-center">
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
-                <form action="{{ isset($product) ? route('master.produk.update', $product) : route('master.produk.store') }}" method="POST">
+                <form action="{{ $product->exists ? route('master.produk.update', ['produk' => $product->id]) : route('master.produk.store') }}" method="POST">
                     @csrf
-                    @if(isset($product)) @method('PUT') @endif
+                    @if($product->exists) @method('PUT') @endif
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Kode Produk <span class="text-danger">*</span></label>

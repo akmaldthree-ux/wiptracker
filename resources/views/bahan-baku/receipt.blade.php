@@ -6,7 +6,7 @@
   <div class="card-header"><i class="bi bi-box-arrow-in-down me-2 text-success"></i>Penerimaan: {{ $rawMaterial->name }}</div>
   <div class="card-body">
     <div class="alert alert-info py-2 mb-4"><small>Stok saat ini: <strong>{{ number_format($rawMaterial->current_stock) }} {{ $rawMaterial->unit }}</strong></small></div>
-    <form method="POST" action="{{ route('bahan-baku.receipt.store',$rawMaterial) }}">
+    <form method="POST" action="{{ url('bahan-baku/'.$rawMaterial->id.'/receipt') }}">
       @csrf
       <div class="row g-3">
         <div class="col-md-6"><label class="form-label fw-semibold">Qty Diterima <span class="text-danger">*</span></label><input type="number" name="qty" class="form-control" min="0.01" step="0.01" required></div>
@@ -18,7 +18,7 @@
       </div>
       <div class="mt-4 d-flex gap-2">
         <button type="submit" class="btn btn-success"><i class="bi bi-check-circle me-2"></i>Konfirmasi Penerimaan</button>
-        <a href="{{ route('bahan-baku.show',$rawMaterial) }}" class="btn btn-outline-secondary">Batal</a>
+        <a href="{{ url('bahan-baku/'.$rawMaterial->id) }}" class="btn btn-outline-secondary">Batal</a>
       </div>
     </form>
   </div>

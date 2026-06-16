@@ -47,7 +47,7 @@
         @php $lowStock = $m->isBelowMinStock(); @endphp
         <tr class="{{ $lowStock ? 'table-danger' : '' }}">
           <td><span class="font-monospace fw-semibold">{{ $m->code }}</span></td>
-          <td><a href="{{ route('bahan-baku.show',$m) }}" class="text-decoration-none fw-semibold {{ $lowStock?'text-danger':'' }}">{{ $m->name }}</a></td>
+          <td><a href="{{ url('bahan-baku/'.$m->id) }}" class="text-decoration-none fw-semibold {{ $lowStock?'text-danger':'' }}">{{ $m->name }}</a></td>
           <td><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ $m->category_label }}</span></td>
           <td>{{ $m->color ?? '-' }}</td>
           <td>{{ $m->unit }}</td>
@@ -65,8 +65,8 @@
           <td>Rp {{ number_format($m->unit_price) }}</td>
           <td>
             <div class="d-flex gap-1">
-              <a href="{{ route('bahan-baku.show',$m) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>
-              <a href="{{ route('bahan-baku.receipt',$m) }}" class="btn btn-sm btn-outline-success py-1"><i class="bi bi-box-arrow-in-down"></i></a>
+              <a href="{{ url('bahan-baku/'.$m->id) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>
+              <a href="{{ url('bahan-baku/'.$m->id.'/receipt') }}" class="btn btn-sm btn-outline-success py-1"><i class="bi bi-box-arrow-in-down"></i></a>
             </div>
           </td>
         </tr>

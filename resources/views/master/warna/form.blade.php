@@ -2,7 +2,7 @@
 @section('title', isset($color) ? 'Edit Warna' : 'Tambah Warna')
 @section('content')
 <div class="mb-4">
-    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.warna.index') }}">Master Warna</a></li><li class="breadcrumb-item active">{{ isset($color) ? 'Edit' : 'Tambah' }}</li></ol></nav>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('master.warna.index') }}">Master Warna</a></li><li class="breadcrumb-item active">{{ $color->exists ? 'Edit' : 'Tambah' }}</li></ol></nav>
     <h4 class="mb-0 fw-bold">{{ isset($color) ? 'Edit Warna' : 'Tambah Warna Baru' }}</h4>
 </div>
 
@@ -10,9 +10,9 @@
     <div class="col-lg-5">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
-                <form action="{{ isset($color) ? route('master.warna.update', $color) : route('master.warna.store') }}" method="POST">
+                <form action="{{ $color->exists ? route('master.warna.update', ['warna' => $color->id]) : route('master.warna.store') }}" method="POST">
                     @csrf
-                    @if(isset($color)) @method('PUT') @endif
+                    @if($color->exists) @method('PUT') @endif
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Kode Warna <span class="text-danger">*</span></label>

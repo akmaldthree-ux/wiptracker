@@ -5,7 +5,7 @@
 <div class="card" style="max-width:700px">
   <div class="card-header"><i class="bi bi-pencil me-2 text-primary"></i>Edit Bahan Baku</div>
   <div class="card-body">
-    <form method="POST" action="{{ route('bahan-baku.update',$rawMaterial) }}">
+    <form method="POST" action="{{ url('bahan-baku/'.$rawMaterial->id) }}">
       @csrf @method('PUT')
       <div class="row g-3">
         <div class="col-md-6"><label class="form-label fw-semibold">Kode</label><input type="text" class="form-control" value="{{ $rawMaterial->code }}" disabled></div>
@@ -18,7 +18,7 @@
       </div>
       <div class="mt-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-2"></i>Perbarui</button>
-        <a href="{{ route('bahan-baku.show',$rawMaterial) }}" class="btn btn-outline-secondary">Batal</a>
+        <a href="{{ url('bahan-baku/'.$rawMaterial->id) }}" class="btn btn-outline-secondary">Batal</a>
       </div>
     </form>
   </div>
