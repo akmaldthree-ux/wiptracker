@@ -1,0 +1,61 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\{ProductionOrder, Station, WipEntry, Handover, RawMaterial, Budget, User, Notification};
+use Illuminate\Support\Facades\DB;
+
+class DashboardController extends Controller
+{
+    public function executive()
+    {
+        $totalActiveOrders = ProductionOrder::where('status', 'active')->count();
+        $totalWipUnits = WipEntry::selectRaw('SUM(qty_in - qty_out - qty_reject) as total')->value('total') ?? 0;
+        $todayThroughput = WipEntry::where('input_date', today())->sum('qty_out');
+        $overdueOrders = ProductionOrder::where('status', 'active')->where('target_date', '<', today())->count();
+        $pendingHandovers = Handover::where('status', 'pending')->count();
+        $discrepancyHandovers = Handover::where('status', 'discrepancy')->count();
+        $lowStockMaterials = RawMaterial::whereRaw('current_stock < min_stock')->count();
+
+        $stations = Station::withCount(['wipEntries as wip_total' => fn($q) => $q->selectRaw('SUM(qty_in - qty_out - qty_reject)')])->orderBy('order_sequence')->get();
+        $activeOrders = ProductionOrder::with(['product','series','items'])->where('status','active')->orderBy('target_date')->get();
+
+        $budgets = Budget::with('order')->get();
+        $totalBudgetPlan = $budgets->sum('total_plan');
+        $totalBudgetActual = $budgets->sum('total_actual');
+
+        $weeklyThroughput = WipEntry::selectRaw("input_date, SUM(qty_out) as total")
+            ->where('input_date', '>=', now()->subDays(7)->toDateString())
+            ->groupBy('input_date')->orderBy('input_date')->get();
+
+        $stationWip = Station::orderBy('order_sequence')->get()->map(function($s) {
+            $wip = WipEntry::where('station_id', $s->id)->selectRaw('SUM(qty_in - qty_out - qty_reject) as total')->value('total') ?? 0;
+            return ['name' => $s->name, 'wip' => max(0, $wip), 'threshold' => $s->bottleneck_threshold, 'is_bottleneck' => $wip > $s->bottleneck_threshold];
+        });
+
+        return view('dashboard.executive', compact(
+            'totalActiveOrders','totalWipUnits','todayThroughput','overdueOrders',
+            'pendingHandovers','discrepancyHandovers','lowStockMaterials',
+            'stations','activeOrders','totalBudgetPlan','totalBudgetActual',
+            'weeklyThroughput','stationWip'
+        ));
+    }
+
+    public function operational()
+    {
+        $stations = Station::orderBy('order_sequence')->get()->map(function($s) {
+            $s->qty_in_total = WipEntry::where('station_id',$s->id)->sum('qty_in');
+            $s->qty_out_total = WipEntry::where('station_id',$s->id)->sum('qty_out');
+            $s->qty_reject_total = WipEntry::where('station_id',$s->id)->sum('qty_reject');
+            $s->qty_in_process = max(0, $s->qty_in_total - $s->qty_out_total - $s->qty_reject_total);
+            $s->is_bottleneck = $s->qty_in_process > $s->bottleneck_threshold;
+            return $s;
+        });
+
+        $pendingHandovers = Handover::with(['order','fromStation','toStation','initiatedBy','items'])->where('status','pending')->latest()->get();
+        $discrepancyHandovers = Handover::with(['order','fromStation','toStation'])->where('status','discrepancy')->latest()->get();
+        $recentWip = WipEntry::with(['order','sku','station','creator'])->latest()->take(20)->get();
+        $overdueOrders = ProductionOrder::with(['product','series'])->where('status','active')->where('target_date','<',today())->get();
+        $nearDeadlineOrders = ProductionOrder::with(['product'])->where('status','active')->whereBetween('target_date',[today(),now()->addDays(3)->toDateString()])->get();
+
+        return view('dashboard.operational', compact('stations','pendingHandovers','discrepancyHandovers','recentWip','overdueOrders','nearDeadlineOrders'));
+    }
+}

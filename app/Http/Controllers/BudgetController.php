@@ -1,0 +1,54 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\{Budget, ProductionOrder, CostEntry, Station};
+use Illuminate\Http\Request;
+
+class BudgetController extends Controller
+{
+    public function index()
+    {
+        $orders = ProductionOrder::with(['product','budget'])->whereIn('status',['active','completed'])->get();
+        $totalPlan = Budget::sum('total_plan');
+        $totalActual = Budget::sum('total_actual');
+        return view('budget.index', compact('orders','totalPlan','totalActual'));
+    }
+
+    public function show(ProductionOrder $order)
+    {
+        $order->load(['product','series','budget','costEntries.station']);
+        $budget = $order->budget;
+        $costEntries = CostEntry::where('production_order_id',$order->id)->with(['station','creator'])->latest()->get();
+        $stations = Station::orderBy('order_sequence')->get();
+        return view('budget.show', compact('order','budget','costEntries','stations'));
+    }
+
+    public function edit(ProductionOrder $order)
+    {
+        $budget = $order->budget ?? new Budget(['production_order_id'=>$order->id]);
+        return view('budget.edit', compact('order','budget'));
+    }
+
+    public function update(Request $request, ProductionOrder $order)
+    {
+        $request->validate(['material_cost_plan'=>'required|numeric|min:0','process_cost_plan'=>'required|numeric|min:0','overhead_cost_plan'=>'required|numeric|min:0']);
+        $total = $request->material_cost_plan + $request->process_cost_plan + $request->overhead_cost_plan;
+        Budget::updateOrCreate(
+            ['production_order_id'=>$order->id],
+            array_merge($request->only(['material_cost_plan','process_cost_plan','overhead_cost_plan']),['total_plan'=>$total,'created_by'=>auth()->id()])
+        );
+        return redirect()->route('budget.show',$order)->with('success','Budget berhasil disimpan.');
+    }
+
+    public function storeCost(Request $request, ProductionOrder $order)
+    {
+        $request->validate(['type'=>'required|in:material,process,overhead','description'=>'required','amount'=>'required|numeric|min:0','entry_date'=>'required|date']);
+        CostEntry::create(array_merge($request->only(['type','description','amount','station_id','entry_date']),['production_order_id'=>$order->id,'budget_id'=>optional($order->budget)->id,'created_by'=>auth()->id()]));
+        // Update budget actual
+        if ($order->budget) {
+            $field = $request->type . '_cost_actual';
+            $order->budget->increment($field, $request->amount);
+            $order->budget->increment('total_actual', $request->amount);
+        }
+        return back()->with('success','Biaya berhasil dicatat.');
+    }
+}
