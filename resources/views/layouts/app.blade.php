@@ -137,7 +137,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#2d374
     <a href="{{ route('budget.index') }}" class="nav-link {{ request()->routeIs('budget.*') ? 'active' : '' }}"><i class="bi bi-wallet2"></i> Budget & Biaya</a>
 
     <div class="nav-section-title">Laporan</div>
-    <a href="{{ route('report.index') }}" class="nav-link {{ request()->routeIs('report.*') ? 'active' : '' }}"><i class="bi bi-file-bar-graph"></i> Laporan</a>
+    <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"><i class="bi bi-file-bar-graph"></i> Laporan</a>
 
     @if(in_array(auth()->user()->role ?? '', ['admin','supervisor']))
     <div class="nav-section-title">Master Data</div>

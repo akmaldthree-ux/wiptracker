@@ -48,11 +48,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/budget/{order}', [BudgetController::class, 'update'])->name('budget.update');
     Route::post('/budget/{order}/cost', [BudgetController::class, 'storeCost'])->name('budget.cost.store');
 
-    Route::get('/laporan', [ReportController::class, 'index'])->name('report.index');
-    Route::get('/laporan/produksi', [ReportController::class, 'production'])->name('report.production');
-    Route::get('/laporan/handover', [ReportController::class, 'handover'])->name('report.handover');
-    Route::get('/laporan/bahan-baku', [ReportController::class, 'material'])->name('report.material');
-    Route::get('/laporan/budget', [ReportController::class, 'budget'])->name('report.budget');
+    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/produksi', [ReportController::class, 'production'])->name('laporan.produksi');
+    Route::get('/laporan/handover', [ReportController::class, 'handover'])->name('laporan.handover');
+    Route::get('/laporan/bahan-baku', [ReportController::class, 'material'])->name('laporan.bahan-baku');
+    Route::get('/laporan/budget', [ReportController::class, 'budget'])->name('laporan.budget');
 
     Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifikasi/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');

@@ -16,8 +16,9 @@ class ReportController extends Controller
             $entries = WipEntry::where('station_id',$s->id)->whereBetween('input_date',[$dateFrom,$dateTo]);
             return ['station'=>$s,'qty_in'=>$entries->sum('qty_in'),'qty_out'=>$entries->sum('qty_out'),'qty_reject'=>$entries->sum('qty_reject')];
         });
-        $orders = ProductionOrder::with('product')->whereBetween('created_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->get();
-        return view('laporan.produksi', compact('data','orders','dateFrom','dateTo','stations'));
+        $orders = ProductionOrder::with(['product','series'])->when($request->product_id, fn($q,$v)=>$q->where('product_id',$v))->when($request->status, fn($q,$v)=>$q->where('status',$v))->whereBetween('created_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->get();
+        $products = \App\Models\Product::where('is_active',true)->orderBy('name')->get();
+        return view('laporan.produksi', compact('data','orders','dateFrom','dateTo','stations','products'));
     }
 
     public function handover(Request $request)
@@ -40,9 +41,7 @@ class ReportController extends Controller
 
     public function budget(Request $request)
     {
-        $orders = ProductionOrder::with(['product','budget'])->whereHas('budget')->get();
-        $totalPlan = $orders->sum(fn($o) => optional($o->budget)->total_plan ?? 0);
-        $totalActual = $orders->sum(fn($o) => optional($o->budget)->total_actual ?? 0);
-        return view('laporan.budget', compact('orders','totalPlan','totalActual'));
+        $budgets = Budget::with(['order.product'])->get();
+        return view('laporan.budget', compact('budgets'));
     }
 }

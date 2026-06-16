@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('report.index') }}">Laporan</a></li><li class="breadcrumb-item active">Handover</li></ol></nav>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('laporan.index') }}">Laporan</a></li><li class="breadcrumb-item active">Handover</li></ol></nav>
         <h4 class="mb-0 fw-bold">Laporan Handover</h4>
     </div>
     <button onclick="window.print()" class="btn btn-outline-secondary"><i class="bi bi-printer me-1"></i>Cetak</button>
@@ -32,7 +32,7 @@
             </div>
             <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary me-2"><i class="bi bi-funnel me-1"></i>Filter</button>
-                <a href="{{ route('report.handover') }}" class="btn btn-outline-secondary">Reset</a>
+                <a href="{{ route('laporan.handover') }}" class="btn btn-outline-secondary">Reset</a>
             </div>
         </form>
     </div>
