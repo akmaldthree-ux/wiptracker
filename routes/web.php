@@ -14,6 +14,7 @@ use App\Http\Controllers\MasterData\ColorController;
 use App\Http\Controllers\MasterData\SizeController;
 use App\Http\Controllers\MasterData\StationController;
 use App\Http\Controllers\MasterData\SewingLocationController;
+use App\Http\Controllers\CuttingPlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/handover', [ReportController::class, 'handover'])->name('laporan.handover');
     Route::get('/laporan/bahan-baku', [ReportController::class, 'material'])->name('laporan.bahan-baku');
     Route::get('/laporan/budget', [ReportController::class, 'budget'])->name('laporan.budget');
+
+    Route::resource('cutting', CuttingPlanController::class);
+    Route::patch('cutting/{cutting}/status', [CuttingPlanController::class, 'updateStatus'])->name('cutting.status');
+    Route::post('cutting/{cutting}/bundle', [CuttingPlanController::class, 'storeBundle'])->name('cutting.bundle.store');
+    Route::patch('cutting/bundle/{bundle}/status', [CuttingPlanController::class, 'updateBundle'])->name('cutting.bundle.status');
 
     Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifikasi/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');

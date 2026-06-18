@@ -122,6 +122,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#2d374
     <div class="nav-section-title">Produksi</div>
     <a href="{{ route('orders.index') }}" class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}"><i class="bi bi-clipboard-check"></i> Order Produksi</a>
     <a href="{{ route('wip.index') }}" class="nav-link {{ request()->routeIs('wip.*') ? 'active' : '' }}"><i class="bi bi-activity"></i> WIP Tracker</a>
+    <a href="{{ route('cutting.index') }}" class="nav-link {{ request()->routeIs('cutting.*') ? 'active' : '' }}"><i class="bi bi-scissors"></i> Cutting Plan</a>
     <a href="{{ route('handover.index') }}" class="nav-link {{ request()->routeIs('handover.*') ? 'active' : '' }}">
       <i class="bi bi-arrow-left-right"></i> Handover
       @php $pending = \App\Models\Handover::where('status','pending')->count(); @endphp
