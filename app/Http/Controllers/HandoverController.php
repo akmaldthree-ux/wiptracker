@@ -129,17 +129,19 @@ class HandoverController extends Controller
             if ($qty === 0) continue;
 
             // qty_out for sender station
-            WipEntry::create([
-                'production_order_id' => $handover->production_order_id,
-                'sku_id'              => $item->sku_id,
-                'station_id'          => $handover->from_station_id,
-                'qty_in'              => 0,
-                'qty_out'             => $qty,
-                'qty_reject'          => 0,
-                'input_date'          => $today,
-                'notes'               => $note,
-                'created_by'          => auth()->id(),
-            ]);
+            if ($handover->from_station_id) {
+                WipEntry::create([
+                    'production_order_id' => $handover->production_order_id,
+                    'sku_id'              => $item->sku_id,
+                    'station_id'          => $handover->from_station_id,
+                    'qty_in'              => 0,
+                    'qty_out'             => $qty,
+                    'qty_reject'          => 0,
+                    'input_date'          => $today,
+                    'notes'               => $note,
+                    'created_by'          => auth()->id(),
+                ]);
+            }
 
             // qty_in for receiver station
             WipEntry::create([
