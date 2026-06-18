@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panduan Deploy DPIS — cPanel</title>
+  <title>Panduan Deploy DPIS — tritory.id</title>
   <style>
     :root {
       --primary: #1a3c6e;
@@ -16,540 +16,136 @@
       --danger-light: #fee2e2;
       --info: #0284c7;
       --info-light: #e0f2fe;
-      --gray: #64748b;
-      --gray-light: #f8fafc;
       --border: #e2e8f0;
+      --gray-light: #f8fafc;
       --text: #1e293b;
       --text-muted: #64748b;
       --sidebar-width: 260px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; line-height: 1.7; color: var(--text); background: #f1f5f9; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--text);
-      background: #f1f5f9;
-    }
+    /* SIDEBAR */
+    .sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh; background: var(--primary); overflow-y: auto; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo .app-name { font-size: 17px; font-weight: 700; color: #fff; }
+    .sidebar-logo .app-domain { font-size: 13px; color: #60a5fa; font-weight: 600; margin-top: 3px; }
+    .sidebar-logo .app-sub { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 18px 20px 6px; }
+    .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 13.5px; border-left: 3px solid transparent; transition: all 0.15s; }
+    .sidebar nav a:hover, .sidebar nav a.active { background: rgba(255,255,255,0.1); color: #fff; border-left-color: #60a5fa; }
+    .step-num { width: 22px; height: 22px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .sidebar-footer { margin-top: auto; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.35); }
 
-    /* ===== SIDEBAR ===== */
-    .sidebar {
-      position: fixed;
-      top: 0; left: 0;
-      width: var(--sidebar-width);
-      height: 100vh;
-      background: var(--primary);
-      overflow-y: auto;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-    }
+    /* MAIN */
+    .main { margin-left: var(--sidebar-width); min-height: 100vh; }
+    .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+    .topbar-title { font-size: 15px; font-weight: 600; color: var(--primary); }
+    .topbar-badge { font-size: 12px; background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+    .content { padding: 36px 40px; max-width: 900px; }
 
-    .sidebar-logo {
-      padding: 24px 20px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+    /* SECTION */
+    .section { background: #fff; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 28px; overflow: hidden; scroll-margin-top: 80px; }
+    .section-header { padding: 18px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: var(--gray-light); }
+    .section-num { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+    .section-title { font-size: 17px; font-weight: 700; color: var(--primary); }
+    .section-body { padding: 26px 28px; }
 
-    .sidebar-logo .app-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.5px;
-    }
+    /* STEPS */
+    .steps { counter-reset: step; }
+    .step { display: flex; gap: 16px; margin-bottom: 22px; position: relative; }
+    .step:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 36px; bottom: -6px; width: 2px; background: var(--border); }
+    .step-icon { width: 32px; height: 32px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; counter-increment: step; }
+    .step-icon::after { content: counter(step); }
+    .step-content { flex: 1; padding-top: 4px; }
+    .step-label { font-weight: 700; color: var(--text); margin-bottom: 8px; font-size: 15px; }
 
-    .sidebar-logo .app-sub {
-      font-size: 11px;
-      color: rgba(255,255,255,0.55);
-      margin-top: 3px;
-    }
+    /* CODE */
+    pre { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 16px 20px; font-size: 13px; line-height: 1.8; overflow-x: auto; margin: 10px 0; }
+    code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; }
+    p code, li code { background: #f1f5f9; color: #be185d; padding: 2px 7px; border-radius: 4px; font-size: 13px; }
+    .c { color: #475569; } .cmd { color: #7dd3fc; } .str { color: #86efac; } .key { color: #fcd34d; } .val { color: #86efac; } .rep { color: #fcd34d; font-weight: bold; }
 
-    .sidebar-section-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      padding: 20px 20px 6px;
-    }
-
-    .sidebar nav a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 20px;
-      color: rgba(255,255,255,0.75);
-      text-decoration: none;
-      font-size: 13.5px;
-      border-left: 3px solid transparent;
-      transition: all 0.15s;
-    }
-
-    .sidebar nav a:hover,
-    .sidebar nav a.active {
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      border-left-color: #60a5fa;
-    }
-
-    .sidebar nav a .step-num {
-      width: 22px;
-      height: 22px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 16px 20px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
-    }
-
-    /* ===== MAIN CONTENT ===== */
-    .main {
-      margin-left: var(--sidebar-width);
-      min-height: 100vh;
-    }
-
-    /* Top bar */
-    .topbar {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 14px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .topbar-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .topbar-badge {
-      font-size: 12px;
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    /* Content area */
-    .content {
-      padding: 40px;
-      max-width: 900px;
-    }
-
-    /* ===== SECTIONS ===== */
-    .section {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      margin-bottom: 32px;
-      overflow: hidden;
-      scroll-margin-top: 80px;
-    }
-
-    .section-header {
-      padding: 20px 28px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--gray-light);
-    }
-
-    .section-num {
-      width: 36px;
-      height: 36px;
-      background: var(--primary);
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .section-body {
-      padding: 28px;
-    }
-
-    /* ===== STEPS ===== */
-    .steps {
-      counter-reset: step;
-    }
-
-    .step {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-
-    .step:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      left: 15px;
-      top: 36px;
-      bottom: -4px;
-      width: 2px;
-      background: var(--border);
-    }
-
-    .step-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--primary);
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-      counter-increment: step;
-    }
-
-    .step-icon::after {
-      content: counter(step);
-    }
-
-    .step-content {
-      flex: 1;
-      padding-top: 4px;
-    }
-
-    .step-label {
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    /* ===== CODE BLOCKS ===== */
-    pre {
-      background: #0f172a;
-      color: #e2e8f0;
-      border-radius: 8px;
-      padding: 18px 20px;
-      font-size: 13px;
-      line-height: 1.7;
-      overflow-x: auto;
-      margin: 12px 0;
-      position: relative;
-    }
-
-    code {
-      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    }
-
-    p code, li code {
-      background: #f1f5f9;
-      color: #be185d;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 13px;
-    }
-
-    .comment { color: #64748b; }
-    .cmd { color: #7dd3fc; }
-    .string { color: #86efac; }
-    .key { color: #fcd34d; }
-    .val { color: #f9a8d4; }
-
-    /* ===== ALERTS ===== */
-    .alert {
-      display: flex;
-      gap: 14px;
-      padding: 14px 18px;
-      border-radius: 8px;
-      margin: 14px 0;
-      font-size: 14px;
-    }
-
+    /* ALERTS */
+    .alert { display: flex; gap: 14px; padding: 14px 18px; border-radius: 8px; margin: 12px 0; font-size: 14px; }
     .alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-    .alert-content strong { display: block; margin-bottom: 3px; }
-
+    .alert-content strong { display: block; margin-bottom: 2px; }
     .alert-warning { background: var(--warning-light); border-left: 4px solid var(--warning); }
-    .alert-warning .alert-icon { color: var(--warning); }
-
-    .alert-danger { background: var(--danger-light); border-left: 4px solid var(--danger); }
-    .alert-danger .alert-icon { color: var(--danger); }
-
-    .alert-info { background: var(--info-light); border-left: 4px solid var(--info); }
-    .alert-info .alert-icon { color: var(--info); }
-
+    .alert-danger  { background: var(--danger-light);  border-left: 4px solid var(--danger);  }
+    .alert-info    { background: var(--info-light);    border-left: 4px solid var(--info);    }
     .alert-success { background: var(--success-light); border-left: 4px solid var(--success); }
-    .alert-success .alert-icon { color: var(--success); }
 
-    /* ===== TABLES ===== */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 14px 0;
-      font-size: 14px;
-    }
-
-    th {
-      background: var(--primary);
-      color: #fff;
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 13px;
-    }
-
-    td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
+    /* TABLES */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+    th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: left; font-size: 13px; font-weight: 600; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
     tr:last-child td { border-bottom: none; }
     tr:nth-child(even) td { background: var(--gray-light); }
 
-    /* ===== CHECKLIST ===== */
-    .checklist {
-      list-style: none;
-    }
-
-    .checklist li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-    }
-
+    /* CHECKLIST */
+    .checklist { list-style: none; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
     .checklist li:last-child { border-bottom: none; }
-
-    .check-box {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--border);
-      border-radius: 4px;
-      flex-shrink: 0;
-      margin-top: 2px;
-      background: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-
+    .check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
     .check-box:hover { border-color: var(--primary); }
     .check-box.checked { background: var(--primary); border-color: var(--primary); }
     .check-box.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
-
     .checklist li.done .check-text { text-decoration: line-through; color: var(--text-muted); }
+    .checklist-group { background: var(--gray-light); border-radius: 4px; padding: 3px 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin: 14px 0 4px; display: inline-block; }
 
-    .checklist-group {
-      background: var(--gray-light);
-      border-radius: 4px;
-      padding: 3px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin: 14px 0 4px;
-    }
-
-    /* ===== BADGE ===== */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
+    /* BADGE */
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     .badge-primary { background: var(--primary-light); color: var(--primary); }
     .badge-success { background: var(--success-light); color: var(--success); }
     .badge-warning { background: var(--warning-light); color: var(--warning); }
     .badge-danger  { background: var(--danger-light);  color: var(--danger);  }
 
-    /* ===== GRID ===== */
+    /* GRID */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+    .info-card { background: var(--gray-light); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .info-card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 8px; }
 
-    .info-card {
-      background: var(--gray-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-    }
-
-    .info-card-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    /* ===== FOLDER TREE ===== */
-    .tree {
-      background: #0f172a;
-      color: #e2e8f0;
-      border-radius: 8px;
-      padding: 18px 20px;
-      font-family: monospace;
-      font-size: 13px;
-      line-height: 1.8;
-      margin: 12px 0;
-    }
-
+    /* FOLDER TREE */
+    .tree { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 18px 20px; font-family: monospace; font-size: 13px; line-height: 1.9; margin: 12px 0; }
     .tree .dir { color: #7dd3fc; }
-    .tree .file { color: #e2e8f0; }
-    .tree .note { color: #64748b; }
-    .tree .important { color: #fcd34d; font-weight: bold; }
+    .tree .hi  { color: #fcd34d; font-weight: bold; }
+    .tree .note { color: #475569; }
+    .tree .ok  { color: #86efac; }
 
-    /* ===== USER TABLE ===== */
-    .user-table td:nth-child(2) { font-family: monospace; font-size: 13px; color: var(--primary); }
-    .user-table td:nth-child(3) { font-family: monospace; font-size: 13px; }
+    /* ENV BLOCK */
+    .env-block { background: #0f172a; border-radius: 8px; padding: 18px 20px; font-family: monospace; font-size: 13px; line-height: 2; margin: 12px 0; }
+    .env-block .ek { color: #7dd3fc; }
+    .env-block .ev { color: #86efac; }
+    .env-block .er { color: #fcd34d; font-weight: bold; }
+    .env-block .ec { color: #475569; }
 
-    /* ===== HERO ===== */
-    .hero {
-      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
-      color: #fff;
-      padding: 40px;
-      margin-bottom: 32px;
-      border-radius: 12px;
-    }
+    /* HERO */
+    .hero { background: linear-gradient(135deg, #1a3c6e 0%, #2563eb 100%); color: #fff; padding: 36px 40px; margin-bottom: 28px; border-radius: 12px; }
+    .hero-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 8px; }
+    .hero-title { font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+    .hero-domain { font-size: 18px; color: #93c5fd; font-weight: 700; margin-bottom: 8px; }
+    .hero-sub { color: rgba(255,255,255,0.7); font-size: 14px; }
+    .hero-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .hero-tag { background: rgba(255,255,255,0.12); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
 
-    .hero-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 8px;
-    }
-
-    .hero-title {
-      font-size: 28px;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 10px;
-    }
-
-    .hero-sub {
-      color: rgba(255,255,255,0.75);
-      font-size: 15px;
-    }
-
-    .hero-tags {
-      display: flex;
-      gap: 8px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .hero-tag {
-      background: rgba(255,255,255,0.15);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    /* ===== TROUBLESHOOT ===== */
-    .trouble-item {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 12px;
-      overflow: hidden;
-    }
-
-    .trouble-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
-      background: var(--gray-light);
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      user-select: none;
-    }
-
+    /* TROUBLE */
+    .trouble-item { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .trouble-header { display: flex; align-items: center; gap: 12px; padding: 13px 18px; background: var(--gray-light); cursor: pointer; font-size: 14px; user-select: none; }
     .trouble-header:hover { background: #e2e8f0; }
-    .trouble-err { color: var(--danger); font-family: monospace; font-size: 13px; }
-    .trouble-body { padding: 18px; display: none; }
-    .trouble-item.open .trouble-body { display: block; }
-    .trouble-arrow { margin-left: auto; transition: transform 0.2s; }
+    .trouble-arrow { margin-left: auto; transition: transform 0.2s; color: var(--text-muted); }
     .trouble-item.open .trouble-arrow { transform: rotate(180deg); }
+    .trouble-body { padding: 18px; display: none; font-size: 14px; }
+    .trouble-item.open .trouble-body { display: block; }
 
-    /* ===== PROGRESS BAR ===== */
-    .progress-bar-wrap {
-      background: var(--border);
-      border-radius: 4px;
-      height: 6px;
-      margin-top: 4px;
-    }
+    /* PROGRESS */
+    .progress-wrap { background: var(--border); border-radius: 4px; height: 8px; margin-top: 6px; }
+    .progress-fill { background: var(--primary); height: 8px; border-radius: 4px; transition: width 0.3s; }
 
-    .progress-bar-fill {
-      background: var(--primary);
-      height: 6px;
-      border-radius: 4px;
-      transition: width 0.3s;
-    }
+    /* MISC */
+    p { margin-bottom: 10px; } ul, ol { padding-left: 20px; margin-bottom: 10px; } li { margin-bottom: 4px; }
+    h3 { font-size: 15px; font-weight: 700; color: var(--primary); margin: 18px 0 8px; }
 
-    /* ===== MISC ===== */
-    p { margin-bottom: 10px; }
-    ul, ol { padding-left: 20px; margin-bottom: 10px; }
-    li { margin-bottom: 4px; }
-    h3 { font-size: 16px; font-weight: 700; color: var(--primary); margin: 20px 0 10px; }
-    hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-    .env-block {
-      background: #0f172a;
-      border-radius: 8px;
-      padding: 18px 20px;
-      font-family: monospace;
-      font-size: 13px;
-      line-height: 1.9;
-      margin: 12px 0;
-    }
-
-    .env-block .comment { color: #475569; }
-    .env-block .env-key { color: #7dd3fc; }
-    .env-block .env-val { color: #86efac; }
-    .env-block .env-replace { color: #fcd34d; font-weight: bold; }
-
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; }
-      .content { padding: 20px; }
-      .grid-2 { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 20px; } .grid-2 { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -558,16 +154,16 @@
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="app-name">DPIS Deploy Guide</div>
+    <div class="app-domain">🌐 tritory.id</div>
     <div class="app-sub">PT DTHREE SUKSES MULIA</div>
   </div>
-
-  <div class="sidebar-section-label">Langkah Deploy</div>
+  <div class="sidebar-label">Langkah Deploy</div>
   <nav>
-    <a href="#spesifikasi"><span class="step-num">1</span> Spesifikasi</a>
+    <a href="#spek"><span class="step-num">1</span> Spesifikasi Hosting</a>
     <a href="#persiapan"><span class="step-num">2</span> Persiapan Lokal</a>
     <a href="#database"><span class="step-num">3</span> Setup Database</a>
-    <a href="#upload"><span class="step-num">4</span> Upload & Ekstrak</a>
-    <a href="#env"><span class="step-num">5</span> Konfigurasi .env</a>
+    <a href="#upload"><span class="step-num">4</span> Upload ke Server</a>
+    <a href="#docroot"><span class="step-num">5</span> Set Document Root</a>
     <a href="#php"><span class="step-num">6</span> Setup PHP</a>
     <a href="#artisan"><span class="step-num">7</span> Perintah Artisan</a>
     <a href="#verifikasi"><span class="step-num">8</span> Verifikasi Login</a>
@@ -576,16 +172,13 @@
     <a href="#troubleshoot"><span class="step-num">!</span> Troubleshooting</a>
     <a href="#setelah"><span class="step-num">→</span> Setelah Deploy</a>
   </nav>
-
-  <div class="sidebar-footer">
-    Laravel 13 · PHP 8.3+ · MySQL<br>Bootstrap 5.3 · Juni 2026
-  </div>
+  <div class="sidebar-footer">Laravel 13 · PHP 8.3+ · MySQL<br>tritory.id · Juni 2026</div>
 </aside>
 
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
-    <span class="topbar-title">📋 Panduan Deploy DPIS ke cPanel</span>
+    <span class="topbar-title">📋 Panduan Deploy DPIS → tritory.id</span>
     <span class="topbar-badge">v1.0 — Production</span>
   </div>
 
@@ -593,9 +186,10 @@
 
     <!-- HERO -->
     <div class="hero">
-      <div class="hero-label">Deployment Guide</div>
+      <div class="hero-label">Deployment Guide — cPanel</div>
       <div class="hero-title">DPIS — DTHREE Production<br>Integration System</div>
-      <div class="hero-sub">Panduan lengkap deploy dari awal hingga sistem siap digunakan di hosting cPanel.</div>
+      <div class="hero-domain">🌐 tritory.id</div>
+      <div class="hero-sub">Panduan lengkap deploy dari awal hingga sistem siap digunakan.<br>Document Root diarahkan langsung ke folder <code style="background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:4px">tritory.id/public</code></div>
       <div class="hero-tags">
         <span class="hero-tag">⚡ Laravel 13</span>
         <span class="hero-tag">🐘 PHP 8.3+</span>
@@ -606,20 +200,12 @@
     </div>
 
     <!-- 1. SPESIFIKASI -->
-    <div class="section" id="spesifikasi">
+    <div class="section" id="spek">
       <div class="section-header">
         <div class="section-num">1</div>
         <div class="section-title">Spesifikasi Hosting yang Dibutuhkan</div>
       </div>
       <div class="section-body">
-        <div class="alert alert-warning">
-          <div class="alert-icon">⚠️</div>
-          <div class="alert-content">
-            <strong>Pastikan hosting Anda memenuhi syarat ini sebelum memulai.</strong>
-            Jika tidak, hubungi support hosting untuk upgrade atau pindah ke paket yang lebih tinggi.
-          </div>
-        </div>
-
         <div class="grid-2">
           <div class="info-card">
             <div class="info-card-title">🔧 Kebutuhan Server</div>
@@ -627,7 +213,6 @@
               <tr><td><strong>PHP</strong></td><td><span class="badge badge-success">8.3 atau 8.4</span></td></tr>
               <tr><td><strong>Database</strong></td><td>MySQL 5.7+ / MariaDB 10.3+</td></tr>
               <tr><td><strong>Disk Space</strong></td><td>Min. 300 MB</td></tr>
-              <tr><td><strong>RAM</strong></td><td>Min. 256 MB</td></tr>
               <tr><td><strong>Terminal/SSH</strong></td><td>Sangat disarankan</td></tr>
             </table>
           </div>
@@ -639,7 +224,6 @@
               <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">openssl</code>
               <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">tokenizer</code>
               <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">xml</code>
-              <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">ctype</code>
               <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">json</code>
               <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">bcmath</code>
               <code style="background:#dcfce7;color:#16a34a;padding:3px 8px;border-radius:4px;font-size:12px">fileinfo</code>
@@ -661,19 +245,19 @@
       <div class="section-body">
         <div class="alert alert-info">
           <div class="alert-icon">💻</div>
-          <div class="alert-content">Langkah ini dilakukan di komputer Anda sendiri, bukan di server hosting.</div>
+          <div class="alert-content">Langkah ini dilakukan di komputer Anda, bukan di server hosting.</div>
         </div>
 
         <div class="steps">
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Download / Clone Project dari GitHub</div>
-              <pre><code><span class="comment"># Clone repository</span>
-<span class="cmd">git clone</span> <span class="string">https://github.com/akmaldthree-ux/wiptracker.git</span> dpis
-<span class="cmd">cd</span> dpis
+              <div class="step-label">Download Project dari GitHub</div>
+              <pre><code><span class="c"># Clone repository</span>
+<span class="cmd">git clone</span> <span class="str">https://github.com/akmaldthree-ux/wiptracker.git</span> tritory.id
+<span class="cmd">cd</span> tritory.id
 <span class="cmd">git checkout</span> claude/clever-bohr-6i3l8a</code></pre>
-              <p style="font-size:13px;color:var(--text-muted)">Atau download ZIP dari GitHub → Extract ke folder bernama <code>dpis</code></p>
+              <p style="font-size:13px;color:var(--text-muted)">Folder diberi nama <code>tritory.id</code> agar sama dengan nama folder di server.</p>
             </div>
           </div>
 
@@ -682,40 +266,42 @@
             <div class="step-content">
               <div class="step-label">Install Composer Dependencies</div>
               <pre><code><span class="cmd">composer install</span> --optimize-autoloader --no-dev</code></pre>
-              <p style="font-size:13px;color:var(--text-muted)">Pastikan Composer sudah terinstall. Proses ini membutuhkan koneksi internet dan memakan waktu beberapa menit.</p>
             </div>
           </div>
 
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Buat File <code>.env</code> untuk Production</div>
-              <p>Buat file bernama <code>.env</code> (bukan <code>.env.example</code>) dengan isi berikut:</p>
+              <div class="step-label">Buat File <code>.env</code></div>
+              <p>Buat file <code>.env</code> di dalam folder <code>tritory.id/</code>:</p>
               <div class="env-block">
-<span class="env-key">APP_NAME</span>=<span class="env-val">"DPIS - DTHREE Production"</span><br>
-<span class="env-key">APP_ENV</span>=<span class="env-val">production</span><br>
-<span class="env-key">APP_KEY</span>=<span class="comment">  ← kosongkan, diisi otomatis nanti</span><br>
-<span class="env-key">APP_DEBUG</span>=<span class="env-val">false</span><br>
-<span class="env-key">APP_URL</span>=<span class="env-replace">https://yourdomain.com</span>  <span class="comment">← GANTI</span><br>
+<span class="ek">APP_NAME</span>=<span class="ev">"DPIS - DTHREE Production"</span><br>
+<span class="ek">APP_ENV</span>=<span class="ev">production</span><br>
+<span class="ek">APP_KEY</span>=<span class="ec">          ← kosongkan, diisi otomatis nanti</span><br>
+<span class="ek">APP_DEBUG</span>=<span class="ev">false</span><br>
+<span class="ek">APP_URL</span>=<span class="ev">https://tritory.id</span><br>
 <br>
-<span class="env-key">DB_CONNECTION</span>=<span class="env-val">mysql</span><br>
-<span class="env-key">DB_HOST</span>=<span class="env-val">localhost</span><br>
-<span class="env-key">DB_PORT</span>=<span class="env-val">3306</span><br>
-<span class="env-key">DB_DATABASE</span>=<span class="env-replace">namauser_dpis</span>   <span class="comment">← GANTI (lihat Langkah 3)</span><br>
-<span class="env-key">DB_USERNAME</span>=<span class="env-replace">namauser_dpis</span>   <span class="comment">← GANTI (lihat Langkah 3)</span><br>
-<span class="env-key">DB_PASSWORD</span>=<span class="env-replace">PasswordKuat123!</span>  <span class="comment">← GANTI</span><br>
+<span class="ek">DB_CONNECTION</span>=<span class="ev">mysql</span><br>
+<span class="ek">DB_HOST</span>=<span class="ev">localhost</span><br>
+<span class="ek">DB_PORT</span>=<span class="ev">3306</span><br>
+<span class="ek">DB_DATABASE</span>=<span class="er">namauser_dpis</span>   <span class="ec">← GANTI (lihat Langkah 3)</span><br>
+<span class="ek">DB_USERNAME</span>=<span class="er">namauser_dpis</span>   <span class="ec">← GANTI (lihat Langkah 3)</span><br>
+<span class="ek">DB_PASSWORD</span>=<span class="er">PasswordKuat123!</span>  <span class="ec">← GANTI</span><br>
 <br>
-<span class="env-key">SESSION_DRIVER</span>=<span class="env-val">file</span><br>
-<span class="env-key">SESSION_LIFETIME</span>=<span class="env-val">30</span><br>
-<span class="env-key">CACHE_STORE</span>=<span class="env-val">file</span><br>
-<span class="env-key">QUEUE_CONNECTION</span>=<span class="env-val">sync</span><br>
+<span class="ek">SESSION_DRIVER</span>=<span class="ev">file</span><br>
+<span class="ek">SESSION_LIFETIME</span>=<span class="ev">30</span><br>
+<span class="ek">CACHE_STORE</span>=<span class="ev">file</span><br>
+<span class="ek">QUEUE_CONNECTION</span>=<span class="ev">sync</span><br>
 <br>
-<span class="env-key">LOG_CHANNEL</span>=<span class="env-val">single</span><br>
-<span class="env-key">LOG_LEVEL</span>=<span class="env-val">error</span>
+<span class="ek">LOG_CHANNEL</span>=<span class="ev">single</span><br>
+<span class="ek">LOG_LEVEL</span>=<span class="ev">error</span><br>
+<br>
+<span class="ek">MAIL_FROM_ADDRESS</span>=<span class="ev">"noreply@tritory.id"</span><br>
+<span class="ek">MAIL_FROM_NAME</span>=<span class="ev">"DPIS System"</span>
               </div>
-              <div class="alert alert-warning" style="margin-top:10px">
+              <div class="alert alert-warning" style="margin-top:8px">
                 <div class="alert-icon">⚠️</div>
-                <div class="alert-content">Teks berwarna <strong style="color:var(--warning)">kuning</strong> wajib diganti sesuai data Anda. Jangan lupa ganti <code>yourdomain.com</code> dengan domain asli Anda.</div>
+                <div class="alert-content">Nilai berwarna <strong style="color:var(--warning)">kuning</strong> wajib diganti sesuai data database hosting Anda.</div>
               </div>
             </div>
           </div>
@@ -723,15 +309,15 @@
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Buat ZIP Archive Project</div>
-              <p><strong>Windows:</strong> Klik kanan folder <code>dpis</code> → Send to → Compressed (zipped) folder</p>
+              <div class="step-label">Buat ZIP Archive</div>
+              <p><strong>Windows:</strong> Klik kanan folder <code>tritory.id</code> → Send to → Compressed (zipped) folder</p>
               <p><strong>Mac / Linux:</strong></p>
-              <pre><code><span class="cmd">cd</span> ..   <span class="comment"># keluar dari folder dpis</span>
-<span class="cmd">zip</span> -r dpis.zip dpis \
-  --exclude <span class="string">"dpis/.git/*"</span> \
-  --exclude <span class="string">"dpis/node_modules/*"</span> \
-  --exclude <span class="string">"dpis/database/*.sqlite"</span></code></pre>
-              <p style="font-size:13px;color:var(--text-muted)">Ukuran ZIP normalnya 20–40 MB (termasuk folder <code>vendor/</code>)</p>
+              <pre><code><span class="cmd">cd</span> ..   <span class="c"># keluar dari folder tritory.id</span>
+<span class="cmd">zip</span> -r tritory.id.zip tritory.id \
+  --exclude <span class="str">"tritory.id/.git/*"</span> \
+  --exclude <span class="str">"tritory.id/node_modules/*"</span> \
+  --exclude <span class="str">"tritory.id/database/*.sqlite"</span></code></pre>
+              <p style="font-size:13px;color:var(--text-muted)">Ukuran ZIP normalnya 20–40 MB (sudah termasuk folder <code>vendor/</code>).</p>
             </div>
           </div>
         </div>
@@ -750,17 +336,17 @@
             <div class="step-icon"></div>
             <div class="step-content">
               <div class="step-label">Buka MySQL Databases</div>
-              <p>Login ke cPanel → cari menu <strong>"MySQL® Databases"</strong></p>
+              <p>Login cPanel → cari menu <strong>"MySQL® Databases"</strong></p>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
               <div class="step-label">Buat Database Baru</div>
-              <p>Di kolom <em>"Create New Database"</em>, ketik: <code>dpis</code> → klik <strong>Create Database</strong></p>
+              <p>Kolom <em>"Create New Database"</em> → ketik <code>dpis</code> → klik <strong>Create Database</strong></p>
               <div class="alert alert-info" style="margin-top:8px">
                 <div class="alert-icon">ℹ️</div>
-                <div class="alert-content">Nama lengkap otomatis menjadi <code>namauser_dpis</code> — ini yang diisi ke <code>DB_DATABASE</code></div>
+                <div class="alert-content">Nama lengkap otomatis: <code>namauser_dpis</code> — ini yang diisi ke <code>DB_DATABASE</code> di file <code>.env</code></div>
               </div>
             </div>
           </div>
@@ -771,7 +357,7 @@
               <p>Scroll ke <em>"MySQL Users"</em> → <em>"Add New User"</em></p>
               <ul>
                 <li>Username: <code>dpis</code></li>
-                <li>Password: gunakan tombol <strong>Password Generator</strong> untuk membuat password yang kuat</li>
+                <li>Password: gunakan tombol <strong>Password Generator</strong></li>
                 <li>Klik <strong>Create User</strong></li>
               </ul>
             </div>
@@ -780,13 +366,8 @@
             <div class="step-icon"></div>
             <div class="step-content">
               <div class="step-label">Hubungkan User ke Database</div>
-              <p>Scroll ke <em>"Add User To Database"</em></p>
-              <ul>
-                <li>Pilih User: <code>namauser_dpis</code></li>
-                <li>Pilih Database: <code>namauser_dpis</code></li>
-                <li>Klik <strong>Add</strong></li>
-                <li>Di halaman berikutnya: centang <strong>ALL PRIVILEGES</strong> → klik <strong>Make Changes</strong></li>
-              </ul>
+              <p>Scroll ke <em>"Add User To Database"</em> → pilih user & database → klik <strong>Add</strong></p>
+              <p>Centang <strong>ALL PRIVILEGES</strong> → klik <strong>Make Changes</strong></p>
             </div>
           </div>
           <div class="step">
@@ -794,12 +375,12 @@
             <div class="step-content">
               <div class="step-label">Catat Informasi Database</div>
               <div class="env-block">
-<span class="env-key">DB_DATABASE</span> = <span class="env-replace">namauser_dpis</span><br>
-<span class="env-key">DB_USERNAME</span> = <span class="env-replace">namauser_dpis</span><br>
-<span class="env-key">DB_PASSWORD</span> = <span class="env-replace">[password yang Anda buat]</span><br>
-<span class="env-key">DB_HOST</span>     = <span class="env-val">localhost</span>
+<span class="ek">DB_DATABASE</span> = <span class="er">namauser_dpis</span><br>
+<span class="ek">DB_USERNAME</span> = <span class="er">namauser_dpis</span><br>
+<span class="ek">DB_PASSWORD</span> = <span class="er">[password yang dibuat]</span><br>
+<span class="ek">DB_HOST</span>     = <span class="ev">localhost</span>
               </div>
-              <p style="font-size:13px;color:var(--text-muted)">Simpan catatan ini, akan dibutuhkan saat edit file <code>.env</code></p>
+              <p style="font-size:13px;color:var(--text-muted)">Update nilai ini di file <code>.env</code> sebelum upload.</p>
             </div>
           </div>
         </div>
@@ -810,20 +391,19 @@
     <div class="section" id="upload">
       <div class="section-header">
         <div class="section-num">4</div>
-        <div class="section-title">Upload & Konfigurasi File di cPanel</div>
+        <div class="section-title">Upload Project ke Server</div>
       </div>
       <div class="section-body">
         <div class="steps">
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Upload ZIP via File Manager</div>
+              <div class="step-label">Upload ZIP via File Manager cPanel</div>
               <ol>
                 <li>cPanel → <strong>File Manager</strong></li>
-                <li>Navigasi ke <code>/home/namauser/</code> <em>(satu level di atas public_html)</em></li>
-                <li>Klik <strong>Upload</strong> → pilih <code>dpis.zip</code></li>
-                <li>Tunggu hingga upload 100% selesai</li>
-                <li>Klik kanan <code>dpis.zip</code> → <strong>Extract</strong> → tujuan: <code>/home/namauser/</code></li>
+                <li>Navigasi ke <code>/home/namauser/</code></li>
+                <li>Klik <strong>Upload</strong> → pilih <code>tritory.id.zip</code></li>
+                <li>Tunggu hingga upload 100%</li>
               </ol>
             </div>
           </div>
@@ -831,103 +411,107 @@
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Struktur Folder Setelah Diekstrak</div>
+              <div class="step-label">Ekstrak ZIP</div>
+              <ol>
+                <li>Klik kanan <code>tritory.id.zip</code> → <strong>Extract</strong></li>
+                <li>Tujuan extract: <code>/home/namauser/</code></li>
+                <li>Klik <strong>Extract File(s)</strong></li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-icon"></div>
+            <div class="step-content">
+              <div class="step-label">Hasil Akhir Struktur Folder</div>
               <div class="tree">
 /home/namauser/<br>
-├── <span class="dir">public_html/</span>   <span class="note">← yang diakses browser</span><br>
+├── <span class="dir">public_html/</span>          <span class="note">← domain utama hosting (biarkan)</span><br>
 │<br>
-└── <span class="dir">dpis/</span>           <span class="note">← folder Laravel hasil extract</span><br>
+└── <span class="hi">tritory.id/</span>           <span class="note">← folder project Laravel ✅</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">app/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">bootstrap/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">config/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">database/</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="important">public/</span>   <span class="note">← isi folder ini dipindah ke public_html</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="hi">public/</span>             <span class="note">← Document Root diarahkan ke sini ✅</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="ok">index.php</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="ok">.htaccess</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="dir">css/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="dir">js/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">resources/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">routes/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">storage/</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dir">vendor/</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="important">.env</span>
+&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="ok">.env</span>
               </div>
-            </div>
-          </div>
-
-          <div class="step">
-            <div class="step-icon"></div>
-            <div class="step-content">
-              <div class="step-label">Pindahkan Isi <code>dpis/public/</code> ke <code>public_html/</code></div>
-              <ol>
-                <li>Masuk ke folder <code>/home/namauser/dpis/public/</code></li>
-                <li>Tekan <strong>Ctrl+A</strong> (Select All)</li>
-                <li>Klik <strong>Move</strong> di toolbar</li>
-                <li>Tujuan: <code>/home/namauser/public_html/</code></li>
-                <li>Klik <strong>Move File(s)</strong></li>
-              </ol>
-              <p style="margin-top:10px;font-size:14px">Setelah dipindah, <code>public_html/</code> berisi:</p>
-              <div class="tree">
-public_html/<br>
-├── <span class="important">index.php</span>     <span class="note">← entry point (akan diedit)</span><br>
-├── <span class="important">.htaccess</span>     <span class="note">← URL rewriting</span><br>
-├── <span class="file">favicon.ico</span><br>
-├── <span class="file">robots.txt</span><br>
-├── <span class="dir">css/</span><br>
-│&nbsp;&nbsp;&nbsp;├── <span class="file">bootstrap.min.css</span><br>
-│&nbsp;&nbsp;&nbsp;└── <span class="dir">bootstrap-icons/</span><br>
-└── <span class="dir">js/</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">bootstrap.bundle.min.js</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="file">chart.umd.min.js</span>
+              <div class="alert alert-success" style="margin-top:10px">
+                <div class="alert-icon">✅</div>
+                <div class="alert-content"><strong>Tidak perlu memindahkan file apapun.</strong> Tidak perlu mengedit <code>index.php</code>. Cukup arahkan Document Root ke folder <code>tritory.id/public</code>.</div>
               </div>
-            </div>
-          </div>
-
-          <div class="step">
-            <div class="step-icon"></div>
-            <div class="step-content">
-              <div class="step-label">Edit <code>index.php</code> di <code>public_html/</code></div>
-              <p>Klik kanan <code>index.php</code> → <strong>Edit</strong>. Ubah <strong>2 baris</strong> berikut:</p>
-
-              <p style="margin-top:14px;font-weight:600;font-size:13px">Baris 1 — Path autoload:</p>
-              <pre><code><span class="comment">// SEBELUM:</span>
-require __DIR__.'/../vendor/autoload.php';
-
-<span class="comment">// SESUDAH:</span>
-require __DIR__.'/../dpis/vendor/autoload.php';</code></pre>
-
-              <p style="margin-top:14px;font-weight:600;font-size:13px">Baris 2 — Path bootstrap:</p>
-              <pre><code><span class="comment">// SEBELUM:</span>
-$app = require_once __DIR__.'/../bootstrap/app.php';
-
-<span class="comment">// SESUDAH:</span>
-$app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
-
-              <p>Klik <strong>Save Changes</strong></p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 5. ENV -->
-    <div class="section" id="env">
+    <!-- 5. DOCUMENT ROOT -->
+    <div class="section" id="docroot">
       <div class="section-header">
         <div class="section-num">5</div>
-        <div class="section-title">Verifikasi File .env</div>
+        <div class="section-title">Set Document Root → tritory.id/public</div>
       </div>
       <div class="section-body">
-        <p>File <code>.env</code> sudah ikut ter-upload bersama project. Pastikan nilainya sudah benar:</p>
-        <ol>
-          <li>File Manager → <code>/home/namauser/dpis/.env</code></li>
-          <li>Klik kanan → <strong>Edit</strong></li>
-          <li>Pastikan nilai berikut sudah sesuai:</li>
-        </ol>
-        <div class="env-block" style="margin-top:12px">
-<span class="env-key">APP_URL</span>=<span class="env-replace">https://yourdomain.com</span><br>
-<span class="env-key">DB_DATABASE</span>=<span class="env-replace">namauser_dpis</span><br>
-<span class="env-key">DB_USERNAME</span>=<span class="env-replace">namauser_dpis</span><br>
-<span class="env-key">DB_PASSWORD</span>=<span class="env-replace">PasswordKuat123!</span><br>
-<span class="env-key">SESSION_DRIVER</span>=<span class="env-val">file</span><br>
-<span class="env-key">CACHE_STORE</span>=<span class="env-val">file</span>
+        <div class="alert alert-info">
+          <div class="alert-icon">🎯</div>
+          <div class="alert-content"><strong>Ini langkah terpenting.</strong> Document Root adalah folder yang dibuka server saat seseorang mengakses <code>tritory.id</code> di browser.</div>
         </div>
-        <p>Klik <strong>Save Changes</strong></p>
+
+        <h3>Jika tritory.id adalah Addon Domain</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-icon"></div>
+            <div class="step-content">
+              <div class="step-label">Buka Addon Domains</div>
+              <p>cPanel → <strong>Addon Domains</strong></p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-icon"></div>
+            <div class="step-content">
+              <div class="step-label">Edit Document Root</div>
+              <p>Cari <code>tritory.id</code> → klik <strong>Manage</strong> atau ikon edit</p>
+              <p>Ubah <strong>Document Root</strong> menjadi:</p>
+              <pre><code>tritory.id/public</code></pre>
+              <p style="font-size:13px;color:var(--text-muted)">Atau path lengkapnya: <code>/home/namauser/tritory.id/public</code></p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-icon"></div>
+            <div class="step-content">
+              <div class="step-label">Simpan</div>
+              <p>Klik <strong>Save</strong> atau <strong>Change</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <h3>Jika tritory.id adalah Domain Utama Hosting</h3>
+        <p>cPanel → <strong>File Manager</strong></p>
+        <p>Buka file <code>/home/namauser/public_html/.htaccess</code> → tambahkan baris berikut:</p>
+        <pre><code>RewriteEngine On
+RewriteRule ^(.*)$ /tritory.id/public/$1 [L]</code></pre>
+        <p style="font-size:13px;color:var(--text-muted)">Atau hubungi support hosting untuk mengubah document root via server config.</p>
+
+        <hr>
+
+        <div class="alert alert-success">
+          <div class="alert-icon">✅</div>
+          <div class="alert-content">
+            <strong>Cara kerja setelah Document Root diset:</strong><br>
+            Browser buka <code>tritory.id</code> → Server buka <code>/home/namauser/tritory.id/public/</code> → File <code>index.php</code> ditemukan → Laravel berjalan ✅
+          </div>
+        </div>
       </div>
     </div>
 
@@ -938,18 +522,18 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
         <div class="section-title">Setup PHP di cPanel</div>
       </div>
       <div class="section-body">
-        <h3>A. Set Versi PHP</h3>
+        <h3>Set Versi PHP</h3>
         <ol>
           <li>cPanel → <strong>MultiPHP Manager</strong></li>
-          <li>Centang domain Anda</li>
+          <li>Centang domain <code>tritory.id</code></li>
           <li>Pilih versi: <span class="badge badge-success">PHP 8.3</span> atau <span class="badge badge-success">PHP 8.4</span></li>
           <li>Klik <strong>Apply</strong></li>
         </ol>
 
-        <h3>B. Aktifkan Ekstensi PHP</h3>
+        <h3>Aktifkan Ekstensi PHP</h3>
         <ol>
-          <li>cPanel → <strong>MultiPHP INI Editor</strong> → pilih domain</li>
-          <li>Pastikan ekstensi berikut dicentang:</li>
+          <li>cPanel → <strong>MultiPHP INI Editor</strong> → pilih <code>tritory.id</code></li>
+          <li>Pastikan ekstensi berikut aktif:</li>
         </ol>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
           <span class="badge badge-success">✓ pdo_mysql</span>
@@ -957,7 +541,6 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
           <span class="badge badge-success">✓ openssl</span>
           <span class="badge badge-success">✓ tokenizer</span>
           <span class="badge badge-success">✓ xml</span>
-          <span class="badge badge-success">✓ ctype</span>
           <span class="badge badge-success">✓ json</span>
           <span class="badge badge-success">✓ bcmath</span>
           <span class="badge badge-success">✓ fileinfo</span>
@@ -966,6 +549,13 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
           <span class="badge badge-success">✓ curl</span>
         </div>
         <p>Klik <strong>Save</strong></p>
+
+        <h3>Aktifkan SSL (HTTPS)</h3>
+        <ol>
+          <li>cPanel → <strong>SSL/TLS</strong> → <strong>Let's Encrypt</strong></li>
+          <li>Pilih domain <code>tritory.id</code> → klik <strong>Issue</strong></li>
+          <li>Tunggu beberapa menit → SSL aktif gratis ✅</li>
+        </ol>
       </div>
     </div>
 
@@ -976,15 +566,12 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
         <div class="section-title">Jalankan Perintah Artisan via Terminal</div>
       </div>
       <div class="section-body">
-        <p>Buka <strong>cPanel → Terminal</strong> (atau SSH dengan PuTTY/Terminal):</p>
-        <pre><code>ssh namauser@yourdomain.com</code></pre>
-
-        <p>Masuk ke folder Laravel:</p>
-        <pre><code><span class="cmd">cd</span> ~/dpis</code></pre>
+        <p>Buka <strong>cPanel → Terminal</strong>, lalu masuk ke folder project:</p>
+        <pre><code><span class="cmd">cd</span> ~/tritory.id</code></pre>
 
         <div class="alert alert-warning">
           <div class="alert-icon">⚠️</div>
-          <div class="alert-content"><strong>Jalankan perintah berikut SECARA BERURUTAN.</strong> Jangan lewati satu pun.</div>
+          <div class="alert-content"><strong>Jalankan perintah berikut secara berurutan. Jangan lewati satu pun.</strong></div>
         </div>
 
         <div class="steps">
@@ -993,7 +580,7 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
             <div class="step-content">
               <div class="step-label">Generate Application Key</div>
               <pre><code><span class="cmd">php artisan</span> key:generate</code></pre>
-              <p style="font-size:13px;color:var(--success)">✓ Output yang benar: <em>Application key set successfully.</em></p>
+              <p style="font-size:13px;color:var(--success)">✅ Output: <em>Application key set successfully.</em></p>
             </div>
           </div>
           <div class="step">
@@ -1009,15 +596,15 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
             <div class="step-content">
               <div class="step-label">Jalankan Migrasi Database</div>
               <pre><code><span class="cmd">php artisan</span> migrate --force</code></pre>
-              <p style="font-size:13px;color:var(--success)">✓ Akan membuat semua tabel database (4 migration files)</p>
+              <p style="font-size:13px;color:var(--success)">✅ Membuat semua tabel database (4 migration)</p>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Isi Data Awal (Seeder)</div>
+              <div class="step-label">Isi Data Awal</div>
               <pre><code><span class="cmd">php artisan</span> db:seed --force</code></pre>
-              <p style="font-size:13px;color:var(--success)">✓ Membuat roles, stasiun produksi, dan akun user default</p>
+              <p style="font-size:13px;color:var(--success)">✅ Membuat roles, stasiun, dan akun user default</p>
             </div>
           </div>
           <div class="step">
@@ -1034,7 +621,7 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
               <pre><code><span class="cmd">php artisan</span> config:cache
 <span class="cmd">php artisan</span> route:cache
 <span class="cmd">php artisan</span> view:cache</code></pre>
-              <p style="font-size:13px;color:var(--success)">✓ Sistem siap digunakan dengan performa optimal</p>
+              <p style="font-size:13px;color:var(--success)">✅ Sistem siap dengan performa optimal</p>
             </div>
           </div>
         </div>
@@ -1053,37 +640,36 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
             <div class="step-icon"></div>
             <div class="step-content">
               <div class="step-label">Buka Browser</div>
-              <p>Akses <code>https://yourdomain.com</code></p>
-              <p>Halaman login DPIS harus tampil dengan tampilan Bootstrap yang lengkap (ada logo, form, styling).</p>
+              <p>Akses <a href="https://tritory.id" target="_blank" style="color:var(--primary);font-weight:600">https://tritory.id</a></p>
+              <p>Halaman login DPIS harus tampil lengkap dengan tampilan Bootstrap.</p>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
               <div class="step-label">Login Pertama</div>
-              <p>Gunakan akun Admin:</p>
               <div class="env-block">
-<span class="env-key">Email</span>    : <span class="env-val">admin@dpis.com</span><br>
-<span class="env-key">Password</span> : <span class="env-val">password123</span>
+<span class="ek">Email</span>    : <span class="ev">admin@dpis.com</span><br>
+<span class="ek">Password</span> : <span class="ev">password123</span>
               </div>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Test Navigasi Menu</div>
-              <p>Coba akses beberapa menu utama:</p>
-              <ul>
-                <li>Dashboard Eksekutif</li>
-                <li>WIP Monitor</li>
-                <li>Order Produksi</li>
-                <li>Cutting Plan</li>
-                <li>Handover</li>
-                <li>Master Data</li>
-              </ul>
-              <div class="alert alert-success" style="margin-top:10px">
+              <div class="step-label">Test Semua Menu Utama</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                <span class="badge badge-primary">Dashboard Eksekutif</span>
+                <span class="badge badge-primary">WIP Monitor</span>
+                <span class="badge badge-primary">Order Produksi</span>
+                <span class="badge badge-primary">Cutting Plan</span>
+                <span class="badge badge-primary">Handover</span>
+                <span class="badge badge-primary">Master Data</span>
+                <span class="badge badge-primary">Laporan</span>
+              </div>
+              <div class="alert alert-success" style="margin-top:12px">
                 <div class="alert-icon">🎉</div>
-                <div class="alert-content"><strong>Jika semua menu bisa diakses tanpa error — deploy berhasil!</strong></div>
+                <div class="alert-content"><strong>Semua menu bisa diakses tanpa error = Deploy berhasil!</strong></div>
               </div>
             </div>
           </div>
@@ -1100,30 +686,19 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
       <div class="section-body">
         <div class="alert alert-danger">
           <div class="alert-icon">🔐</div>
-          <div class="alert-content">
-            <strong>PENTING: Segera ganti semua password setelah login pertama!</strong>
-            Caranya: klik nama user di pojok kanan atas → <strong>Profil Saya</strong> → ubah password.
-          </div>
+          <div class="alert-content"><strong>Segera ganti semua password setelah login pertama!</strong><br>Klik nama user di pojok kanan atas → Profil Saya → ubah password.</div>
         </div>
-
-        <table class="user-table" style="margin-top:16px">
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th>Email</th>
-              <th>Password Default</th>
-              <th>Akses</th>
-            </tr>
-          </thead>
+        <table style="margin-top:14px">
+          <thead><tr><th>Role</th><th>Email</th><th>Password Default</th><th>Akses</th></tr></thead>
           <tbody>
-            <tr><td>Admin</td><td>admin@dpis.com</td><td>password123</td><td><span class="badge badge-danger">Full Access</span></td></tr>
-            <tr><td>Supervisor</td><td>supervisor@dpis.com</td><td>password123</td><td><span class="badge badge-warning">Supervisor</span></td></tr>
-            <tr><td>Manager</td><td>manager@dpis.com</td><td>password123</td><td><span class="badge badge-primary">View Only</span></td></tr>
-            <tr><td>PIC Cutting</td><td>cutting@dpis.com</td><td>password123</td><td><span class="badge badge-success">Cutting</span></td></tr>
-            <tr><td>PIC Sewing</td><td>sewing@dpis.com</td><td>password123</td><td><span class="badge badge-success">Sewing</span></td></tr>
-            <tr><td>PIC Finishing</td><td>finishing@dpis.com</td><td>password123</td><td><span class="badge badge-success">Finishing</span></td></tr>
-            <tr><td>PIC QC</td><td>qc@dpis.com</td><td>password123</td><td><span class="badge badge-success">QC</span></td></tr>
-            <tr><td>Staff Gudang</td><td>warehouse@dpis.com</td><td>password123</td><td><span class="badge badge-success">Warehouse</span></td></tr>
+            <tr><td>Admin</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">admin@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-danger">Full Access</span></td></tr>
+            <tr><td>Supervisor</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">supervisor@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-warning">Supervisor</span></td></tr>
+            <tr><td>Manager</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">manager@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-primary">View Only</span></td></tr>
+            <tr><td>PIC Cutting</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">cutting@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-success">Cutting</span></td></tr>
+            <tr><td>PIC Sewing</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">sewing@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-success">Sewing</span></td></tr>
+            <tr><td>PIC Finishing</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">finishing@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-success">Finishing</span></td></tr>
+            <tr><td>PIC QC</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">qc@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-success">QC</span></td></tr>
+            <tr><td>Staff Gudang</td><td style="font-family:monospace;font-size:13px;color:var(--primary)">warehouse@dpis.com</td><td style="font-family:monospace;font-size:13px">password123</td><td><span class="badge badge-success">Warehouse</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -1136,31 +711,31 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
         <div class="section-title">Checklist Deploy</div>
       </div>
       <div class="section-body">
-        <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Klik setiap item untuk menandai sebagai selesai. Progress tersimpan di browser.</p>
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Klik setiap item untuk menandai selesai. Progress tersimpan otomatis di browser.</p>
 
-        <div class="checklist-group">Persiapan Lokal</div>
+        <span class="checklist-group">Persiapan Lokal</span>
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Clone / download project dari GitHub</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Clone project → folder diberi nama <code>tritory.id</code></span></li>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Jalankan <code>composer install --optimize-autoloader --no-dev</code></span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat file <code>.env</code> dengan konfigurasi production (MySQL, domain)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat ZIP project (exclude .git, node_modules, *.sqlite)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat file <code>.env</code> — isi <code>APP_URL=https://tritory.id</code> dan kredensial database</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat ZIP: <code>tritory.id.zip</code></span></li>
         </ul>
 
-        <div class="checklist-group">Setup di cPanel</div>
+        <span class="checklist-group">Setup di cPanel</span>
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat database MySQL di cPanel</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat database MySQL: <code>namauser_dpis</code></span></li>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buat MySQL user + assign ALL PRIVILEGES ke database</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Upload <code>dpis.zip</code> ke <code>/home/namauser/</code></span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Extract ZIP → folder <code>dpis/</code> terbentuk</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Pindah isi <code>dpis/public/</code> ke <code>public_html/</code></span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Edit <code>public_html/index.php</code> → ubah 2 baris path ke folder <code>dpis/</code></span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Set PHP 8.3 / 8.4 di MultiPHP Manager</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Aktifkan ekstensi PHP yang dibutuhkan</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Verifikasi isi file <code>.env</code> sudah benar</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Upload <code>tritory.id.zip</code> ke <code>/home/namauser/</code></span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Extract ZIP → folder <code>tritory.id/</code> terbentuk</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Set Document Root domain <code>tritory.id</code> → ke folder <code>tritory.id/public</code></span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Set PHP 8.3 / 8.4 di MultiPHP Manager untuk <code>tritory.id</code></span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Aktifkan semua ekstensi PHP yang dibutuhkan</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Aktifkan SSL Let's Encrypt untuk <code>tritory.id</code></span></li>
         </ul>
 
-        <div class="checklist-group">Terminal / SSH</div>
+        <span class="checklist-group">Terminal / SSH</span>
         <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text"><code>cd ~/tritory.id</code></span></li>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text"><code>php artisan key:generate</code></span></li>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text"><code>chmod -R 775 storage bootstrap/cache</code></span></li>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text"><code>php artisan migrate --force</code></span></li>
@@ -1169,21 +744,21 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text"><code>php artisan config:cache route:cache view:cache</code></span></li>
         </ul>
 
-        <div class="checklist-group">Verifikasi</div>
+        <span class="checklist-group">Verifikasi</span>
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buka browser → halaman login DPIS muncul dengan tampilan yang benar</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Login sebagai admin@dpis.com / password123 → berhasil masuk</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Navigasi semua menu → tidak ada error</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Buka <code>https://tritory.id</code> → halaman login muncul dengan tampilan yang benar</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Login <code>admin@dpis.com / password123</code> → berhasil masuk</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Semua menu bisa diakses tanpa error</span></li>
           <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Ganti semua password default</span></li>
         </ul>
 
-        <div id="progress-section" style="margin-top:20px;padding:16px;background:var(--gray-light);border-radius:8px">
+        <div style="margin-top:20px;padding:16px;background:var(--gray-light);border-radius:8px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
             <span style="font-size:13px;font-weight:600">Progress Deploy</span>
-            <span id="progress-text" style="font-size:13px;font-weight:600;color:var(--primary)">0 / 21 selesai</span>
+            <span id="progress-text" style="font-size:13px;font-weight:700;color:var(--primary)">0 / 23 selesai</span>
           </div>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+          <div class="progress-wrap">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
           </div>
         </div>
       </div>
@@ -1200,17 +775,17 @@ $app = require_once __DIR__.'/../dpis/bootstrap/app.php';</code></pre>
         <div class="trouble-item" onclick="toggleTrouble(this)">
           <div class="trouble-header">
             <span class="badge badge-danger">500</span>
-            <span class="trouble-err">Internal Server Error</span>
+            <span style="font-weight:600">Internal Server Error</span>
             <span class="trouble-arrow">▼</span>
           </div>
           <div class="trouble-body">
             <p><strong>Penyebab:</strong> Error PHP di aplikasi</p>
-            <pre><code><span class="comment"># Lihat log error terbaru</span>
-<span class="cmd">tail</span> -50 ~/dpis/storage/logs/laravel.log
+            <pre><code><span class="c"># Lihat log error</span>
+<span class="cmd">tail</span> -50 ~/tritory.id/storage/logs/laravel.log
 
-<span class="comment"># Aktifkan debug sementara — edit .env:</span>
+<span class="c"># Aktifkan debug sementara di .env:</span>
 APP_DEBUG=true
-<span class="comment"># Refresh browser, lihat error, lalu matikan lagi:</span>
+<span class="c"># Refresh → lihat error → matikan lagi:</span>
 APP_DEBUG=false
 <span class="cmd">php artisan</span> config:cache</code></pre>
           </div>
@@ -1218,46 +793,44 @@ APP_DEBUG=false
 
         <div class="trouble-item" onclick="toggleTrouble(this)">
           <div class="trouble-header">
-            <span class="badge badge-warning">419</span>
-            <span class="trouble-err">Page Expired / CSRF Error</span>
-            <span class="trouble-arrow">▼</span>
-          </div>
-          <div class="trouble-body">
-            <p><strong>Penyebab:</strong> Folder session tidak bisa ditulis</p>
-            <pre><code><span class="cmd">chmod</span> -R 775 ~/dpis/storage/framework/sessions
-<span class="cmd">php artisan</span> config:clear
-<span class="cmd">php artisan</span> cache:clear</code></pre>
-          </div>
-        </div>
-
-        <div class="trouble-item" onclick="toggleTrouble(this)">
-          <div class="trouble-header">
             <span class="badge badge-warning">404</span>
-            <span class="trouble-err">Semua URL Tidak Ditemukan</span>
+            <span style="font-weight:600">Semua URL Tidak Ditemukan</span>
             <span class="trouble-arrow">▼</span>
           </div>
           <div class="trouble-body">
-            <p><strong>Penyebab:</strong> <code>.htaccess</code> tidak aktif atau mod_rewrite belum diaktifkan</p>
+            <p><strong>Penyebab:</strong> Document Root belum diarahkan ke folder <code>public</code>, atau <code>mod_rewrite</code> belum aktif.</p>
             <ul>
-              <li>Pastikan file <code>.htaccess</code> ada di <code>public_html/</code></li>
+              <li>Pastikan Document Root sudah mengarah ke <code>/home/namauser/tritory.id/public</code></li>
+              <li>Pastikan file <code>.htaccess</code> ada di dalam folder <code>tritory.id/public/</code></li>
               <li>Hubungi support hosting, minta aktifkan <code>mod_rewrite</code></li>
-              <li>Atau tambahkan di awal <code>.htaccess</code>: <code>Options +FollowSymLinks</code></li>
             </ul>
           </div>
         </div>
 
         <div class="trouble-item" onclick="toggleTrouble(this)">
           <div class="trouble-header">
-            <span class="badge badge-danger">CSS</span>
-            <span class="trouble-err">Halaman Tampil Tanpa Styling</span>
+            <span class="badge badge-warning">419</span>
+            <span style="font-weight:600">Page Expired / CSRF Error</span>
             <span class="trouble-arrow">▼</span>
           </div>
           <div class="trouble-body">
-            <p><strong>Penyebab:</strong> File CSS tidak terpindah ke <code>public_html/</code> atau <code>APP_URL</code> salah</p>
+            <pre><code><span class="cmd">chmod</span> -R 775 ~/tritory.id/storage/framework/sessions
+<span class="cmd">php artisan</span> config:clear && <span class="cmd">php artisan</span> cache:clear</code></pre>
+          </div>
+        </div>
+
+        <div class="trouble-item" onclick="toggleTrouble(this)">
+          <div class="trouble-header">
+            <span class="badge badge-danger">CSS</span>
+            <span style="font-weight:600">Tampilan Rusak / Tidak Ada Style</span>
+            <span class="trouble-arrow">▼</span>
+          </div>
+          <div class="trouble-body">
+            <p><strong>Penyebab:</strong> <code>APP_URL</code> salah atau file CSS tidak ada.</p>
             <ul>
-              <li>Pastikan <code>public_html/css/bootstrap.min.css</code> ada</li>
-              <li>Pastikan <code>public_html/css/bootstrap-icons/</code> ada (folder ikon)</li>
-              <li>Pastikan <code>APP_URL</code> di <code>.env</code> sesuai domain asli (bukan localhost)</li>
+              <li>Pastikan <code>APP_URL=https://tritory.id</code> di file <code>.env</code> (bukan localhost)</li>
+              <li>Pastikan folder <code>tritory.id/public/css/</code> berisi <code>bootstrap.min.css</code></li>
+              <li>Jalankan <code>php artisan config:cache</code> setelah edit <code>.env</code></li>
             </ul>
           </div>
         </div>
@@ -1265,49 +838,32 @@ APP_DEBUG=false
         <div class="trouble-item" onclick="toggleTrouble(this)">
           <div class="trouble-header">
             <span class="badge badge-danger">DB</span>
-            <span class="trouble-err">SQLSTATE: Access Denied</span>
+            <span style="font-weight:600">SQLSTATE: Access Denied</span>
             <span class="trouble-arrow">▼</span>
           </div>
           <div class="trouble-body">
-            <p><strong>Penyebab:</strong> Kredensial database salah atau user belum diberi akses</p>
-            <pre><code><span class="comment"># Cek isi .env</span>
-<span class="cmd">cat</span> ~/dpis/.env | grep DB_
+            <p><strong>Penyebab:</strong> Kredensial database salah di <code>.env</code></p>
+            <pre><code><span class="c"># Cek isi .env</span>
+<span class="cmd">cat</span> ~/tritory.id/.env | grep DB_
 
-<span class="comment"># Setelah edit .env, refresh config:</span>
+<span class="c"># Setelah edit .env:</span>
 <span class="cmd">php artisan</span> config:clear
 <span class="cmd">php artisan</span> config:cache</code></pre>
-            <p>Pastikan user MySQL sudah di-assign ke database dengan ALL PRIVILEGES di cPanel MySQL Databases.</p>
           </div>
         </div>
 
         <div class="trouble-item" onclick="toggleTrouble(this)">
           <div class="trouble-header">
-            <span class="badge badge-warning">⚙️</span>
-            <span class="trouble-err">Tidak Ada Akses Terminal / SSH</span>
+            <span class="badge badge-warning">🔒</span>
+            <span style="font-weight:600">HTTPS Tidak Berjalan / Mixed Content</span>
             <span class="trouble-arrow">▼</span>
           </div>
           <div class="trouble-body">
-            <p>Buat file sementara <code>public_html/setup.php</code>:</p>
-            <pre><code>&lt;?php
-<span class="comment">// HAPUS FILE INI SEGERA SETELAH SELESAI!</span>
-chdir(__DIR__ . '/../dpis');
-require __DIR__ . '/../dpis/vendor/autoload.php';
-$app = require_once __DIR__ . '/../dpis/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-echo "&lt;pre&gt;";
-$kernel->call('key:generate');
-$kernel->call('migrate', ['--force' => true]);
-$kernel->call('db:seed', ['--force' => true]);
-$kernel->call('config:cache');
-$kernel->call('route:cache');
-$kernel->call('view:cache');
-echo "&lt;/pre&gt;Done!";
-</code></pre>
-            <p>Akses: <code>https://yourdomain.com/setup.php</code></p>
-            <div class="alert alert-danger" style="margin-top:10px">
-              <div class="alert-icon">🗑️</div>
-              <div class="alert-content"><strong>Hapus file setup.php SEGERA setelah selesai!</strong> File ini sangat berbahaya jika dibiarkan.</div>
-            </div>
+            <ul>
+              <li>Pastikan <code>APP_URL=https://tritory.id</code> (pakai https, bukan http)</li>
+              <li>Aktifkan Let's Encrypt di cPanel → SSL/TLS</li>
+              <li>Aktifkan <strong>Force HTTPS</strong> di cPanel jika tersedia</li>
+            </ul>
           </div>
         </div>
 
@@ -1318,131 +874,106 @@ echo "&lt;/pre&gt;Done!";
     <div class="section" id="setelah">
       <div class="section-header">
         <div class="section-num">→</div>
-        <div class="section-title">Langkah Setelah Deploy — Konfigurasi Awal Sistem</div>
+        <div class="section-title">Langkah Setelah Deploy — Konfigurasi Awal</div>
       </div>
       <div class="section-body">
-        <div class="alert alert-info">
-          <div class="alert-icon">📋</div>
-          <div class="alert-content">Lakukan konfigurasi berikut secara berurutan setelah berhasil login sebagai Admin.</div>
-        </div>
-
         <div class="steps">
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
               <div class="step-label">Ganti Semua Password Default</div>
-              <p>Login satu per satu dengan setiap akun → Profil Saya → ubah password ke password yang kuat dan unik.</p>
+              <p>Login tiap akun → klik nama di pojok kanan atas → <strong>Profil Saya</strong> → ubah password.</p>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Setup Master Data</div>
-              <p>Menu <strong>Master Data</strong> di sidebar, isi secara berurutan:</p>
+              <div class="step-label">Isi Master Data</div>
+              <p>Menu <strong>Master Data</strong> → isi berurutan:</p>
               <ol>
-                <li><strong>Produk</strong> — tambahkan produk yang diproduksi perusahaan</li>
-                <li><strong>Series</strong> — tambahkan seri/varian produk</li>
-                <li><strong>Warna</strong> — daftar warna yang digunakan</li>
-                <li><strong>Ukuran</strong> — S, M, L, XL, XXL, dst.</li>
-                <li><strong>Stasiun</strong> — 5 stasiun sudah ada, sesuaikan nama & batas bottleneck</li>
-                <li><strong>Tempat Sewing</strong> — tambahkan lokasi sewing yang dimiliki</li>
+                <li><strong>Produk</strong> — produk yang diproduksi</li>
+                <li><strong>Series</strong> — varian/seri produk</li>
+                <li><strong>Warna</strong> — daftar warna</li>
+                <li><strong>Ukuran</strong> — S, M, L, XL, dst.</li>
+                <li><strong>Stasiun</strong> — sesuaikan nama & threshold bottleneck</li>
+                <li><strong>Tempat Sewing</strong> — lokasi sewing yang tersedia</li>
               </ol>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Tambah User Sesuai Kebutuhan</div>
-              <p>Menu <strong>Users</strong> → Tambah User → isi nama, email, password, dan assign role yang sesuai.</p>
+              <div class="step-label">Tambah User Karyawan</div>
+              <p>Menu <strong>Users</strong> → Tambah User → isi nama, email, password, role.</p>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Buat Production Order Pertama</div>
-              <p>Menu <strong>Order Produksi</strong> → Buat Order Baru → isi produk, target qty, deadline.</p>
+              <div class="step-label">Buat Order Produksi Pertama</div>
+              <p>Menu <strong>Order Produksi</strong> → Buat Order Baru.</p>
             </div>
           </div>
           <div class="step">
             <div class="step-icon"></div>
             <div class="step-content">
-              <div class="step-label">Buat Cutting Plan</div>
-              <p>Menu <strong>Cutting Plan</strong> → Buat Plan → pilih order, tanggal, target qty, data marker kain.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-icon"></div>
-            <div class="step-content">
-              <div class="step-label">Sistem Siap Digunakan! 🎉</div>
-              <p>Monitor posisi produksi via <strong>WIP Monitor</strong> dan pantau semua aktivitas di <strong>Dashboard</strong>.</p>
+              <div class="step-label">🎉 Sistem Siap Digunakan!</div>
+              <p>Monitor via <strong>Dashboard Eksekutif</strong> dan <strong>WIP Monitor</strong> di <a href="https://tritory.id" target="_blank" style="color:var(--primary);font-weight:600">tritory.id</a></p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div style="text-align:center;padding:32px 0;color:var(--text-muted);font-size:13px">
-      DPIS v1.0 · PT DTHREE SUKSES MULIA · Laravel 13 · PHP 8.3+ · Bootstrap 5.3<br>
-      <span style="margin-top:4px;display:block">Panduan dibuat Juni 2026</span>
+    <div style="text-align:center;padding:28px 0;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border);margin-top:8px">
+      DPIS v1.0 &nbsp;·&nbsp; PT DTHREE SUKSES MULIA &nbsp;·&nbsp;
+      <a href="https://tritory.id" style="color:var(--primary);font-weight:600">tritory.id</a><br>
+      <span style="margin-top:4px;display:block">Laravel 13 · PHP 8.3+ · Bootstrap 5.3 · Juni 2026</span>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
 <script>
-  // Sidebar active state
-  const sections = document.querySelectorAll('.section');
-  const navLinks = document.querySelectorAll('.sidebar nav a');
+// Sidebar active
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) cur = s.id; });
+  navLinks.forEach(a => { a.classList.remove('active'); if (a.getAttribute('href') === '#' + cur) a.classList.add('active'); });
+});
 
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
-    navLinks.forEach(a => {
-      a.classList.remove('active');
-      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-    });
-  });
+// Checklist
+const KEY = 'dpis_tritory_checklist';
+const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+document.querySelectorAll('.check-box').forEach((box, i) => {
+  if (saved[i]) { box.classList.add('checked'); box.closest('li').classList.add('done'); }
+});
+updateProgress();
 
-  // Checklist
-  const STORAGE_KEY = 'dpis_checklist';
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-  document.querySelectorAll('.check-box').forEach((box, i) => {
-    if (saved[i]) {
-      box.classList.add('checked');
-      box.closest('li').classList.add('done');
-    }
-  });
+function toggleCheck(box) {
+  box.classList.toggle('checked');
+  box.closest('li').classList.toggle('done');
+  const all = document.querySelectorAll('.check-box');
+  const state = {};
+  all.forEach((b, i) => { state[i] = b.classList.contains('checked'); });
+  localStorage.setItem(KEY, JSON.stringify(state));
   updateProgress();
+}
 
-  function toggleCheck(box) {
-    const li = box.closest('li');
-    box.classList.toggle('checked');
-    li.classList.toggle('done');
-    const all = document.querySelectorAll('.check-box');
-    const state = {};
-    all.forEach((b, i) => { state[i] = b.classList.contains('checked'); });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    updateProgress();
-  }
+function updateProgress() {
+  const all = document.querySelectorAll('.check-box');
+  const done = document.querySelectorAll('.check-box.checked');
+  const pct = Math.round((done.length / all.length) * 100);
+  document.getElementById('progress-text').textContent = done.length + ' / ' + all.length + ' selesai';
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = pct === 100 ? '#16a34a' : '#1a3c6e';
+}
 
-  function updateProgress() {
-    const all = document.querySelectorAll('.check-box');
-    const done = document.querySelectorAll('.check-box.checked');
-    const pct = Math.round((done.length / all.length) * 100);
-    document.getElementById('progress-text').textContent = done.length + ' / ' + all.length + ' selesai';
-    document.getElementById('progress-fill').style.width = pct + '%';
-    if (pct === 100) {
-      document.getElementById('progress-fill').style.background = '#16a34a';
-    }
-  }
-
-  // Troubleshoot accordion
-  function toggleTrouble(el) {
-    el.classList.toggle('open');
-  }
+// Trouble accordion
+function toggleTrouble(el) { el.classList.toggle('open'); }
 </script>
 </body>
 </html>
