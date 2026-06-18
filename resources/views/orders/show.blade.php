@@ -137,7 +137,7 @@
             <span class="fw-semibold">{{ $h->handover_no }}</span>
             <span class="badge bg-{{ $h->status_color }}">{{ $h->status_label }}</span>
           </div>
-          <small class="text-muted">{{ $h->fromStation->name }} → {{ $h->toStation->name }}</small>
+          <small class="text-muted">{{ $h->fromStation ? $h->fromStation->name : 'Production Order' }} → {{ $h->toStation->name }}</small>
           @if($h->hasDiscrepancy())<div><span class="badge bg-danger" style="font-size:.65rem">Ada Discrepancy</span></div>@endif
         </a>
         @empty
