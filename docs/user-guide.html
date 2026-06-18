@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Pengguna DPIS — PT DTHREE SUKSES MULIA</title>
+  <style>
+    /* ── SCREEN STYLES ── */
+    :root {
+      --primary: #1a3c6e;
+      --primary-light: #e8eef7;
+      --accent: #3b82f6;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --border: #e2e8f0;
+      --gray: #f8fafc;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 14px; line-height: 1.8; color: var(--text); background: #f1f5f9; }
+
+    /* ── PRINT BUTTON ── */
+    .print-bar { background: var(--primary); color: #fff; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .print-bar h1 { font-size: 15px; font-weight: 600; }
+    .print-bar p { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+    .btn-print { background: #fff; color: var(--primary); border: none; padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+    .btn-print:hover { background: #e0f2fe; }
+
+    /* ── WRAPPER ── */
+    .wrapper { max-width: 900px; margin: 30px auto; padding: 0 20px 60px; }
+
+    /* ── COVER ── */
+    .cover { background: linear-gradient(135deg, #1a3c6e 0%, #1e4d9b 60%, #2563eb 100%); color: #fff; border-radius: 16px; padding: 60px 50px; margin-bottom: 32px; position: relative; overflow: hidden; }
+    .cover::before { content: ''; position: absolute; top: -60px; right: -60px; width: 280px; height: 280px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+    .cover::after { content: ''; position: absolute; bottom: -80px; left: 40px; width: 200px; height: 200px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+    .cover-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 16px; }
+    .cover h1 { font-size: 34px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+    .cover h1 span { color: #60a5fa; }
+    .cover-sub { font-size: 16px; color: rgba(255,255,255,0.75); margin-bottom: 32px; }
+    .cover-meta { display: flex; gap: 32px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 24px; margin-top: 24px; }
+    .cover-meta-item .label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.8px; }
+    .cover-meta-item .val { font-size: 14px; font-weight: 600; margin-top: 2px; }
+
+    /* ── TOC ── */
+    .toc { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 28px 32px; margin-bottom: 28px; }
+    .toc h2 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light); }
+    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; }
+    .toc a { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; text-decoration: none; color: var(--text); font-size: 13px; border-bottom: 1px dotted var(--border); }
+    .toc a:hover { color: var(--accent); }
+    .toc-num { font-size: 11px; font-weight: 700; color: var(--primary); min-width: 22px; }
+    .toc-dots { flex: 1; border-bottom: 1px dotted #cbd5e1; margin: 0 4px; }
+
+    /* ── CHAPTER ── */
+    .chapter { background: #fff; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 28px; overflow: hidden; scroll-margin-top: 20px; }
+    .chapter-head { background: var(--primary); color: #fff; padding: 20px 32px; display: flex; align-items: center; gap: 16px; }
+    .chapter-num { width: 44px; height: 44px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+    .chapter-head h2 { font-size: 18px; font-weight: 700; }
+    .chapter-head p { font-size: 12.5px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+    .chapter-body { padding: 32px; }
+
+    /* ── SECTION INSIDE CHAPTER ── */
+    .section { margin-bottom: 28px; }
+    .section:last-child { margin-bottom: 0; }
+    .section h3 { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; gap: 8px; }
+    .section h4 { font-size: 14px; font-weight: 600; margin: 14px 0 8px; color: #374151; }
+    .section p { font-size: 13.5px; color: #374151; margin-bottom: 8px; }
+    .section ul, .section ol { padding-left: 20px; margin-bottom: 8px; }
+    .section li { font-size: 13.5px; color: #374151; margin-bottom: 4px; }
+
+    /* ── STEPS ── */
+    .steps { list-style: none; padding: 0; counter-reset: step; }
+    .steps > li { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); counter-increment: step; }
+    .steps > li:last-child { border-bottom: none; padding-bottom: 0; }
+    .steps > li::before { content: counter(step); width: 28px; height: 28px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .step-body h4 { font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
+    .step-body p, .step-body li { font-size: 13px; color: #374151; }
+    .step-body ul { padding-left: 16px; margin-top: 4px; }
+
+    /* ── ALERTS ── */
+    .alert { border-radius: 8px; padding: 12px 16px; margin: 12px 0; display: flex; gap: 10px; font-size: 13px; }
+    .alert-icon { font-size: 16px; flex-shrink: 0; }
+    .alert-info { background: #e0f2fe; border-left: 4px solid #0284c7; }
+    .alert-warn { background: var(--warning-light); border-left: 4px solid var(--warning); }
+    .alert-success { background: var(--success-light); border-left: 4px solid var(--success); }
+    .alert-danger { background: var(--danger-light); border-left: 4px solid var(--danger); }
+    .alert strong { display: block; font-weight: 600; margin-bottom: 2px; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); margin: 12px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { background: var(--primary); color: #fff; }
+    th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--gray); }
+
+    /* ── BADGES ── */
+    .badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+    .badge-green { background: var(--success-light); color: var(--success); }
+    .badge-yellow { background: var(--warning-light); color: var(--warning); }
+    .badge-red { background: var(--danger-light); color: var(--danger); }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+    .badge-purple { background: #f3e8ff; color: #7c3aed; }
+
+    /* ── FLOW ── */
+    .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+    .flow-node { background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; border: 1px solid #c7d9f0; text-align: center; }
+    .flow-node.active { background: var(--primary); color: #fff; }
+    .flow-arrow { color: var(--muted); font-size: 18px; }
+
+    /* ── ROLE CARD ── */
+    .role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 14px 0; }
+    .role-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .role-card .role-name { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+    .role-card ul { padding-left: 16px; }
+    .role-card li { font-size: 12.5px; color: #374151; margin-bottom: 2px; }
+
+    /* ── FEATURE CARD ── */
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+    .feature-card { border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+    .feature-icon { font-size: 24px; margin-bottom: 10px; }
+    .feature-card h4 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .feature-card p { font-size: 12.5px; color: var(--muted); }
+
+    /* ── SCREEN MOCKUP ── */
+    .mockup { background: var(--gray); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 14px 0; }
+    .mockup-bar { background: var(--primary); border-radius: 6px 6px 0 0; padding: 8px 14px; margin: -20px -20px 14px; display: flex; align-items: center; gap: 6px; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-url { background: rgba(255,255,255,0.15); border-radius: 4px; padding: 3px 12px; font-size: 11px; color: rgba(255,255,255,0.7); flex: 1; margin: 0 10px; }
+    .mockup-body { font-size: 12.5px; }
+    .field-row { margin-bottom: 10px; }
+    .field-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .field-input { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #374151; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 2px solid var(--border); margin: 24px 0; }
+
+    /* ── FOOTER ── */
+    .doc-footer { text-align: center; padding: 20px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      @page { margin: 18mm 15mm; size: A4; }
+      .print-bar { display: none !important; }
+      body { background: #fff; font-size: 12px; }
+      .wrapper { max-width: 100%; margin: 0; padding: 0; }
+      .cover { border-radius: 0; margin-bottom: 0; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .toc { page-break-after: always; border-radius: 0; }
+      .chapter { page-break-inside: avoid; border-radius: 0; margin-bottom: 0; border-left: none; border-right: none; }
+      .chapter-head { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      thead { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .section { page-break-inside: avoid; }
+      .alert { page-break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PRINT BAR -->
+<div class="print-bar">
+  <div>
+    <h1>📘 Panduan Pengguna DPIS</h1>
+    <p>Klik tombol di kanan untuk menyimpan sebagai PDF (Ctrl+P → Save as PDF)</p>
+  </div>
+  <button class="btn-print" onclick="window.print()">🖨️ Simpan / Print PDF</button>
+</div>
+
+<div class="wrapper">
+
+  <!-- ══════════════════════════════════════ COVER ══════════════════════════════════════ -->
+  <div class="cover">
+    <div class="cover-label">Dokumen Resmi — Panduan Pengguna</div>
+    <h1>DTHREE Production<br><span>Integration System</span></h1>
+    <div class="cover-sub">Panduan Lengkap Penggunaan Aplikasi DPIS<br>untuk Seluruh Pengguna PT DTHREE SUKSES MULIA</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="label">Aplikasi</div>
+        <div class="val">DPIS v1.0</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Domain</div>
+        <div class="val">tritory.id</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Tahun</div>
+        <div class="val">2026</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Perusahaan</div>
+        <div class="val">PT DTHREE SUKSES MULIA</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ TOC ══════════════════════════════════════ -->
+  <div class="toc">
+    <h2>📋 Daftar Isi</h2>
+    <div class="toc-grid">
+      <a href="#bab1"><span class="toc-num">1</span>Pendahuluan & Gambaran Sistem<span class="toc-dots"></span></a>
+      <a href="#bab2"><span class="toc-num">2</span>Hak Akses & Peran Pengguna<span class="toc-dots"></span></a>
+      <a href="#bab3"><span class="toc-num">3</span>Login & Navigasi<span class="toc-dots"></span></a>
+      <a href="#bab4"><span class="toc-num">4</span>Dashboard<span class="toc-dots"></span></a>
+      <a href="#bab5"><span class="toc-num">5</span>Master Data<span class="toc-dots"></span></a>
+      <a href="#bab6"><span class="toc-num">6</span>Production Order<span class="toc-dots"></span></a>
+      <a href="#bab7"><span class="toc-num">7</span>Cutting Plan<span class="toc-dots"></span></a>
+      <a href="#bab8"><span class="toc-num">8</span>WIP Tracker<span class="toc-dots"></span></a>
+      <a href="#bab9"><span class="toc-num">9</span>Handover<span class="toc-dots"></span></a>
+      <a href="#bab10"><span class="toc-num">10</span>Bahan Baku<span class="toc-dots"></span></a>
+      <a href="#bab11"><span class="toc-num">11</span>Budget & Biaya<span class="toc-dots"></span></a>
+      <a href="#bab12"><span class="toc-num">12</span>Laporan<span class="toc-dots"></span></a>
+      <a href="#bab13"><span class="toc-num">13</span>Notifikasi<span class="toc-dots"></span></a>
+      <a href="#bab14"><span class="toc-num">14</span>Manajemen User<span class="toc-dots"></span></a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 1 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab1">
+    <div class="chapter-head">
+      <div class="chapter-num">1</div>
+      <div>
+        <h2>Pendahuluan & Gambaran Sistem</h2>
+        <p>Tentang DPIS dan alur produksi yang didukung</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>🏭 Apa itu DPIS?</h3>
+        <p><strong>DTHREE Production Integration System (DPIS)</strong> adalah sistem informasi manajemen produksi berbasis web yang dirancang khusus untuk PT DTHREE SUKSES MULIA. Sistem ini mengintegrasikan seluruh alur produksi garmen — dari perencanaan, eksekusi di lantai produksi, hingga pelaporan manajemen.</p>
+        <p>Sistem dapat diakses melalui browser di alamat: <strong>https://tritory.id</strong></p>
+      </div>
+
+      <div class="section">
+        <h3>⚙️ Fitur Utama</h3>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h4>Production Order</h4>
+            <p>Buat dan kelola order produksi lengkap dengan SKU, target quantity, dan deadline.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✂️</div>
+            <h4>Cutting Plan</h4>
+            <p>Jadwalkan dan monitor proses cutting dengan kalender visual dan tracking bundle.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h4>WIP Tracker</h4>
+            <p>Input dan pantau Work In Progress di setiap stasiun secara real-time.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h4>Handover</h4>
+            <p>Catat serah terima barang antar stasiun dengan verifikasi dan konfirmasi digital.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <h4>Bahan Baku</h4>
+            <p>Kelola stok bahan baku, terima pengiriman, dan pantau minimum stock.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h4>Budget & Biaya</h4>
+            <p>Rencanakan dan pantau anggaran produksi dibandingkan realisasi aktual.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h4>Dashboard & Laporan</h4>
+            <p>Visualisasi data produksi dengan grafik interaktif dan laporan yang bisa dicetak.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔔</div>
+            <h4>Notifikasi</h4>
+            <p>Alert otomatis untuk deadline mendekati, stok menipis, dan handover menunggu.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🔀 Alur Produksi</h3>
+        <p>DPIS mengikuti alur produksi garmen PT DTHREE SUKSES MULIA secara berurutan:</p>
+        <div class="flow">
+          <div class="flow-node active">✂️ Cutting<br><small>Seq. 1</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">🧵 Sewing<br><small>Seq. 2</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">✨ Finishing<br><small>Seq. 3</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">🔍 QC<br><small>Seq. 4</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">🏬 Warehouse<br><small>Seq. 5</small></div>
+        </div>
+        <p style="margin-top:10px;">Setiap perpindahan barang antar stasiun dicatat melalui fitur <strong>Handover</strong> dan dipantau melalui <strong>WIP Tracker</strong>.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 2 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab2">
+    <div class="chapter-head">
+      <div class="chapter-num">2</div>
+      <div>
+        <h2>Hak Akses & Peran Pengguna</h2>
+        <p>Setiap pengguna memiliki akses sesuai dengan perannya</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>👥 Daftar Role & Hak Akses</h3>
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-name">🔴 Admin</div>
+            <ul>
+              <li>Akses penuh ke semua fitur</li>
+              <li>Kelola master data</li>
+              <li>Kelola user & hak akses</li>
+              <li>Lihat semua laporan</li>
+            </ul>
+          </div>
+          <div class="role-card">
+            <div class="role-name">🟣 Manager</div>
+            <ul>
+              <li>Dashboard eksekutif</li>
+              <li>Lihat semua laporan</li>
+              <li>Pantau budget</li>
+              <li>Approve handover</li>
+            </ul>
+          </div>
+          <div class="role-card">
+            <div class="role-name">🟡 Supervisor</div>
+            <ul>
+              <li>Buat production order</li>
+              <li>Kelola cutting plan</li>
+              <li>Buat & approve handover</li>
+              <li>Input WIP</li>
+            </ul>
+          </div>
+          <div class="role-card">
+            <div class="role-name">🔵 PIC Stasiun</div>
+            <ul>
+              <li>Input WIP stasiun sendiri</li>
+              <li>Buat handover</li>
+              <li>Konfirmasi penerimaan</li>
+              <li>Lihat laporan terbatas</li>
+            </ul>
+          </div>
+          <div class="role-card">
+            <div class="role-name">🟢 Staff Gudang</div>
+            <ul>
+              <li>Terima bahan baku</li>
+              <li>Kelola stok bahan baku</li>
+              <li>Konfirmasi handover gudang</li>
+              <li>Laporan bahan baku</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>📊 Matriks Akses Fitur</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fitur</th>
+                <th>Admin</th>
+                <th>Manager</th>
+                <th>Supervisor</th>
+                <th>PIC Stasiun</th>
+                <th>Staff Gudang</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Dashboard Eksekutif</td><td>✅</td><td>✅</td><td>✅</td><td>—</td><td>—</td></tr>
+              <tr><td>Dashboard Operasional</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>—</td></tr>
+              <tr><td>WIP Monitor</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>—</td></tr>
+              <tr><td>Production Order</td><td>✅</td><td>Lihat</td><td>✅</td><td>Lihat</td><td>—</td></tr>
+              <tr><td>Cutting Plan</td><td>✅</td><td>Lihat</td><td>✅</td><td>Terbatas</td><td>—</td></tr>
+              <tr><td>WIP Input</td><td>✅</td><td>—</td><td>✅</td><td>✅</td><td>—</td></tr>
+              <tr><td>Handover</td><td>✅</td><td>Approve</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Bahan Baku</td><td>✅</td><td>Lihat</td><td>Lihat</td><td>—</td><td>✅</td></tr>
+              <tr><td>Budget</td><td>✅</td><td>✅</td><td>Lihat</td><td>—</td><td>—</td></tr>
+              <tr><td>Laporan</td><td>✅</td><td>✅</td><td>✅</td><td>Terbatas</td><td>Terbatas</td></tr>
+              <tr><td>Master Data</td><td>✅</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>Kelola User</td><td>✅</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 3 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab3">
+    <div class="chapter-head">
+      <div class="chapter-num">3</div>
+      <div>
+        <h2>Login & Navigasi</h2>
+        <p>Cara masuk ke sistem dan memahami antarmuka</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>🔐 Cara Login</h3>
+        <ol class="steps">
+          <li>
+            <div class="step-body">
+              <h4>Buka Browser</h4>
+              <p>Buka browser (Chrome, Firefox, atau Edge) dan akses <strong>https://tritory.id</strong></p>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Masukkan Kredensial</h4>
+              <p>Isi <strong>Email</strong> dan <strong>Password</strong> yang sudah diberikan oleh Admin sistem.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Klik Tombol Login</h4>
+              <p>Klik <strong>"Masuk"</strong>. Sistem akan mengarahkan ke Dashboard sesuai role kamu.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Lupa password?</strong> Hubungi Admin sistem untuk reset password. Tidak ada fitur reset mandiri saat ini.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🗺️ Memahami Navigasi</h3>
+        <p>Setelah login, tampilan terdiri dari beberapa area utama:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Area</th><th>Lokasi</th><th>Fungsi</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Sidebar Kiri</strong></td><td>Sisi kiri layar</td><td>Menu navigasi utama ke semua fitur</td></tr>
+              <tr><td><strong>Topbar</strong></td><td>Atas layar</td><td>Notifikasi, profil, dan nama halaman aktif</td></tr>
+              <tr><td><strong>Area Konten</strong></td><td>Tengah/kanan</td><td>Tampilan data dan form input</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Menu Sidebar:</h4>
+        <ul>
+          <li><strong>Dashboard</strong> — Eksekutif, Operasional, WIP Monitor</li>
+          <li><strong>Production Order</strong> — Daftar dan buat order produksi</li>
+          <li><strong>Cutting Plan</strong> — Jadwal cutting (kalender & list)</li>
+          <li><strong>WIP Tracker</strong> — Input dan lihat posisi WIP</li>
+          <li><strong>Handover</strong> — Serah terima antar stasiun</li>
+          <li><strong>Bahan Baku</strong> — Manajemen stok material</li>
+          <li><strong>Budget</strong> — Perencanaan dan realisasi biaya</li>
+          <li><strong>Laporan</strong> — Berbagai laporan produksi</li>
+          <li><strong>Master Data</strong> — Data referensi (Admin only)</li>
+          <li><strong>Users</strong> — Manajemen pengguna (Admin only)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>👤 Profil & Ganti Password</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik nama/foto profil di pojok kanan atas topbar</h4></div></li>
+          <li><div class="step-body"><h4>Pilih "Profil Saya"</h4></div></li>
+          <li><div class="step-body"><h4>Update nama, email, atau password, lalu klik Simpan</h4></div></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 4 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab4">
+    <div class="chapter-head">
+      <div class="chapter-num">4</div>
+      <div>
+        <h2>Dashboard</h2>
+        <p>Pantau kondisi produksi secara real-time</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>📊 Dashboard Eksekutif</h3>
+        <p>Halaman ini memberikan ringkasan tingkat tinggi untuk manajemen. Tersedia di menu <strong>Dashboard → Eksekutif</strong>.</p>
+
+        <h4>Informasi yang tersedia:</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Kartu/Widget</th><th>Keterangan</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Total Order Aktif</strong></td><td>Jumlah production order yang sedang berjalan</td></tr>
+              <tr><td><strong>Total Unit WIP</strong></td><td>Total unit yang sedang dalam proses di semua stasiun</td></tr>
+              <tr><td><strong>Throughput Hari Ini</strong></td><td>Jumlah unit yang selesai diproses hari ini</td></tr>
+              <tr><td><strong>Order Terlambat</strong></td><td>Order yang melewati target tanggal selesai</td></tr>
+              <tr><td><strong>Handover Pending</strong></td><td>Serah terima yang menunggu konfirmasi</td></tr>
+              <tr><td><strong>Stok Bahan Baku Menipis</strong></td><td>Material di bawah batas minimum</td></tr>
+              <tr><td><strong>Grafik WIP per Stasiun</strong></td><td>Bar chart WIP di setiap stasiun produksi</td></tr>
+              <tr><td><strong>Grafik Throughput Mingguan</strong></td><td>Line chart output produksi 7 hari terakhir</td></tr>
+              <tr><td><strong>Status Budget</strong></td><td>Perbandingan rencana vs realisasi anggaran</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🔧 Dashboard Operasional</h3>
+        <p>Fokus pada kondisi lantai produksi secara detail. Tersedia di menu <strong>Dashboard → Operasional</strong>.</p>
+        <ul>
+          <li>Status WIP per stasiun (In, Out, Reject, In-Process)</li>
+          <li>Highlight stasiun <em>bottleneck</em> (merah jika melebihi threshold)</li>
+          <li>Daftar handover pending dan discrepancy</li>
+          <li>Aktivitas WIP terbaru (20 entry terakhir)</li>
+          <li>Order yang terlambat dan mendekati deadline</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>📍 WIP Monitor</h3>
+        <p>Visualisasi posisi produk WIP di setiap stasiun. Tersedia di menu <strong>Dashboard → WIP Monitor</strong>.</p>
+        <ul>
+          <li><strong>Pipeline Flow</strong> — Tampilan aliran WIP dari Cutting ke Warehouse</li>
+          <li><strong>Stacked Bar Chart</strong> — WIP per order di setiap stasiun</li>
+          <li><strong>Donut Chart</strong> — Proporsi WIP per stasiun</li>
+          <li><strong>Tabel Matrix</strong> — Baris = Order, Kolom = Stasiun, Isi = Qty WIP</li>
+          <li><strong>Filter Order</strong> — Highlight order tertentu di semua visualisasi</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 5 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab5">
+    <div class="chapter-head">
+      <div class="chapter-num">5</div>
+      <div>
+        <h2>Master Data</h2>
+        <p>Data referensi yang digunakan seluruh sistem (Admin only)</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ️</span>
+        <div><strong>Hanya Admin</strong> yang bisa mengakses dan mengubah Master Data. Setup master data harus dilakukan sebelum fitur lain bisa digunakan.</div>
+      </div>
+
+      <div class="section">
+        <h3>📁 Daftar Master Data</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Master Data</th><th>Menu</th><th>Keterangan</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Produk</strong></td><td>Master → Produk</td><td>Jenis produk yang diproduksi (kaos, jaket, dll)</td></tr>
+              <tr><td><strong>Series</strong></td><td>Master → Series</td><td>Varian/koleksi dari setiap produk</td></tr>
+              <tr><td><strong>Warna</strong></td><td>Master → Warna</td><td>Pilihan warna untuk SKU</td></tr>
+              <tr><td><strong>Ukuran</strong></td><td>Master → Ukuran</td><td>Pilihan ukuran (S, M, L, XL, dst)</td></tr>
+              <tr><td><strong>Stasiun</strong></td><td>Master → Stasiun</td><td>Stasiun produksi beserta urutan dan threshold bottleneck</td></tr>
+              <tr><td><strong>Tempat Sewing</strong></td><td>Master → Tempat Sewing</td><td>Lokasi/mitra sewing eksternal</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>⚙️ Cara Tambah Master Data</h3>
+        <p>Prosedur yang sama berlaku untuk semua master data:</p>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik menu Master Data → pilih jenis data yang ingin ditambah</h4></div></li>
+          <li><div class="step-body"><h4>Klik tombol "+ Tambah" di pojok kanan atas tabel</h4></div></li>
+          <li><div class="step-body"><h4>Isi form yang tersedia, lalu klik Simpan</h4></div></li>
+          <li><div class="step-body"><h4>Data baru akan muncul di tabel</h4></div></li>
+        </ol>
+
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Urutan setup yang disarankan:</strong> Produk → Series → Warna → Ukuran → Stasiun → Tempat Sewing. Series harus dibuat setelah Produk karena terhubung.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🏭 Pengaturan Stasiun</h3>
+        <p>Data Stasiun memiliki field khusus yang penting:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Keterangan</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Nama Stasiun</strong></td><td>Nama tampilan (misal: Cutting, Sewing)</td></tr>
+              <tr><td><strong>Urutan (Order Sequence)</strong></td><td>Angka urutan alur produksi (1=Cutting, 2=Sewing, dst)</td></tr>
+              <tr><td><strong>Bottleneck Threshold</strong></td><td>Batas WIP maksimal sebelum dianggap bottleneck (ditandai merah di dashboard)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 6 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab6">
+    <div class="chapter-head">
+      <div class="chapter-num">6</div>
+      <div>
+        <h2>Production Order</h2>
+        <p>Buat dan kelola order produksi</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>📋 Daftar Order</h3>
+        <p>Menu <strong>Production Order</strong> menampilkan semua order dalam format tabel dengan filter dan pencarian. Setiap baris menampilkan: Nomor Order, Produk, Series, Target Qty, Target Tanggal, dan Status.</p>
+
+        <h4>Status Order:</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
+          <span class="badge badge-gray">Draft</span> — Order belum diaktifkan
+          &nbsp;&nbsp;
+          <span class="badge badge-blue">Active</span> — Produksi sedang berjalan
+          &nbsp;&nbsp;
+          <span class="badge badge-green">Completed</span> — Produksi selesai
+          &nbsp;&nbsp;
+          <span class="badge badge-red">Cancelled</span> — Order dibatalkan
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>➕ Membuat Production Order Baru</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik "+ Buat Order" di halaman daftar order</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi informasi utama order:</h4>
+              <ul>
+                <li><strong>Produk</strong> — pilih dari dropdown</li>
+                <li><strong>Series</strong> — otomatis muncul setelah pilih produk</li>
+                <li><strong>Nomor PO Buyer</strong> — nomor order dari buyer (opsional)</li>
+                <li><strong>Target Tanggal Selesai</strong> — deadline produksi</li>
+                <li><strong>Catatan</strong> — informasi tambahan</li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Tambah SKU (item produk)</h4>
+              <p>Klik "+ Tambah SKU" untuk menambah kombinasi Warna + Ukuran + Qty. Bisa tambah beberapa SKU dalam satu order.</p>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan — order tersimpan dengan status Draft</h4></div></li>
+          <li><div class="step-body"><h4>Untuk mulai produksi, ubah status ke Active via tombol "Ubah Status"</h4></div></li>
+        </ol>
+
+        <div class="alert alert-info">
+          <span class="alert-icon">💡</span>
+          <div>Nomor order (misal: ORD-2026-001) dibuat otomatis oleh sistem.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 7 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab7">
+    <div class="chapter-head">
+      <div class="chapter-num">7</div>
+      <div>
+        <h2>Cutting Plan</h2>
+        <p>Jadwalkan dan monitor proses cutting</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>📅 Tampilan Kalender & List</h3>
+        <p>Menu <strong>Cutting Plan</strong> menyediakan dua tampilan yang bisa di-toggle:</p>
+        <ul>
+          <li><strong>Tampilan List</strong> — Tabel semua cutting plan dengan filter status</li>
+          <li><strong>Tampilan Kalender</strong> — Grid kalender bulanan, cutting plan ditampilkan sebagai badge berwarna sesuai status</li>
+        </ul>
+
+        <h4>Status Cutting Plan:</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;">
+          <span class="badge badge-gray">Draft</span>
+          <span class="badge badge-blue">Scheduled</span>
+          <span class="badge badge-yellow">In Progress</span>
+          <span class="badge badge-green">Completed</span>
+          <span class="badge badge-red">Cancelled</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>➕ Membuat Cutting Plan</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik "+ Buat Cutting Plan"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi detail cutting plan:</h4>
+              <ul>
+                <li><strong>Production Order</strong> — pilih order yang akan di-cutting</li>
+                <li><strong>Tanggal Cutting</strong> — jadwal pelaksanaan</li>
+                <li><strong>Panjang Marker</strong> — dalam meter</li>
+                <li><strong>Lebar Kain</strong> — dalam cm</li>
+                <li><strong>Jumlah Layer</strong> — jumlah lapisan kain</li>
+                <li><strong>Target Qty</strong> — jumlah unit yang akan dipotong</li>
+                <li><strong>Shift</strong> — pagi/siang/malam</li>
+              </ul>
+              <p>Estimasi kain yang dibutuhkan akan dihitung <strong>otomatis</strong>: Panjang Marker × Jumlah Layer.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Tambah Bundle (opsional)</h4>
+              <p>Tambahkan rincian bundle per SKU: pilih SKU dari order dan masukkan qty per bundle.</p>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan. Nomor plan (misal: CP-2026-001) dibuat otomatis.</h4></div></li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3>📦 Tracking Bundle</h3>
+        <p>Setiap cutting plan bisa memiliki beberapa bundle. Bundle mewakili kelompok potongan kain per SKU yang siap dikirim ke Sewing.</p>
+        <h4>Status Bundle:</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
+          <span class="badge badge-yellow">Cut</span> — Sudah dipotong
+          <span class="badge badge-blue">Bundled</span> — Sudah dibundel
+          <span class="badge badge-green">Sent to Sewing</span> — Sudah dikirim ke Sewing
+        </div>
+        <p style="margin-top:10px;">Update status bundle langsung dari halaman detail Cutting Plan via dropdown di kolom status.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 8 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab8">
+    <div class="chapter-head">
+      <div class="chapter-num">8</div>
+      <div>
+        <h2>WIP Tracker</h2>
+        <p>Input dan pantau Work In Progress di setiap stasiun</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>📊 Memahami WIP</h3>
+        <p><strong>WIP (Work In Progress)</strong> adalah unit produk yang sedang dalam proses di suatu stasiun. Rumus perhitungan WIP di sistem:</p>
+        <div style="background:var(--primary-light);border-left:4px solid var(--primary);padding:12px 16px;border-radius:6px;margin:12px 0;font-size:13px;">
+          <strong>WIP Net = Qty Masuk (In) − Qty Keluar (Out) − Qty Reject</strong>
+        </div>
+        <p>WIP yang tinggi di satu stasiun mengindikasikan potensi <em>bottleneck</em>.</p>
+      </div>
+
+      <div class="section">
+        <h3>➕ Input WIP</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik menu WIP Tracker → "+ Input WIP"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Pilih Production Order</h4>
+              <p>Pilih order yang sedang diproses di stasiun kamu.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Pilih SKU dan Stasiun</h4>
+              <p>Pilih kombinasi warna+ukuran dan stasiun tempat kamu bekerja.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Isi Qty</h4>
+              <ul>
+                <li><strong>Qty In</strong> — unit yang masuk ke stasiun</li>
+                <li><strong>Qty Out</strong> — unit yang selesai diproses dan keluar</li>
+                <li><strong>Qty Reject</strong> — unit yang ditolak/cacat</li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Pilih Tanggal input dan Klik Simpan</h4></div></li>
+        </ol>
+
+        <div class="alert alert-info">
+          <span class="alert-icon">💡</span>
+          <div>WIP bisa di-input harian. Tidak perlu input semua qty sekaligus — bisa bertahap setiap hari sesuai progres aktual.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>👁️ Lihat WIP per Order</h3>
+        <p>Klik nomor order di daftar WIP untuk melihat detail progres per stasiun dalam bentuk tabel dan visualisasi bar progress.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 9 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab9">
+    <div class="chapter-head">
+      <div class="chapter-num">9</div>
+      <div>
+        <h2>Handover (Serah Terima)</h2>
+        <p>Catat perpindahan barang antar stasiun secara digital</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>🔄 Alur Handover</h3>
+        <div class="flow">
+          <div class="flow-node active">Buat Handover</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Status: Pending</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Penerima Konfirmasi</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Manager Approve</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node active">Selesai ✅</div>
+        </div>
+        <p style="margin-top:10px;">Jika qty yang diterima berbeda dengan yang dikirim, status berubah menjadi <span class="badge badge-red">Discrepancy</span> dan perlu ditindaklanjuti.</p>
+      </div>
+
+      <div class="section">
+        <h3>➕ Membuat Handover Baru</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik menu Handover → "+ Buat Handover"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi informasi handover:</h4>
+              <ul>
+                <li><strong>Production Order</strong> — order yang barangnya akan diserahkan</li>
+                <li><strong>Dari Stasiun</strong> — stasiun pengirim</li>
+                <li><strong>Ke Stasiun</strong> — stasiun penerima</li>
+                <li><strong>Tanggal Handover</strong></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Pilih Tempat Sewing (jika ke Sewing)</h4>
+              <p>Jika handover menuju stasiun <strong>Sewing</strong>, field <strong>Tempat Sewing</strong> akan muncul otomatis — wajib diisi untuk mencatat ke mitra sewing mana barang dikirim.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-body">
+              <h4>Tambah Item Handover</h4>
+              <p>Klik "+ Tambah Item" untuk setiap SKU. Isi: SKU, Qty Kirim.</p>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan. Status otomatis menjadi Pending.</h4></div></li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3>✅ Konfirmasi Penerimaan</h3>
+        <p>PIC stasiun penerima perlu mengkonfirmasi bahwa barang sudah diterima:</p>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Buka detail handover (klik nomor handover dari daftar)</h4></div></li>
+          <li><div class="step-body"><h4>Isi <strong>Qty Diterima</strong> untuk setiap item</h4></div></li>
+          <li><div class="step-body"><h4>Klik tombol "Konfirmasi Terima"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Sistem menentukan status otomatis:</h4>
+              <ul>
+                <li>Qty sama → status <span class="badge badge-blue">Confirmed</span></li>
+                <li>Qty berbeda → status <span class="badge badge-red">Discrepancy</span></li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3>✔️ Approve Handover (Manager/Admin)</h3>
+        <p>Setelah dikonfirmasi, Manager perlu menyetujui handover:</p>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Buka detail handover yang statusnya Confirmed atau Discrepancy</h4></div></li>
+          <li><div class="step-body"><h4>Klik tombol "Approve"</h4></div></li>
+          <li><div class="step-body"><h4>Status berubah menjadi Approved — proses selesai</h4></div></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 10 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab10">
+    <div class="chapter-head">
+      <div class="chapter-num">10</div>
+      <div>
+        <h2>Bahan Baku</h2>
+        <p>Kelola stok dan penerimaan material produksi</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>📦 Daftar Bahan Baku</h3>
+        <p>Menu <strong>Bahan Baku</strong> menampilkan semua material yang terdaftar beserta stok saat ini. Material dengan stok di bawah <em>Minimum Stock</em> akan ditandai merah dan memicu notifikasi.</p>
+
+        <h4>Informasi yang ditampilkan:</h4>
+        <ul>
+          <li>Kode & Nama Material</li>
+          <li>Satuan (meter, kg, pcs, dll)</li>
+          <li>Stok Saat Ini vs Minimum Stok</li>
+          <li>Status stok (Cukup / Menipis)</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>➕ Tambah Material Baru</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik "+ Tambah Bahan Baku"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi form:</h4>
+              <ul>
+                <li><strong>Kode</strong> — kode unik material</li>
+                <li><strong>Nama</strong> — nama material</li>
+                <li><strong>Satuan</strong> — meter, kg, pcs, dll</li>
+                <li><strong>Stok Awal</strong> — stok saat pertama kali diinput</li>
+                <li><strong>Minimum Stok</strong> — batas bawah untuk trigger alert</li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan</h4></div></li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3>📥 Catat Penerimaan Bahan Baku</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Dari daftar Bahan Baku, klik tombol "Terima" pada material yang datang</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi form penerimaan:</h4>
+              <ul>
+                <li><strong>Qty Diterima</strong></li>
+                <li><strong>Tanggal Penerimaan</strong></li>
+                <li><strong>No. Surat Jalan</strong> (opsional)</li>
+                <li><strong>Supplier</strong> (opsional)</li>
+                <li><strong>Catatan</strong></li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan — stok otomatis bertambah</h4></div></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 11 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab11">
+    <div class="chapter-head">
+      <div class="chapter-num">11</div>
+      <div>
+        <h2>Budget & Biaya Produksi</h2>
+        <p>Rencanakan dan pantau anggaran produksi</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>💰 Daftar Budget</h3>
+        <p>Menu <strong>Budget</strong> menampilkan semua production order beserta rencana anggaran dan realisasi biaya aktual. Di bagian atas terdapat ringkasan total plan vs total aktual seluruh order.</p>
+      </div>
+
+      <div class="section">
+        <h3>📝 Input Rencana Anggaran</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik order di daftar budget → klik "Edit Budget"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi rencana biaya per kategori:</h4>
+              <ul>
+                <li>Biaya Bahan Baku (plan)</li>
+                <li>Biaya Tenaga Kerja (plan)</li>
+                <li>Biaya Overhead (plan)</li>
+                <li>Biaya Lain-lain (plan)</li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan</h4></div></li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <h3>💸 Input Biaya Aktual</h3>
+        <p>Biaya aktual diinput per transaksi dari halaman detail budget order:</p>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Buka detail budget order</h4></div></li>
+          <li><div class="step-body"><h4>Klik "+ Tambah Biaya"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi form:</h4>
+              <ul>
+                <li><strong>Kategori Biaya</strong></li>
+                <li><strong>Deskripsi</strong></li>
+                <li><strong>Jumlah (Rp)</strong></li>
+                <li><strong>Tanggal</strong></li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan — total aktual terupdate otomatis</h4></div></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 12 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab12">
+    <div class="chapter-head">
+      <div class="chapter-num">12</div>
+      <div>
+        <h2>Laporan</h2>
+        <p>Berbagai laporan produksi yang bisa dicetak</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>📄 Jenis Laporan</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Laporan</th><th>Menu</th><th>Isi</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Laporan Produksi</strong></td><td>Laporan → Produksi</td><td>Rekapitulasi WIP dan output per order, per stasiun, per periode</td></tr>
+              <tr><td><strong>Laporan Handover</strong></td><td>Laporan → Handover</td><td>Riwayat serah terima antar stasiun dengan status dan qty</td></tr>
+              <tr><td><strong>Laporan Bahan Baku</strong></td><td>Laporan → Bahan Baku</td><td>Riwayat penerimaan dan saldo stok material</td></tr>
+              <tr><td><strong>Laporan Budget</strong></td><td>Laporan → Budget</td><td>Perbandingan rencana vs realisasi biaya per order</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🔍 Filter & Cetak Laporan</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Pilih jenis laporan dari menu Laporan</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Gunakan filter yang tersedia:</h4>
+              <ul>
+                <li>Rentang tanggal (dari - sampai)</li>
+                <li>Production Order tertentu</li>
+                <li>Stasiun tertentu</li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik "Tampilkan" untuk memuat data</h4></div></li>
+          <li><div class="step-body"><h4>Klik "Cetak" atau gunakan Ctrl+P untuk mencetak/simpan PDF</h4></div></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 13 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab13">
+    <div class="chapter-head">
+      <div class="chapter-num">13</div>
+      <div>
+        <h2>Notifikasi</h2>
+        <p>Alert otomatis untuk kondisi yang perlu perhatian</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>🔔 Jenis Notifikasi</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Notifikasi</th><th>Penerima</th><th>Trigger</th></tr></thead>
+            <tbody>
+              <tr><td>Order Mendekati Deadline</td><td>Supervisor, Manager</td><td>Deadline tinggal 3 hari atau kurang</td></tr>
+              <tr><td>Order Terlambat</td><td>Supervisor, Manager</td><td>Melewati target tanggal selesai</td></tr>
+              <tr><td>Handover Pending</td><td>PIC Stasiun Penerima</td><td>Ada handover baru yang perlu dikonfirmasi</td></tr>
+              <tr><td>Handover Discrepancy</td><td>Supervisor, Manager</td><td>Qty diterima berbeda dengan qty kirim</td></tr>
+              <tr><td>Stok Bahan Baku Menipis</td><td>Staff Gudang, Manager</td><td>Stok turun di bawah minimum stock</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>📖 Membaca Notifikasi</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik ikon lonceng 🔔 di topbar — angka merah menunjukkan notifikasi belum dibaca</h4></div></li>
+          <li><div class="step-body"><h4>Klik notifikasi untuk langsung menuju halaman terkait</h4></div></li>
+          <li><div class="step-body"><h4>Untuk lihat semua notifikasi, klik "Lihat Semua" atau menu Notifikasi</h4></div></li>
+          <li><div class="step-body"><h4>Klik "Tandai Semua Dibaca" untuk membersihkan semua notifikasi sekaligus</h4></div></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ BAB 14 ══════════════════════════════════════ -->
+  <div class="chapter" id="bab14">
+    <div class="chapter-head">
+      <div class="chapter-num">14</div>
+      <div>
+        <h2>Manajemen User</h2>
+        <p>Kelola akun pengguna sistem (Admin only)</p>
+      </div>
+    </div>
+    <div class="chapter-body">
+
+      <div class="section">
+        <h3>👥 Daftar User</h3>
+        <p>Menu <strong>Users</strong> menampilkan semua akun pengguna beserta role dan status aktif/nonaktif.</p>
+      </div>
+
+      <div class="section">
+        <h3>➕ Tambah User Baru</h3>
+        <ol class="steps">
+          <li><div class="step-body"><h4>Klik menu Users → "+ Tambah User"</h4></div></li>
+          <li>
+            <div class="step-body">
+              <h4>Isi form:</h4>
+              <ul>
+                <li><strong>Nama Lengkap</strong></li>
+                <li><strong>Email</strong> — digunakan untuk login</li>
+                <li><strong>Password</strong> — minimal 8 karakter</li>
+                <li><strong>Role</strong> — pilih sesuai tugas pengguna</li>
+              </ul>
+            </div>
+          </li>
+          <li><div class="step-body"><h4>Klik Simpan — user sudah bisa login langsung</h4></div></li>
+        </ol>
+
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Keamanan:</strong> Informasikan password ke pengguna baru secara langsung/pribadi. Minta pengguna segera ganti password setelah login pertama.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>✏️ Edit & Nonaktifkan User</h3>
+        <ul>
+          <li>Klik ikon edit ✏️ untuk mengubah nama, email, role, atau reset password</li>
+          <li>Untuk menonaktifkan user (tanpa menghapus), uncheck opsi "Aktif" di form edit</li>
+          <li>User nonaktif tidak bisa login namun data historisnya tetap tersimpan</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <strong>DPIS — DTHREE Production Integration System</strong><br>
+    PT DTHREE SUKSES MULIA &nbsp;·&nbsp; https://tritory.id &nbsp;·&nbsp; Dokumen ini bersifat konfidensial
+  </div>
+
+</div><!-- /wrapper -->
+
+</body>
+</html>
