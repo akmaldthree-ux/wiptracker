@@ -27,6 +27,19 @@
     </div>
     @endif
     <a href="{{ route('wip.show',$order) }}" class="btn btn-outline-primary"><i class="bi bi-activity me-1"></i>Lihat WIP</a>
+    @if($order->status === 'active' && in_array(auth()->user()->role,['admin','supervisor']))
+    @php
+        $alreadySentToCutting = $order->handovers->whereNull('from_station_id')->whereIn('status',['pending','confirmed','approved'])->isNotEmpty();
+    @endphp
+    @if(!$alreadySentToCutting)
+    <form method="POST" action="{{ route('orders.send-to-cutting',$order) }}" onsubmit="return confirm('Kirim order ini ke stasiun Cutting? Handover akan dibuat otomatis.')">
+        @csrf
+        <button type="submit" class="btn btn-success"><i class="bi bi-scissors me-1"></i>Kirim ke Cutting</button>
+    </form>
+    @else
+    <span class="btn btn-success disabled"><i class="bi bi-check-circle me-1"></i>Sudah Dikirim ke Cutting</span>
+    @endif
+    @endif
     <a href="{{ route('handover.create') }}?order_id={{ $order->id }}" class="btn btn-primary"><i class="bi bi-arrow-left-right me-1"></i>Buat Handover</a>
   </div>
 </div>
