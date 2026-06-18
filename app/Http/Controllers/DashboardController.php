@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\{ProductionOrder, Station, WipEntry, Handover, RawMaterial, Budget, User, Notification};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -57,5 +58,55 @@ class DashboardController extends Controller
         $nearDeadlineOrders = ProductionOrder::with(['product'])->where('status','active')->whereBetween('target_date',[today(),now()->addDays(3)->toDateString()])->get();
 
         return view('dashboard.operational', compact('stations','pendingHandovers','discrepancyHandovers','recentWip','overdueOrders','nearDeadlineOrders'));
+    }
+
+    public function wipMonitor()
+    {
+        // Stations sorted by sequence with net WIP aggregated
+        $stations = Station::orderBy('order_sequence')->get()->map(function ($s) {
+            $s->net_wip = max(0, WipEntry::where('station_id', $s->id)
+                ->selectRaw('SUM(qty_in - qty_out - qty_reject) as net')->value('net') ?? 0);
+            return $s;
+        });
+
+        // Active orders
+        $activeOrders = ProductionOrder::with(['product', 'series', 'items'])
+            ->whereIn('status', ['active', 'draft'])
+            ->orderBy('target_date')
+            ->get();
+
+        // WIP per station grouped by order: { station_id => Collection of { order_no, net_wip, production_order_id } }
+        $wipRaw = WipEntry::selectRaw('station_id, production_order_id, SUM(qty_in - qty_out - qty_reject) as net_wip')
+            ->groupBy('station_id', 'production_order_id')
+            ->having('net_wip', '>', 0)
+            ->with('order:id,order_no')
+            ->get();
+
+        $wipByStation = $wipRaw->groupBy('station_id')->map(function ($items) {
+            return $items->map(fn($i) => (object)[
+                'production_order_id' => $i->production_order_id,
+                'order_no'            => $i->order->order_no ?? '—',
+                'net_wip'             => (int) $i->net_wip,
+            ])->sortByDesc('net_wip')->values();
+        });
+
+        // Matrix: { order_id => { station_id => net_wip } } for chart & table
+        $wipByOrderStation = [];
+        foreach ($wipRaw as $row) {
+            $wipByOrderStation[$row->production_order_id][$row->station_id] = (int) $row->net_wip;
+        }
+
+        // Palette for charts
+        $stationColors = ['#1a3c6e','#0ea5e9','#10b981','#f59e0b','#8b5cf6'];
+        $orderPalette  = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#84cc16'];
+        $orderColors   = $activeOrders->values()->map(fn($o, $i) => $orderPalette[$i % count($orderPalette)])->toArray();
+
+        // Recent WIP activity
+        $recentWip = WipEntry::with(['order', 'sku', 'station', 'creator'])->latest()->take(15)->get();
+
+        return view('dashboard.wip-monitor', compact(
+            'stations', 'activeOrders', 'wipByStation', 'wipByOrderStation',
+            'stationColors', 'orderColors', 'recentWip'
+        ));
     }
 }

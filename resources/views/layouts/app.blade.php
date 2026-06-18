@@ -118,6 +118,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#2d374
     <div class="nav-section-title">Utama</div>
     <a href="{{ route('dashboard.executive') }}" class="nav-link {{ request()->routeIs('dashboard.executive') ? 'active' : '' }}"><i class="bi bi-speedometer2"></i> Dashboard Eksekutif</a>
     <a href="{{ route('dashboard.operational') }}" class="nav-link {{ request()->routeIs('dashboard.operational') ? 'active' : '' }}"><i class="bi bi-display"></i> Dashboard Operasional</a>
+    <a href="{{ route('dashboard.wip-monitor') }}" class="nav-link {{ request()->routeIs('dashboard.wip-monitor') ? 'active' : '' }}"><i class="bi bi-radar"></i> WIP Monitor</a>
 
     <div class="nav-section-title">Produksi</div>
     <a href="{{ route('orders.index') }}" class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}"><i class="bi bi-clipboard-check"></i> Order Produksi</a>
