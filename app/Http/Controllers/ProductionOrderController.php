@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{ProductionOrder, ProductionOrderItem, Product, Series, Sku, Station, WipEntry, Handover, HandoverItem, Notification, User};
+use App\Models\{ProductionOrder, ProductionOrderItem, Product, Series, Sku, Station, WipEntry};
 use Illuminate\Http\Request;
 
 class ProductionOrderController extends Controller
@@ -90,54 +90,4 @@ class ProductionOrderController extends Controller
         return redirect()->route('orders.index')->with('success','Order berhasil dihapus.');
     }
 
-    public function sendToCutting(ProductionOrder $order)
-    {
-        abort_if(!in_array(auth()->user()->role, ['admin','supervisor']), 403);
-        abort_if($order->status !== 'active', 403, 'Order harus berstatus Aktif untuk dikirim ke Cutting.');
-
-        $cuttingStation = Station::where('order_sequence', 1)->where('is_active', true)->first();
-        abort_if(!$cuttingStation, 404, 'Stasiun Cutting tidak ditemukan.');
-
-        $alreadySent = Handover::where('production_order_id', $order->id)
-            ->whereNull('from_station_id')
-            ->whereIn('status', ['pending','confirmed','approved'])
-            ->exists();
-        if ($alreadySent) {
-            return back()->with('warning', 'Order ini sudah pernah dikirim ke Cutting.');
-        }
-
-        $ho = Handover::create([
-            'handover_no'         => 'HO-' . date('Y') . '-' . str_pad(Handover::count() + 1, 3, '0', STR_PAD_LEFT),
-            'production_order_id' => $order->id,
-            'from_station_id'     => null,
-            'to_station_id'       => $cuttingStation->id,
-            'status'              => 'pending',
-            'initiated_by'        => auth()->id(),
-            'notes'               => 'Kiriman awal dari Production Order ke Cutting.',
-            'initiated_at'        => now(),
-        ]);
-
-        foreach ($order->items as $item) {
-            HandoverItem::create([
-                'handover_id' => $ho->id,
-                'sku_id'      => $item->sku_id,
-                'qty_sent'    => $item->target_qty,
-            ]);
-        }
-
-        $cuttingPICs = User::where('station_id', $cuttingStation->id)->get();
-        foreach ($cuttingPICs as $pic) {
-            Notification::create([
-                'user_id' => $pic->id,
-                'title'   => "Order Masuk ke Cutting: {$order->order_no}",
-                'message' => "Production order {$order->order_no} siap diproses di Cutting.",
-                'type'    => 'info',
-                'link'    => "/handover/{$ho->id}",
-                'is_read' => false,
-            ]);
-        }
-
-        return redirect()->route('handover.show', $ho)
-            ->with('success', "Order {$order->order_no} berhasil dikirim ke Cutting. Handover {$ho->handover_no} dibuat.");
-    }
 }

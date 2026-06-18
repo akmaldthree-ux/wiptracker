@@ -31,7 +31,6 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('orders', ProductionOrderController::class);
     Route::patch('orders/{order}/status', [ProductionOrderController::class, 'updateStatus'])->name('orders.status');
-    Route::post('orders/{order}/send-to-cutting', [ProductionOrderController::class, 'sendToCutting'])->name('orders.send-to-cutting');
 
     Route::get('/wip', [WipController::class, 'index'])->name('wip.index');
     Route::get('/wip/input', [WipController::class, 'create'])->name('wip.create');
