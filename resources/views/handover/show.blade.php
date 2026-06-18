@@ -28,6 +28,19 @@
           <tr><td class="text-muted">Order</td><td><a href="{{ route('orders.show',$handover->order) }}">{{ $handover->order->order_no }}</a></td></tr>
           <tr><td class="text-muted">Dari Stasiun</td><td class="fw-semibold">{{ $handover->fromStation->name }}</td></tr>
           <tr><td class="text-muted">Ke Stasiun</td><td class="fw-semibold">{{ $handover->toStation->name }}</td></tr>
+          @if($handover->sewingLocation)
+          <tr>
+            <td class="text-muted">Tempat Sewing</td>
+            <td>
+              <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25">
+                <i class="bi bi-building me-1"></i>{{ $handover->sewingLocation->name }}
+              </span>
+              @if($handover->sewingLocation->address)
+              <br><small class="text-muted">{{ $handover->sewingLocation->address }}</small>
+              @endif
+            </td>
+          </tr>
+          @endif
           <tr><td class="text-muted">Diinisiasi Oleh</td><td>{{ $handover->initiatedBy->name }}</td></tr>
           <tr><td class="text-muted">Waktu Kirim</td><td>{{ $handover->initiated_at ? $handover->initiated_at->format('d M Y H:i') : '-' }}</td></tr>
           @if($handover->confirmedBy)

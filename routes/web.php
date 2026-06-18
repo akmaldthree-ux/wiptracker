@@ -13,6 +13,7 @@ use App\Http\Controllers\MasterData\SeriesController;
 use App\Http\Controllers\MasterData\ColorController;
 use App\Http\Controllers\MasterData\SizeController;
 use App\Http\Controllers\MasterData\StationController;
+use App\Http\Controllers\MasterData\SewingLocationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('warna', ColorController::class);
         Route::resource('ukuran', SizeController::class);
         Route::resource('stasiun', StationController::class);
+        Route::resource('sewing-location', SewingLocationController::class);
     });
 
     Route::resource('users', UserController::class);

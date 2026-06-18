@@ -151,6 +151,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#2d374
         <a href="{{ route('master.warna.index') }}" class="nav-link {{ request()->routeIs('master.warna.*') ? 'active' : '' }}"><i class="bi bi-palette"></i> Warna</a>
         <a href="{{ route('master.ukuran.index') }}" class="nav-link {{ request()->routeIs('master.ukuran.*') ? 'active' : '' }}"><i class="bi bi-rulers"></i> Ukuran</a>
         <a href="{{ route('master.stasiun.index') }}" class="nav-link {{ request()->routeIs('master.stasiun.*') ? 'active' : '' }}"><i class="bi bi-geo-alt"></i> Stasiun</a>
+        <a href="{{ route('master.sewing-location.index') }}" class="nav-link {{ request()->routeIs('master.sewing-location.*') ? 'active' : '' }}"><i class="bi bi-building"></i> Tempat Sewing</a>
       </div>
     </div>
     @endif

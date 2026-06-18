@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Handover, HandoverItem, ProductionOrder, Station, Sku, WipEntry, Notification, User};
+use App\Models\{Handover, HandoverItem, ProductionOrder, Station, Sku, WipEntry, Notification, User, SewingLocation};
 use Illuminate\Http\Request;
 
 class HandoverController extends Controller
@@ -21,26 +21,36 @@ class HandoverController extends Controller
         $station = $user->station;
         $orders = ProductionOrder::where('status','active')->with('product')->get();
         $stations = Station::where('is_active',true)->orderBy('order_sequence')->get();
-        return view('handover.create', compact('station','orders','stations'));
+        $sewingLocations = SewingLocation::where('is_active',true)->orderBy('name')->get();
+        return view('handover.create', compact('station','orders','stations','sewingLocations'));
     }
 
     public function store(Request $request)
     {
+        $fromStation = Station::find($request->from_station_id);
+        $toStation = $fromStation ? Station::where('order_sequence',$fromStation->order_sequence+1)->where('is_active',true)->first() : null;
+
+        // Wajib pilih tempat sewing jika tujuan adalah stasiun sewing (order_sequence=2)
+        $requireSewingLocation = $toStation && $toStation->order_sequence == 2;
+
         $request->validate([
             'production_order_id'=>'required|exists:production_orders,id',
             'from_station_id'=>'required|exists:stations,id',
+            'sewing_location_id'=> $requireSewingLocation ? 'required|exists:sewing_locations,id' : 'nullable|exists:sewing_locations,id',
             'items'=>'required|array|min:1',
             'items.*.sku_id'=>'required|exists:skus,id',
             'items.*.qty_sent'=>'required|integer|min:1',
+        ], [
+            'sewing_location_id.required' => 'Tempat Sewing wajib dipilih saat handover ke stasiun Sewing.',
         ]);
-        $fromStation = Station::find($request->from_station_id);
-        $toStation = Station::where('order_sequence',$fromStation->order_sequence+1)->where('is_active',true)->first();
+
         if (!$toStation) return back()->withErrors(['from_station_id'=>'Tidak ada stasiun tujuan setelah stasiun ini.']);
 
         $ho = Handover::create([
             'handover_no' => 'HO-' . date('Y') . '-' . str_pad(Handover::count()+1,3,'0',STR_PAD_LEFT),
             'production_order_id'=>$request->production_order_id,
             'from_station_id'=>$request->from_station_id, 'to_station_id'=>$toStation->id,
+            'sewing_location_id'=>$request->sewing_location_id ?: null,
             'status'=>'pending','initiated_by'=>auth()->id(),'notes'=>$request->notes,
             'condition_notes'=>$request->condition_notes,'initiated_at'=>now(),
         ]);
@@ -58,7 +68,7 @@ class HandoverController extends Controller
 
     public function show(Handover $handover)
     {
-        $handover->load(['order.product','fromStation','toStation','initiatedBy','confirmedBy','approvedBy','items.sku.color','items.sku.size']);
+        $handover->load(['order.product','fromStation','toStation','sewingLocation','initiatedBy','confirmedBy','approvedBy','items.sku.color','items.sku.size']);
         return view('handover.show', compact('handover'));
     }
 
