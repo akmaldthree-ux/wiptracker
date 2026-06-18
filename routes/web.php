@@ -85,4 +85,15 @@ Route::middleware('auth')->prefix('api')->group(function() {
     Route::get('series-by-product/{product}', fn(\App\Models\Product $product) => response()->json($product->series()->where('is_active',true)->get(['id','name','code'])));
     Route::get('skus-by-series/{series}', fn(\App\Models\Series $series) => response()->json($series->skus()->where('is_active',true)->with(['color','size'])->get()));
     Route::get('order-skus/{order}', fn(\App\Models\ProductionOrder $order) => response()->json($order->items()->with(['sku.color','sku.size'])->get()));
+    Route::get('wip-available/{order}/{station}', function(\App\Models\ProductionOrder $order, \App\Models\Station $station) {
+        $entries = \App\Models\WipEntry::where('production_order_id', $order->id)
+            ->where('station_id', $station->id)
+            ->selectRaw('sku_id, SUM(qty_in) as total_in, SUM(qty_out) as total_out, SUM(qty_reject) as total_reject')
+            ->groupBy('sku_id')->get();
+        $result = [];
+        foreach ($entries as $e) {
+            $result[$e->sku_id] = max(0, $e->total_in - $e->total_out - $e->total_reject);
+        }
+        return response()->json($result);
+    });
 });

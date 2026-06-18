@@ -46,6 +46,23 @@ class HandoverController extends Controller
 
         if (!$toStation) return back()->withErrors(['from_station_id'=>'Tidak ada stasiun tujuan setelah stasiun ini.']);
 
+        // Validate qty_sent does not exceed available WIP at from_station
+        $wipEntries = WipEntry::where('production_order_id', $request->production_order_id)
+            ->where('station_id', $request->from_station_id)
+            ->selectRaw('sku_id, SUM(qty_in) as total_in, SUM(qty_out) as total_out, SUM(qty_reject) as total_reject')
+            ->groupBy('sku_id')->get()->keyBy('sku_id');
+
+        foreach ($request->items as $item) {
+            if (empty($item['sku_id']) || empty($item['qty_sent'])) continue;
+            $e = $wipEntries->get($item['sku_id']);
+            $available = $e ? max(0, $e->total_in - $e->total_out - $e->total_reject) : 0;
+            if ((int)$item['qty_sent'] > $available) {
+                $sku = \App\Models\Sku::find($item['sku_id']);
+                $skuCode = $sku ? $sku->sku_code : "SKU #{$item['sku_id']}";
+                return back()->withInput()->withErrors(['items' => "SKU {$skuCode}: qty yang dikirim ({$item['qty_sent']}) melebihi stok tersedia di stasiun ({$available} pcs)."]);
+            }
+        }
+
         $ho = Handover::create([
             'handover_no' => 'HO-' . date('Y') . '-' . str_pad(Handover::count()+1,3,'0',STR_PAD_LEFT),
             'production_order_id'=>$request->production_order_id,

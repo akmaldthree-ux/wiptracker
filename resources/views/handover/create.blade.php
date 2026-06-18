@@ -79,14 +79,20 @@
         <h6 class="mb-0"><i class="bi bi-list-ul me-2 text-primary"></i>Item SKU yang Dikirim</h6>
         <button type="button" id="addItem" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus me-1"></i>Tambah SKU</button>
       </div>
+      <div id="wipAvailableInfo" class="alert alert-warning py-2 mb-2" style="display:none">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span id="wipAvailableText">Pilih Order dan Stasiun Asal untuk melihat stok tersedia.</span>
+      </div>
       <div id="itemsContainer">
         <div class="row g-2 align-items-end mb-2 item-row">
-          <div class="col-md-8">
+          <div class="col-md-6">
             <select name="items[0][sku_id]" class="form-select form-select-sm sku-sel"><option value="">-- Pilih SKU --</option></select>
           </div>
           <div class="col-md-3">
-            <input type="number" name="items[0][qty_sent]" class="form-control form-control-sm" placeholder="Qty" min="1">
+            <input type="number" name="items[0][qty_sent]" class="form-control form-control-sm qty-input" placeholder="Qty" min="1">
+            <div class="form-text available-info text-success" style="display:none"></div>
           </div>
+          <div class="col-md-2"><span class="badge bg-secondary available-badge w-100 py-2" style="display:none;font-size:.75rem"></span></div>
           <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 remove-item"><i class="bi bi-trash"></i></button></div>
         </div>
       </div>
@@ -108,6 +114,48 @@ const stations = {
   @endforeach
 };
 
+let wipAvailable = {}; // sku_id -> available qty
+
+async function loadWipAvailable() {
+  const oid = document.getElementById('orderSel').value;
+  const sid = document.getElementById('stationSel').value;
+  wipAvailable = {};
+  if (!oid || !sid) return;
+  try {
+    const r = await fetch(`/api/wip-available/${oid}/${sid}`);
+    wipAvailable = await r.json();
+  } catch(e) {}
+  updateAllQtyLimits();
+}
+
+function updateAllQtyLimits() {
+  document.querySelectorAll('.item-row').forEach(row => updateQtyLimit(row));
+}
+
+function updateQtyLimit(row) {
+  const skuSel = row.querySelector('.sku-sel');
+  const qtyInput = row.querySelector('.qty-input');
+  const badge = row.querySelector('.available-badge');
+  const info = row.querySelector('.available-info');
+  if (!skuSel || !qtyInput) return;
+  const skuId = skuSel.value;
+  if (!skuId || wipAvailable[skuId] === undefined) {
+    qtyInput.removeAttribute('max');
+    if (badge) badge.style.display = 'none';
+    if (info) info.style.display = 'none';
+    return;
+  }
+  const avail = wipAvailable[skuId] ?? 0;
+  qtyInput.max = avail;
+  if (avail === 0) {
+    if (badge) { badge.className = 'badge bg-danger available-badge w-100 py-2'; badge.textContent = 'Stok: 0'; badge.style.display = ''; }
+    if (info) { info.className = 'form-text available-info text-danger'; info.textContent = 'Tidak ada stok tersedia'; info.style.display = ''; }
+  } else {
+    if (badge) { badge.className = 'badge bg-success available-badge w-100 py-2'; badge.textContent = `Maks: ${avail}`; badge.style.display = ''; }
+    if (info) { info.className = 'form-text available-info text-success'; info.textContent = `Tersedia: ${avail} pcs`; info.style.display = ''; }
+  }
+}
+
 // SKU loader
 let idx = 1;
 function loadSKUs(sel) {
@@ -115,7 +163,11 @@ function loadSKUs(sel) {
   if (!oid) { sel.innerHTML = '<option value="">-- Pilih Order dulu --</option>'; return; }
   fetch(`/api/order-skus/${oid}`).then(r => r.json()).then(data => {
     sel.innerHTML = '<option value="">-- Pilih SKU --</option>';
-    data.forEach(item => sel.innerHTML += `<option value="${item.sku_id}">${item.sku?.sku_code || ''}</option>`);
+    data.forEach(item => {
+      const label = [item.sku?.sku_code, item.sku?.color?.name, item.sku?.size?.name].filter(Boolean).join(' — ');
+      sel.innerHTML += `<option value="${item.sku_id}">${label}</option>`;
+    });
+    updateAllQtyLimits();
   });
 }
 
@@ -157,14 +209,26 @@ function checkSewingLocation() {
   }
 }
 
-document.getElementById('stationSel').addEventListener('change', checkSewingLocation);
+document.getElementById('stationSel').addEventListener('change', function() {
+  checkSewingLocation();
+  loadWipAvailable();
+});
 document.getElementById('orderSel').addEventListener('change', function () {
   document.querySelectorAll('.sku-sel').forEach(s => loadSKUs(s));
+  loadWipAvailable();
+});
+
+// Listen to SKU select changes to update qty limits
+document.getElementById('itemsContainer').addEventListener('change', function(e) {
+  if (e.target.classList.contains('sku-sel')) {
+    updateQtyLimit(e.target.closest('.item-row'));
+  }
 });
 
 // Init
 checkSewingLocation();
 loadSKUs(document.querySelector('.sku-sel'));
+loadWipAvailable();
 
 // Re-check if old value was set (after validation error)
 @if(old('from_station_id'))
@@ -176,7 +240,7 @@ checkSewingLocation();
 document.getElementById('addItem').addEventListener('click', function () {
   const div = document.createElement('div');
   div.className = 'row g-2 align-items-end mb-2 item-row';
-  div.innerHTML = `<div class="col-md-8"><select name="items[${idx}][sku_id]" class="form-select form-select-sm sku-sel"><option value="">-- Pilih SKU --</option></select></div><div class="col-md-3"><input type="number" name="items[${idx}][qty_sent]" class="form-control form-control-sm" placeholder="Qty" min="1"></div><div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 remove-item"><i class="bi bi-trash"></i></button></div>`;
+  div.innerHTML = `<div class="col-md-6"><select name="items[${idx}][sku_id]" class="form-select form-select-sm sku-sel"><option value="">-- Pilih SKU --</option></select></div><div class="col-md-3"><input type="number" name="items[${idx}][qty_sent]" class="form-control form-control-sm qty-input" placeholder="Qty" min="1"><div class="form-text available-info text-success" style="display:none"></div></div><div class="col-md-2"><span class="badge bg-secondary available-badge w-100 py-2" style="display:none;font-size:.75rem"></span></div><div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 remove-item"><i class="bi bi-trash"></i></button></div>`;
   document.getElementById('itemsContainer').appendChild(div);
   loadSKUs(div.querySelector('.sku-sel'));
   div.querySelector('.remove-item').addEventListener('click', () => div.remove());
