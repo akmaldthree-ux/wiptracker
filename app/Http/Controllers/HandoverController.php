@@ -87,6 +87,11 @@ class HandoverController extends Controller
         $status = $hasDiscrepancy ? 'discrepancy' : 'confirmed';
         $handover->update(['status'=>$status,'confirmed_by'=>auth()->id(),'confirmed_at'=>now()]);
 
+        // Auto-create WIP entries when confirmed (no discrepancy)
+        if (!$hasDiscrepancy) {
+            $this->createWipFromHandover($handover);
+        }
+
         if ($hasDiscrepancy) {
             $supervisors = User::where('role','supervisor')->orWhere('role','admin')->get();
             foreach ($supervisors as $s) {
@@ -94,7 +99,7 @@ class HandoverController extends Controller
             }
             return back()->with('warning','Handover dikonfirmasi dengan discrepancy. Menunggu persetujuan supervisor.');
         }
-        return back()->with('success','Handover berhasil dikonfirmasi.');
+        return back()->with('success','Handover berhasil dikonfirmasi. WIP stasiun pengirim dan penerima diperbarui otomatis.');
     }
 
     public function approve(Request $request, Handover $handover)
@@ -102,7 +107,53 @@ class HandoverController extends Controller
         abort_if($handover->status !== 'discrepancy', 403);
         abort_if(!in_array(auth()->user()->role,['admin','supervisor']), 403);
         $handover->update(['status'=>'approved','approved_by'=>auth()->id()]);
-        return back()->with('success','Discrepancy handover telah disetujui.');
+
+        // Auto-create WIP entries when discrepancy is approved (use qty_received as actuals)
+        $this->createWipFromHandover($handover);
+
+        return back()->with('success','Discrepancy handover telah disetujui. WIP diperbarui berdasarkan qty aktual yang diterima.');
+    }
+
+    /**
+     * Create WIP out entry for sender station and WIP in entry for receiver station
+     * based on confirmed qty_received per handover item.
+     */
+    private function createWipFromHandover(Handover $handover): void
+    {
+        $handover->load('items');
+        $today = now()->toDateString();
+        $note  = "Auto dari Handover {$handover->handover_no}";
+
+        foreach ($handover->items as $item) {
+            $qty = max(0, (int) $item->qty_received);
+            if ($qty === 0) continue;
+
+            // qty_out for sender station
+            WipEntry::create([
+                'production_order_id' => $handover->production_order_id,
+                'sku_id'              => $item->sku_id,
+                'station_id'          => $handover->from_station_id,
+                'qty_in'              => 0,
+                'qty_out'             => $qty,
+                'qty_reject'          => 0,
+                'input_date'          => $today,
+                'notes'               => $note,
+                'created_by'          => auth()->id(),
+            ]);
+
+            // qty_in for receiver station
+            WipEntry::create([
+                'production_order_id' => $handover->production_order_id,
+                'sku_id'              => $item->sku_id,
+                'station_id'          => $handover->to_station_id,
+                'qty_in'              => $qty,
+                'qty_out'             => 0,
+                'qty_reject'          => 0,
+                'input_date'          => $today,
+                'notes'               => $note,
+                'created_by'          => auth()->id(),
+            ]);
+        }
     }
 
     public function destroy(Handover $handover)
