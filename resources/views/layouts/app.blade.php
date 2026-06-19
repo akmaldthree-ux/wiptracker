@@ -14,10 +14,10 @@
   --primary-light: #eff6ff;
   --accent: #f97316;
   --accent-light: #fff7ed;
-  --sidebar-bg: #0f172a;
-  --sidebar-hover: rgba(255,255,255,.07);
-  --sidebar-active-bg: rgba(37,99,235,.18);
-  --sidebar-active-border: #3b82f6;
+  --sidebar-bg: #1a1005;
+  --sidebar-hover: rgba(196,148,26,.12);
+  --sidebar-active-bg: rgba(196,148,26,.22);
+  --sidebar-active-border: #C4941A;
   --sidebar-text: rgba(255,255,255,.55);
   --sidebar-text-active: #fff;
   --sidebar-w: 256px;
@@ -48,7 +48,7 @@ body {
 #sidebar {
   position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
   background: var(--sidebar-bg);
-  background-image: linear-gradient(180deg, rgba(37,99,235,.12) 0%, transparent 40%);
+  background-image: linear-gradient(180deg, rgba(196,148,26,.18) 0%, rgba(140,90,5,.08) 35%, transparent 70%);
   z-index: 1040; transition: .3s cubic-bezier(.4,0,.2,1);
   overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;
 }
@@ -65,7 +65,7 @@ body {
   width: 90px; height: auto;
   opacity: .95;
 }
-.brand-text .sub { color: rgba(255,255,255,.25); font-size: .6rem; letter-spacing: .4px; text-align: center; }
+.brand-text .sub { color: rgba(196,148,26,.55); font-size: .65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
 
 .nav-section-title {
   color: rgba(255,255,255,.2); font-size: .6rem; font-weight: 700;
@@ -91,7 +91,7 @@ body {
   height: 60%; width: 3px; border-radius: 0 3px 3px 0; background: var(--sidebar-active-border);
 }
 .sidebar-nav .nav-link i { font-size: .9rem; width: 17px; text-align: center; flex-shrink: 0; }
-.sidebar-nav .nav-link.active i { color: #60a5fa; }
+.sidebar-nav .nav-link.active i { color: #E8B830; }
 .sidebar-nav .badge { font-size: .6rem; padding: .18em .5em; margin-left: auto; }
 .nav-submenu { padding: 0; }
 .nav-submenu .nav-link { padding: .4rem .9rem .4rem 2.6rem; font-size: .81rem; }
@@ -420,7 +420,7 @@ hr { border-color: #edf0f7; }
   <div class="sidebar-brand">
     <img src="{{ asset('images/dthree-logo.png') }}" alt="DTHREE" class="brand-logo-img">
     <div class="brand-text">
-      <div class="sub">Dthree Production Integration System</div>
+      <div class="sub">DPIS</div>
     </div>
   </div>
 
