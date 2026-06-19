@@ -24,9 +24,9 @@
   <div class="card-header d-flex align-items-center justify-content-between">
     <span class="fw-semibold"><i class="bi bi-diagram-3 me-2 text-primary"></i>Alur Produksi — Posisi WIP per Stasiun</span>
     <div class="d-flex gap-2">
-      <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Normal</span>
-      <span class="badge bg-warning bg-opacity-15 text-warning border border-warning border-opacity-25"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Hampir Penuh</span>
-      <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Bottleneck</span>
+      <span class="badge text-white" style="background:#16a34a"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Normal</span>
+      <span class="badge text-white" style="background:#d97706"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Hampir Penuh</span>
+      <span class="badge text-white" style="background:#dc2626"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Bottleneck</span>
     </div>
   </div>
   <div class="card-body p-4">

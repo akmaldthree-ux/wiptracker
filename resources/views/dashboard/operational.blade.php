@@ -9,7 +9,7 @@
   <div class="col-md-4 col-lg-2dot4" style="flex:0 0 auto;width:20%">
     <div class="card border-{{ $statusColor }}" style="border-top:4px solid !important;border-top-color:var(--bs-{{ $statusColor }}) !important">
       <div class="card-body text-center py-3">
-        @if($st->is_bottleneck)<div class="badge bg-danger mb-2">BOTTLENECK</div>@endif
+        @if($st->is_bottleneck)<div class="badge bg-danger text-white mb-2">BOTTLENECK</div>@endif
         <div class="fw-bold text-{{ $statusColor == 'danger' ? 'danger' : 'primary' }}">{{ $st->station->name ?? $st->name }}</div>
         <div class="display-6 fw-bold mt-1">{{ number_format($st->qty_in_process) }}</div>
         <small class="text-muted">dalam proses</small>

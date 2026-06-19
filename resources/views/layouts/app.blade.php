@@ -259,6 +259,19 @@ body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: var(
 .text-muted { color: var(--text-muted) !important; }
 a { color: var(--primary); }
 
+/* ── Fix warning color contrast (Bootstrap yellow is near-invisible on white) ── */
+.text-warning { color: #b45309 !important; }
+.badge.bg-warning { color: #fff !important; }
+.btn-warning { color: #fff !important; }
+.alert-warning { color: #92400e !important; }
+
+/* ── Fix light-bg badges (bg-opacity-15) to use darker text ── */
+.badge.bg-success.bg-opacity-15 { color: #065f46 !important; border: 1px solid rgba(16,185,129,.3); }
+.badge.bg-warning.bg-opacity-15 { color: #92400e !important; border: 1px solid rgba(245,158,11,.3); background-color: rgba(245,158,11,.15) !important; }
+.badge.bg-danger.bg-opacity-15  { color: #991b1b !important; border: 1px solid rgba(239,68,68,.3); }
+.badge.bg-primary.bg-opacity-15 { color: #1d4ed8 !important; border: 1px solid rgba(37,99,235,.3); }
+.badge.bg-secondary.bg-opacity-15 { color: #475569 !important; border: 1px solid rgba(100,116,139,.3); }
+
 /* ── Mobile ── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1039; backdrop-filter: blur(2px); }
 .overlay.show { display: block; }
