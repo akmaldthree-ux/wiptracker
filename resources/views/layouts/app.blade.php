@@ -9,16 +9,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #eff6ff;
+  --primary: #C4941A;
+  --primary-dark: #A07010;
+  --primary-light: #fefce8;
   --accent: #f97316;
   --accent-light: #fff7ed;
-  --sidebar-bg: #1a1005;
-  --sidebar-hover: rgba(196,148,26,.12);
-  --sidebar-active-bg: rgba(196,148,26,.22);
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: rgba(196,148,26,.1);
+  --sidebar-active-bg: rgba(196,148,26,.18);
   --sidebar-active-border: #C4941A;
-  --sidebar-text: rgba(255,255,255,.55);
+  --sidebar-text: rgba(255,255,255,.5);
   --sidebar-text-active: #fff;
   --sidebar-w: 256px;
   --topbar-h: 62px;
@@ -48,7 +48,7 @@ body {
 #sidebar {
   position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
   background: var(--sidebar-bg);
-  background-image: linear-gradient(180deg, rgba(196,148,26,.18) 0%, rgba(140,90,5,.08) 35%, transparent 70%);
+  background-image: linear-gradient(180deg, rgba(196,148,26,.12) 0%, rgba(37,56,100,.08) 40%, transparent 70%);
   z-index: 1040; transition: .3s cubic-bezier(.4,0,.2,1);
   overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;
 }

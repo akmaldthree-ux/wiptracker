@@ -17,7 +17,7 @@ body {
   justify-content: center;
   padding: 1.5rem;
   -webkit-font-smoothing: antialiased;
-  background: #1a1209;
+  background: #0c1220;
   overflow: hidden;
   position: relative;
 }
@@ -28,9 +28,9 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(196,148,26,.28) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(160,110,10,.18) 0%, transparent 55%),
-    #1a1209;
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(196,148,26,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(37,99,235,.18) 0%, transparent 55%),
+    #0c1220;
 }
 .bg-layer::after {
   content: '';
@@ -51,8 +51,8 @@ body {
   animation: drift 14s ease-in-out infinite alternate;
 }
 .blob-1 { width: 520px; height: 520px; background: #C4941A; top: -180px; left: -120px; animation-delay: 0s; }
-.blob-2 { width: 380px; height: 380px; background: #8B6010; bottom: -120px; right: -80px; animation-delay: -5s; }
-.blob-3 { width: 240px; height: 240px; background: #D4A820; top: 45%; right: 12%; animation-delay: -9s; }
+.blob-2 { width: 380px; height: 380px; background: #1e3a8a; bottom: -120px; right: -80px; animation-delay: -5s; }
+.blob-3 { width: 240px; height: 240px; background: #2563eb; top: 45%; right: 12%; animation-delay: -9s; }
 @keyframes drift {
   from { transform: translate(0, 0) scale(1); }
   to   { transform: translate(18px, 28px) scale(1.06); }
@@ -84,7 +84,7 @@ body {
   content: '';
   display: block;
   height: 4px;
-  background: linear-gradient(90deg, #C4941A, #E8B830, #A07010);
+  background: linear-gradient(90deg, #0f172a, #C4941A, #E8B830, #C4941A, #0f172a);
 }
 
 /* ── CARD HEADER ── */
