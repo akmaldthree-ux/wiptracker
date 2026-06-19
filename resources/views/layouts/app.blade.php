@@ -261,16 +261,27 @@ a { color: var(--primary); }
 
 /* ── Fix warning color contrast (Bootstrap yellow is near-invisible on white) ── */
 .text-warning { color: #b45309 !important; }
-.badge.bg-warning { color: #fff !important; }
-.btn-warning { color: #fff !important; }
 .alert-warning { color: #92400e !important; }
 
-/* ── Fix light-bg badges (bg-opacity-15) to use darker text ── */
-.badge.bg-success.bg-opacity-15 { color: #065f46 !important; border: 1px solid rgba(16,185,129,.3); }
-.badge.bg-warning.bg-opacity-15 { color: #92400e !important; border: 1px solid rgba(245,158,11,.3); background-color: rgba(245,158,11,.15) !important; }
-.badge.bg-danger.bg-opacity-15  { color: #991b1b !important; border: 1px solid rgba(239,68,68,.3); }
-.badge.bg-primary.bg-opacity-15 { color: #1d4ed8 !important; border: 1px solid rgba(37,99,235,.3); }
-.badge.bg-secondary.bg-opacity-15 { color: #475569 !important; border: 1px solid rgba(100,116,139,.3); }
+/* ── Solid badges: always white text ── */
+.badge.bg-primary,
+.badge.bg-success,
+.badge.bg-danger,
+.badge.bg-secondary,
+.badge.bg-dark,
+.badge.bg-info,
+.badge.bg-warning { color: #fff !important; }
+
+/* ── Warning button: white text ── */
+.btn-warning, .btn-warning:hover { color: #fff !important; }
+
+/* ── Light-bg badges (bg-opacity-15): dark text for contrast ── */
+.badge.bg-success.bg-opacity-15   { color: #065f46 !important; }
+.badge.bg-warning.bg-opacity-15   { color: #92400e !important; background-color: rgba(245,158,11,.15) !important; }
+.badge.bg-danger.bg-opacity-15    { color: #991b1b !important; }
+.badge.bg-primary.bg-opacity-15   { color: #1d4ed8 !important; }
+.badge.bg-secondary.bg-opacity-15 { color: #475569 !important; }
+.badge.bg-info.bg-opacity-15      { color: #0369a1 !important; }
 
 /* ── Mobile ── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1039; backdrop-filter: blur(2px); }
