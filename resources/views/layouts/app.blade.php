@@ -56,16 +56,16 @@ body {
 #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
 
 .sidebar-brand {
-  padding: 1rem 1.2rem;
+  padding: 1.5rem 1.2rem 1.2rem;
   display: flex; flex-direction: column; align-items: center;
   border-bottom: 1px solid rgba(255,255,255,.08); flex-shrink: 0;
-  gap: .3rem;
+  gap: .5rem;
 }
 .brand-logo-img {
-  width: 90px; height: auto;
+  width: 130px; height: auto;
   opacity: .95;
 }
-.brand-text .sub { color: rgba(0,173,181,.7); font-size: .65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+.brand-text .sub { color: rgba(0,173,181,.85); font-size: .8rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; text-align: center; }
 
 .nav-section-title {
   color: rgba(238,238,238,.25); font-size: .6rem; font-weight: 700;
