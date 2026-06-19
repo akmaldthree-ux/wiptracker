@@ -155,7 +155,7 @@
         <thead>
           <tr>
             <th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th>
-            <th>Qty Terima</th><th>Qty Reject</th><th>Foto Reject</th><th>Alasan Reject</th><th>Catatan Selisih</th>
+            <th>Qty Terima</th><th>Qty Reject</th><th>Tipe Reject</th><th>Foto Reject</th><th>Alasan Reject</th><th>Catatan Selisih</th>
           </tr>
         </thead>
         <tbody>
@@ -174,6 +174,19 @@
               <input type="number" name="items[{{ $item->id }}][qty_reject]"
                      class="form-control form-control-sm qty-reject-input"
                      data-item-id="{{ $item->id }}" value="0" min="0">
+            </td>
+            <td style="min-width:130px">
+              {{-- Tipe Reject --}}
+              <div class="reject-type-wrap" id="rejectTypeWrap_{{ $item->id }}" style="display:none">
+                <select name="items[{{ $item->id }}][reject_type]" class="form-select form-select-sm mb-1 reject-type-sel" data-item-id="{{ $item->id }}">
+                  <option value="">-- Pilih Tipe --</option>
+                  <option value="rework">🔧 Rework</option>
+                  <option value="second">🏷️ Second</option>
+                  <option value="scrap">🗑️ Scrap</option>
+                </select>
+                <div id="rejectTypeHint_{{ $item->id }}" class="form-text" style="font-size:.68rem"></div>
+              </div>
+              <small class="text-muted no-reject-label2" id="noRejectLabel2_{{ $item->id }}">—</small>
             </td>
             <td style="min-width:130px">
               <div class="photo-reject-wrap" id="photoRejectWrap_{{ $item->id }}" style="display:none">
@@ -230,7 +243,7 @@
   <div class="table-responsive">
     <table class="table table-hover mb-0">
       <thead>
-        <tr><th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th><th>Qty Terima</th><th>Qty Reject</th><th>Foto Reject</th><th>Selisih</th><th>Catatan</th></tr>
+        <tr><th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th><th>Qty Terima</th><th>Qty Reject</th><th>Tipe Reject</th><th>Foto Reject</th><th>Selisih</th><th>Catatan</th></tr>
       </thead>
       <tbody>
         @foreach($handover->items as $item)
@@ -243,6 +256,16 @@
           <td class="{{ ($item->qty_reject ?? 0) > 0 ? 'text-danger fw-semibold' : 'text-muted' }}">
             {{ ($item->qty_reject ?? 0) > 0 ? $item->qty_reject : '-' }}
             @if($item->reject_notes)<br><small class="text-muted">{{ $item->reject_notes }}</small>@endif
+          </td>
+          <td>
+            @if($item->reject_type)
+              @php $rt = $item->reject_type; @endphp
+              <span class="badge {{ $rt==='rework'?'bg-warning text-dark':($rt==='second'?'bg-info text-white':'bg-danger text-white') }}">
+                {{ $rt==='rework'?'🔧 Rework':($rt==='second'?'🏷️ Second':'🗑️ Scrap') }}
+              </span>
+            @else
+              <span class="text-muted">—</span>
+            @endif
           </td>
           <td>
             @if($item->photo_reject)
@@ -267,24 +290,48 @@
 
 @push('scripts')
 <script>
-// Toggle foto reject per item berdasarkan qty_reject
+const rejectTypeHints = {
+  rework: '🔧 Barang dikembalikan ke stasiun asal untuk diperbaiki. Handover rework otomatis dibuat.',
+  second: '🏷️ Barang disimpan sebagai produk second quality.',
+  scrap:  '🗑️ Barang dihapus dari sistem sebagai kerugian produksi.',
+};
+
+// Toggle tipe reject & foto reject per item berdasarkan qty_reject
 document.querySelectorAll('.qty-reject-input').forEach(input => {
   input.addEventListener('input', function() {
-    const id   = this.dataset.itemId;
-    const wrap = document.getElementById('photoRejectWrap_' + id);
-    const lbl  = document.getElementById('noRejectLabel_' + id);
-    const fileInput = wrap ? wrap.querySelector('.photo-reject-input') : null;
+    const id        = this.dataset.itemId;
+    const typeWrap  = document.getElementById('rejectTypeWrap_' + id);
+    const lbl2      = document.getElementById('noRejectLabel2_' + id);
+    const photoWrap = document.getElementById('photoRejectWrap_' + id);
+    const lbl       = document.getElementById('noRejectLabel_' + id);
+    const fileInput = photoWrap ? photoWrap.querySelector('.photo-reject-input') : null;
+    const typeSel   = typeWrap ? typeWrap.querySelector('.reject-type-sel') : null;
+
     if (parseInt(this.value) > 0) {
-      if (wrap) wrap.style.display = 'block';
-      if (lbl)  lbl.style.display  = 'none';
+      if (typeWrap)  { typeWrap.style.display = 'block'; }
+      if (lbl2)      { lbl2.style.display = 'none'; }
+      if (photoWrap) { photoWrap.style.display = 'block'; }
+      if (lbl)       { lbl.style.display = 'none'; }
       if (fileInput) fileInput.setAttribute('required', 'required');
+      if (typeSel)   typeSel.setAttribute('required', 'required');
     } else {
-      if (wrap) wrap.style.display = 'none';
-      if (lbl)  lbl.style.display  = '';
+      if (typeWrap)  { typeWrap.style.display = 'none'; }
+      if (lbl2)      { lbl2.style.display = ''; }
+      if (photoWrap) { photoWrap.style.display = 'none'; }
+      if (lbl)       { lbl.style.display = ''; }
       if (fileInput) { fileInput.removeAttribute('required'); fileInput.value = ''; }
+      if (typeSel)   { typeSel.removeAttribute('required'); typeSel.value = ''; }
       const prev = document.getElementById('photoRejectPreview_' + id);
       if (prev) prev.style.display = 'none';
     }
+  });
+});
+
+// Hint teks per tipe reject
+document.querySelectorAll('.reject-type-sel').forEach(sel => {
+  sel.addEventListener('change', function() {
+    const hint = document.getElementById('rejectTypeHint_' + this.dataset.itemId);
+    if (hint) hint.textContent = rejectTypeHints[this.value] || '';
   });
 });
 

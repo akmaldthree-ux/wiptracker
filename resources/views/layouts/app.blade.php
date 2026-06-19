@@ -435,6 +435,11 @@ hr { border-color: #edf0f7; }
     <a href="{{ route('dashboard.wip-monitor') }}" class="nav-link {{ request()->routeIs('dashboard.wip-monitor') ? 'active' : '' }}">
       <i class="bi bi-radar"></i> WIP Monitor
     </a>
+    <a href="{{ route('dashboard.reject') }}" class="nav-link {{ request()->routeIs('dashboard.reject') ? 'active' : '' }}">
+      <i class="bi bi-x-octagon"></i> Dashboard Reject
+      @php $rejectCount = \App\Models\HandoverItem::where('qty_reject','>',0)->whereNotNull('reject_type')->whereHas('handover',fn($q)=>$q->where('confirmed_at','>=',now()->startOfMonth()))->sum('qty_reject'); @endphp
+      @if($rejectCount > 0)<span class="badge bg-danger ms-auto">{{ $rejectCount }}</span>@endif
+    </a>
 
     <div class="nav-section-title">Produksi</div>
     <a href="{{ route('orders.index') }}" class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">

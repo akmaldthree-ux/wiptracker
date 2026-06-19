@@ -17,6 +17,7 @@ use App\Http\Controllers\MasterData\SewingLocationController;
 use App\Http\Controllers\CuttingPlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RejectController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
@@ -28,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'executive'])->name('dashboard.executive');
     Route::get('/dashboard/operasional', [DashboardController::class, 'operational'])->name('dashboard.operational');
     Route::get('/dashboard/wip-monitor', [DashboardController::class, 'wipMonitor'])->name('dashboard.wip-monitor');
+    Route::get('/dashboard/reject', [RejectController::class, 'dashboard'])->name('dashboard.reject');
 
     Route::resource('orders', ProductionOrderController::class);
     Route::patch('orders/{order}/status', [ProductionOrderController::class, 'updateStatus'])->name('orders.status');

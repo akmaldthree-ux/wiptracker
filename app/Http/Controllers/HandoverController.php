@@ -107,6 +107,7 @@ class HandoverController extends Controller
             'items'                      => 'required|array',
             'items.*.qty_received'       => 'required|integer|min:0',
             'items.*.qty_reject'         => 'nullable|integer|min:0',
+            'items.*.reject_type'        => 'nullable|in:rework,second,scrap',
             'items.*.discrepancy_notes'  => 'nullable|string',
             'items.*.reject_notes'       => 'nullable|string',
             'photo_received'             => 'required|image|max:10240',
@@ -116,26 +117,29 @@ class HandoverController extends Controller
             'photo_received.max'      => 'Ukuran foto maksimal 10MB.',
         ]);
 
-        // Validate photo_reject required per item when qty_reject > 0
+        // Validate photo_reject & reject_type required per item when qty_reject > 0
         foreach ($request->items as $id => $data) {
             $qtyReject = (int) ($data['qty_reject'] ?? 0);
             if ($qtyReject > 0) {
-                $hasPhoto = $request->hasFile("items.{$id}.photo_reject") ||
-                            $request->hasFile("photo_reject_{$id}");
-                if (!$hasPhoto) {
-                    $item = HandoverItem::find($id);
-                    return back()->withErrors(['photo_reject' => "Foto bukti cacat wajib disertakan untuk SKU {$item->sku->sku_code} (qty reject: {$qtyReject})."]);
+                $item = HandoverItem::with('sku')->find($id);
+                if (!$request->hasFile("photo_reject_{$id}")) {
+                    return back()->withErrors(['photo_reject' => "Foto bukti cacat wajib disertakan untuk SKU {$item->sku->sku_code}."]);
+                }
+                if (empty($data['reject_type'])) {
+                    return back()->withErrors(['reject_type' => "Tipe reject wajib dipilih untuk SKU {$item->sku->sku_code} (rework/second/scrap)."]);
                 }
             }
         }
 
         $photoReceivedPath = $this->compressAndStore($request->file('photo_received'), 'handovers/received');
 
-        $hasDiscrepancy = false;
+        $hasDiscrepancy  = false;
+        $reworkItems     = []; // collect items with reject_type=rework for auto rework handover
         foreach ($request->items as $id => $data) {
             $item        = HandoverItem::find($id);
             $qtyReceived = (int) $data['qty_received'];
             $qtyReject   = (int) ($data['qty_reject'] ?? 0);
+            $rejectType  = $qtyReject > 0 ? ($data['reject_type'] ?? null) : null;
             $disc        = ($qtyReceived + $qtyReject) - $item->qty_sent;
             if ($disc != 0) $hasDiscrepancy = true;
 
@@ -147,11 +151,16 @@ class HandoverController extends Controller
             $item->update([
                 'qty_received'      => $qtyReceived,
                 'qty_reject'        => $qtyReject,
+                'reject_type'       => $rejectType,
                 'reject_notes'      => $data['reject_notes'] ?? null,
                 'photo_reject'      => $photoRejectPath,
                 'discrepancy'       => $disc,
                 'discrepancy_notes' => $data['discrepancy_notes'] ?? null,
             ]);
+
+            if ($rejectType === 'rework' && $qtyReject > 0) {
+                $reworkItems[] = ['sku_id' => $item->sku_id, 'qty' => $qtyReject];
+            }
         }
 
         $status = $hasDiscrepancy ? 'discrepancy' : 'confirmed';
@@ -166,6 +175,27 @@ class HandoverController extends Controller
             $this->createWipFromHandover($handover, useReceived: true);
         }
 
+        // Auto-create rework handover: kirim balik ke stasiun asal
+        if (!empty($reworkItems) && $handover->from_station_id) {
+            $reworkHo = Handover::create([
+                'handover_no'         => 'HO-RW-' . date('Y') . '-' . str_pad(Handover::count() + 1, 3, '0', STR_PAD_LEFT),
+                'production_order_id' => $handover->production_order_id,
+                'from_station_id'     => $handover->to_station_id,
+                'to_station_id'       => $handover->from_station_id,
+                'status'              => 'pending',
+                'initiated_by'        => auth()->id(),
+                'notes'               => "Rework dari {$handover->handover_no}",
+                'initiated_at'        => now(),
+            ]);
+            foreach ($reworkItems as $ri) {
+                HandoverItem::create(['handover_id' => $reworkHo->id, 'sku_id' => $ri['sku_id'], 'qty_sent' => $ri['qty']]);
+            }
+            $senderPICs = User::where('station_id', $handover->from_station_id)->get();
+            foreach ($senderPICs as $pic) {
+                Notification::create(['user_id' => $pic->id, 'title' => "Rework Masuk: {$reworkHo->handover_no}", 'message' => "Ada barang rework dari {$handover->toStation->name} yang perlu diperbaiki.", 'type' => 'warning', 'link' => "/handover/{$reworkHo->id}", 'is_read' => false]);
+            }
+        }
+
         if ($hasDiscrepancy) {
             $supervisors = User::where('role','supervisor')->orWhere('role','admin')->get();
             foreach ($supervisors as $s) {
@@ -173,7 +203,10 @@ class HandoverController extends Controller
             }
             return back()->with('warning','Handover dikonfirmasi dengan discrepancy. Menunggu persetujuan supervisor.');
         }
-        return back()->with('success','Handover berhasil dikonfirmasi. WIP stasiun pengirim dan penerima diperbarui otomatis.');
+
+        $msg = 'Handover berhasil dikonfirmasi. WIP diperbarui otomatis.';
+        if (!empty($reworkItems)) $msg .= ' Handover rework otomatis dibuat.';
+        return back()->with('success', $msg);
     }
 
     public function approve(Request $request, Handover $handover)
