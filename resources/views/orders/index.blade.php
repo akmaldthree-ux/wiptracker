@@ -12,20 +12,23 @@
   @endif
 </div>
 <!-- Filter -->
-<div class="card mb-4">
-  <div class="card-body py-3">
-    <form method="GET" class="row g-2 align-items-end">
-      <div class="col-md-4"><input type="text" name="search" class="form-control" placeholder="Cari no. order / produk..." value="{{ request('search') }}"></div>
-      <div class="col-md-3">
-        <select name="status" class="form-select">
+<div class="card mb-3">
+  <div class="card-body py-2 px-3">
+    <form method="GET" class="row g-2 align-items-center">
+      <div class="col-auto"><small class="text-muted fw-semibold"><i class="bi bi-funnel me-1"></i>Filter:</small></div>
+      <div class="col"><input type="text" name="search" class="form-control form-control-sm" placeholder="No. order / produk..." value="{{ request('search') }}" style="max-width:220px"></div>
+      <div class="col">
+        <select name="status" class="form-select form-select-sm" style="max-width:170px">
           <option value="">Semua Status</option>
           @foreach(['draft'=>'Draft','active'=>'Aktif','completed'=>'Selesai','on_hold'=>'Ditahan','cancelled'=>'Dibatalkan'] as $v=>$l)
           <option value="{{ $v }}" {{ request('status')==$v ? 'selected' : '' }}>{{ $l }}</option>
           @endforeach
         </select>
       </div>
-      <div class="col-md-2"><button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Cari</button></div>
-      <div class="col-md-2"><a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100">Reset</a></div>
+      <div class="col-auto d-flex gap-1">
+        <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-search me-1"></i>Cari</button>
+        <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x"></i></a>
+      </div>
     </form>
   </div>
 </div>
@@ -64,7 +67,7 @@
           </td>
         </tr>
         @empty
-        <tr><td colspan="8" class="text-center text-muted py-5"><i class="bi bi-inbox display-5 d-block mb-2"></i>Tidak ada order ditemukan</td></tr>
+        <tr><td colspan="8"><div class="empty-state"><i class="bi bi-clipboard-x"></i><p class="fw-semibold mb-1">Tidak ada order ditemukan</p><p>Coba ubah filter atau buat order baru</p></div></td></tr>
         @endforelse
       </tbody>
     </table>

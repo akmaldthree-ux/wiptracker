@@ -59,29 +59,29 @@
   <div class="col-md-6">
     <div class="card h-100">
       <div class="card-header"><i class="bi bi-bar-chart me-2"></i>Ringkasan Qty</div>
-      <div class="card-body">
-        <div class="row g-3 text-center">
+      <div class="card-body d-flex flex-column justify-content-center">
+        <div class="row g-2 text-center">
           <div class="col-4">
-            <div class="p-3 bg-primary bg-opacity-10 rounded">
-              <div class="fs-2 fw-bold text-primary">{{ $handover->total_sent }}</div>
-              <small class="text-muted">Total Dikirim</small>
+            <div class="stat-card">
+              <div class="stat-value text-primary">{{ $handover->total_sent }}</div>
+              <div class="stat-label">Dikirim</div>
             </div>
           </div>
           <div class="col-4">
-            <div class="p-3 bg-success bg-opacity-10 rounded">
-              <div class="fs-2 fw-bold text-success">{{ $handover->total_received ?? '-' }}</div>
-              <small class="text-muted">Total Diterima</small>
+            <div class="stat-card">
+              <div class="stat-value text-success">{{ $handover->total_received ?? '—' }}</div>
+              <div class="stat-label">Diterima</div>
             </div>
           </div>
           <div class="col-4">
-            <div class="p-3 {{ $handover->total_discrepancy != 0 ? 'bg-danger' : 'bg-success' }} bg-opacity-10 rounded">
-              <div class="fs-2 fw-bold {{ $handover->total_discrepancy != 0 ? 'text-danger' : 'text-success' }}">{{ $handover->total_discrepancy ?? '0' }}</div>
-              <small class="text-muted">Selisih</small>
+            <div class="stat-card">
+              <div class="stat-value {{ ($handover->total_discrepancy ?? 0) != 0 ? 'text-danger' : 'text-success' }}">{{ $handover->total_discrepancy ?? '0' }}</div>
+              <div class="stat-label">Selisih</div>
             </div>
           </div>
         </div>
         @if($handover->hasDiscrepancy())
-        <div class="alert alert-danger mt-3 mb-0 py-2"><i class="bi bi-exclamation-triangle me-2"></i>Ada discrepancy pada handover ini!</div>
+        <div class="alert alert-danger mt-3 mb-0 py-2 d-flex align-items-center gap-2"><i class="bi bi-exclamation-triangle-fill"></i>Ada discrepancy pada handover ini!</div>
         @endif
       </div>
     </div>

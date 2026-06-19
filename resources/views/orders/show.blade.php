@@ -37,38 +37,33 @@
   </div>
 </div>
 
+@php $progress = $order->getProgressPercentage(); @endphp
 <div class="row g-3 mb-4">
-  <div class="col-md-3">
-    <div class="card text-center">
-      <div class="card-body py-3">
-        <div class="fs-2 fw-bold text-primary">{{ number_format($order->getTotalTargetQty()) }}</div>
-        <small class="text-muted">Total Target Qty</small>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-value text-primary">{{ number_format($order->getTotalTargetQty()) }}</div>
+      <div class="stat-label">Total Target Qty</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-value text-{{ $progress>=100?'success':($progress>=50?'primary':'warning') }}">{{ $progress }}%</div>
+      <div class="stat-label">Progress</div>
+      <div class="progress mt-2" style="height:4px">
+        <div class="progress-bar {{ $progress>=100?'bg-success':($progress>=50?'bg-primary':'bg-warning') }}" style="width:{{ $progress }}%"></div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card text-center">
-      <div class="card-body py-3">
-        @php $progress = $order->getProgressPercentage(); @endphp
-        <div class="fs-2 fw-bold text-{{ $progress>=100?'success':($progress>=50?'primary':'warning') }}">{{ $progress }}%</div>
-        <small class="text-muted">Progress</small>
-      </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-value {{ $order->isOverdue() ? 'text-danger' : 'text-success' }}" style="font-size:1.1rem;margin-top:.35rem">{{ $order->target_date->format('d M Y') }}</div>
+      <div class="stat-label">Target Selesai @if($order->isOverdue())<span class="text-danger">— Terlambat</span>@endif</div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card text-center">
-      <div class="card-body py-3">
-        <div class="fs-2 fw-bold {{ $order->isOverdue() ? 'text-danger' : 'text-success' }}">{{ $order->target_date->format('d M Y') }}</div>
-        <small class="text-muted">Target Selesai {{ $order->isOverdue() ? '— ⚠️ TERLAMBAT' : '' }}</small>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card text-center">
-      <div class="card-body py-3">
-        <div class="fs-2 fw-bold text-info">{{ $order->handovers->count() }}</div>
-        <small class="text-muted">Total Handover</small>
-      </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-value text-info">{{ $order->handovers->count() }}</div>
+      <div class="stat-label">Total Handover</div>
     </div>
   </div>
 </div>

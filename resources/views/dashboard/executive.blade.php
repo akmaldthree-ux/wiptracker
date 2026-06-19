@@ -12,7 +12,7 @@
       <div class="kpi-icon"><i class="bi bi-clipboard-check"></i></div>
       <div class="kpi-value">{{ $totalActiveOrders }}</div>
       <div class="kpi-label">Order Aktif</div>
-      <div class="kpi-change"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Sedang berjalan</div>
+      <div class="kpi-change"><i class="bi bi-arrow-up-right"></i>Sedang berjalan</div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-xl-2">
@@ -20,7 +20,7 @@
       <div class="kpi-icon"><i class="bi bi-layers"></i></div>
       <div class="kpi-value">{{ number_format($totalWipUnits) }}</div>
       <div class="kpi-label">Unit Dalam Proses</div>
-      <div class="kpi-change"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Total WIP aktif</div>
+      <div class="kpi-change"><i class="bi bi-activity"></i>Total WIP aktif</div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-xl-2">
@@ -28,7 +28,7 @@
       <div class="kpi-icon"><i class="bi bi-check2-circle"></i></div>
       <div class="kpi-value">{{ number_format($todayThroughput) }}</div>
       <div class="kpi-label">Throughput Hari Ini</div>
-      <div class="kpi-change"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Unit selesai</div>
+      <div class="kpi-change"><i class="bi bi-calendar-day"></i>Unit selesai hari ini</div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-xl-2">
@@ -36,7 +36,7 @@
       <div class="kpi-icon"><i class="bi bi-alarm"></i></div>
       <div class="kpi-value">{{ $overdueOrders }}</div>
       <div class="kpi-label">Order Terlambat</div>
-      <div class="kpi-change"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Melewati target</div>
+      <div class="kpi-change"><i class="bi bi-{{ $overdueOrders > 0 ? 'exclamation-triangle' : 'check-circle' }}"></i>Melewati target</div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-xl-2">
@@ -44,15 +44,15 @@
       <div class="kpi-icon"><i class="bi bi-arrow-left-right"></i></div>
       <div class="kpi-value">{{ $pendingHandovers }}</div>
       <div class="kpi-label">Handover Pending</div>
-      <div class="kpi-change"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Perlu konfirmasi</div>
+      <div class="kpi-change"><i class="bi bi-clock"></i>Perlu konfirmasi</div>
     </div>
   </div>
   <div class="col-6 col-md-4 col-xl-2">
     <div class="kpi-card {{ $lowStockMaterials > 0 ? 'kpi-red' : 'kpi-green' }}">
-      <div class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></div>
+      <div class="kpi-icon"><i class="bi bi-boxes"></i></div>
       <div class="kpi-value">{{ $lowStockMaterials }}</div>
       <div class="kpi-label">Stok Kritis</div>
-      <div class="kpi-change"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Di bawah minimum</div>
+      <div class="kpi-change"><i class="bi bi-{{ $lowStockMaterials > 0 ? 'exclamation-circle' : 'check-circle' }}"></i>Di bawah minimum</div>
     </div>
   </div>
 </div>
@@ -61,25 +61,27 @@
   <!-- Pipeline Status -->
   <div class="col-12">
     <div class="card">
-      <div class="card-header d-flex align-items-center justify-content-between">
+      <div class="card-header justify-content-between">
         <span><i class="bi bi-diagram-3 me-2 text-primary"></i>Status Pipeline Produksi</span>
-        <small class="text-muted">WIP per stasiun — <span class="text-danger fw-semibold">merah = bottleneck</span></small>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <span class="badge" style="background:#dcfce7;color:#15803d;font-size:.68rem">Normal</span>
+          <span class="badge" style="background:#fef9c3;color:#a16207;font-size:.68rem">Mendekati</span>
+          <span class="badge" style="background:#fee2e2;color:#991b1b;font-size:.68rem">Bottleneck</span>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-start gap-0 overflow-x-auto pb-1">
           @foreach($stationWip as $s)
-          <div class="pipeline-step flex-fill">
-            @php $pct = $s['threshold'] > 0 ? min(100,($s['wip']/$s['threshold'])*100) : 0; @endphp
+          @php $pct = $s['threshold'] > 0 ? min(100,($s['wip']/$s['threshold'])*100) : 0; @endphp
+          <div class="pipeline-step flex-fill" style="min-width:90px">
             <div class="pipeline-dot {{ $s['is_bottleneck'] ? 'red' : ($pct > 70 ? 'yellow' : ($s['wip'] > 0 ? 'green' : 'grey')) }}">
-              <i class="bi bi-{{ $s['is_bottleneck'] ? 'exclamation-lg' : 'check-lg' }}"></i>
+              {{ number_format($s['wip']) }}
             </div>
-            <div class="fw-semibold" style="font-size:.8rem">{{ $s['name'] }}</div>
-            <div class="fs-5 fw-bold {{ $s['is_bottleneck'] ? 'text-danger' : 'text-primary' }}">{{ number_format($s['wip']) }}</div>
-            <small class="text-muted">unit WIP</small>
-            <div class="progress mt-2" style="height:6px">
+            <div class="fw-semibold text-truncate px-1" style="font-size:.75rem">{{ $s['name'] }}</div>
+            <div class="progress mt-1 mx-2" style="height:4px">
               <div class="progress-bar {{ $s['is_bottleneck'] ? 'bg-danger' : ($pct > 70 ? 'bg-warning' : 'bg-success') }}" style="width:{{ $pct }}%"></div>
             </div>
-            <small class="text-muted" style="font-size:.65rem">threshold: {{ number_format($s['threshold']) }}</small>
+            <small class="text-muted" style="font-size:.62rem">{{ number_format($pct,0) }}%</small>
           </div>
           @endforeach
         </div>
