@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login — DPIS</title>
+<title>Login — DPIS | Dthree Production Integration System</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
@@ -280,7 +280,7 @@ body {
   <div class="card-header">
     <img src="{{ asset('images/dthree-logo.png') }}" alt="DTHREE Logo" class="brand-logo">
     <div class="header-divider"></div>
-    <div class="system-label">Production Integration System</div>
+    <div class="system-label">Dthree Production Integration System</div>
   </div>
 
   <div class="card-body">
