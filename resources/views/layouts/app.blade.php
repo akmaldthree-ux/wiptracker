@@ -63,10 +63,8 @@ body {
 }
 .brand-logo-img {
   width: 90px; height: auto;
-  border-radius: 8px;
-  opacity: .95;
-  background: rgba(255,255,255,.08);
-  padding: 4px;
+  mix-blend-mode: screen;
+  opacity: .92;
 }
 .brand-text .sub { color: rgba(255,255,255,.25); font-size: .6rem; letter-spacing: .4px; text-align: center; }
 

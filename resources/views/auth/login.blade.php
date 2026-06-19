@@ -98,7 +98,8 @@ body {
   width: 110px;
   height: auto;
   margin: 0 auto 1rem;
-  filter: drop-shadow(0 4px 12px rgba(196,148,26,.25));
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 4px 12px rgba(196,148,26,.2));
 }
 
 .header-divider {
