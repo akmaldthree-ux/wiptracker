@@ -96,7 +96,12 @@
     @csrf
     <div class="table-responsive">
       <table class="table table-hover mb-0">
-        <thead><tr><th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th><th>Qty Terima</th><th>Catatan Selisih</th></tr></thead>
+        <thead>
+          <tr>
+            <th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th>
+            <th>Qty Terima</th><th>Qty Reject</th><th>Alasan Reject</th><th>Catatan Selisih</th>
+          </tr>
+        </thead>
         <tbody>
           @foreach($handover->items as $item)
           <tr>
@@ -104,8 +109,10 @@
             <td>{{ optional($item->sku->color)->name }}</td>
             <td>{{ optional($item->sku->size)->name }}</td>
             <td class="fw-semibold text-primary">{{ $item->qty_sent }}</td>
-            <td style="width:140px"><input type="number" name="items[{{ $item->id }}][qty_received]" class="form-control form-control-sm" value="{{ $item->qty_sent }}" min="0" required></td>
-            <td><input type="text" name="items[{{ $item->id }}][discrepancy_notes]" class="form-control form-control-sm" placeholder="Alasan jika ada selisih..."></td>
+            <td style="width:120px"><input type="number" name="items[{{ $item->id }}][qty_received]" class="form-control form-control-sm" value="{{ $item->qty_sent }}" min="0" required></td>
+            <td style="width:110px"><input type="number" name="items[{{ $item->id }}][qty_reject]" class="form-control form-control-sm" value="0" min="0"></td>
+            <td><input type="text" name="items[{{ $item->id }}][reject_notes]" class="form-control form-control-sm" placeholder="Alasan reject..."></td>
+            <td><input type="text" name="items[{{ $item->id }}][discrepancy_notes]" class="form-control form-control-sm" placeholder="Catatan selisih..."></td>
           </tr>
           @endforeach
         </tbody>
@@ -116,7 +123,7 @@
   @else
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead><tr><th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th><th>Qty Terima</th><th>Selisih</th><th>Catatan Selisih</th></tr></thead>
+      <thead><tr><th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th><th>Qty Terima</th><th>Qty Reject</th><th>Selisih</th><th>Catatan</th></tr></thead>
       <tbody>
         @foreach($handover->items as $item)
         <tr class="{{ $item->discrepancy != 0 && $item->discrepancy !== null ? 'table-warning' : '' }}">
@@ -125,6 +132,10 @@
           <td>{{ optional($item->sku->size)->name }}</td>
           <td class="fw-semibold">{{ $item->qty_sent }}</td>
           <td class="fw-semibold {{ $item->qty_received !== null ? 'text-success' : 'text-muted' }}">{{ $item->qty_received ?? '-' }}</td>
+          <td class="{{ ($item->qty_reject ?? 0) > 0 ? 'text-danger fw-semibold' : 'text-muted' }}">
+            {{ ($item->qty_reject ?? 0) > 0 ? $item->qty_reject : '-' }}
+            @if($item->reject_notes)<br><small class="text-muted">{{ $item->reject_notes }}</small>@endif
+          </td>
           <td class="{{ $item->discrepancy != 0 && $item->discrepancy !== null ? 'text-danger fw-bold' : 'text-muted' }}">{{ $item->discrepancy !== null ? $item->discrepancy : '-' }}</td>
           <td><small class="text-muted">{{ $item->discrepancy_notes ?? '-' }}</small></td>
         </tr>

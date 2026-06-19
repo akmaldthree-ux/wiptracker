@@ -92,14 +92,28 @@ class HandoverController extends Controller
     public function confirm(Request $request, Handover $handover)
     {
         abort_if($handover->status !== 'pending', 403);
-        $request->validate(['items'=>'required|array','items.*.qty_received'=>'required|integer|min:0','items.*.discrepancy_notes'=>'nullable|string']);
+        $request->validate([
+            'items'                      => 'required|array',
+            'items.*.qty_received'       => 'required|integer|min:0',
+            'items.*.qty_reject'         => 'nullable|integer|min:0',
+            'items.*.discrepancy_notes'  => 'nullable|string',
+            'items.*.reject_notes'       => 'nullable|string',
+        ]);
 
         $hasDiscrepancy = false;
         foreach ($request->items as $id => $data) {
             $item = HandoverItem::find($id);
-            $disc = $data['qty_received'] - $item->qty_sent;
+            $qtyReceived = (int) $data['qty_received'];
+            $qtyReject   = (int) ($data['qty_reject'] ?? 0);
+            $disc = ($qtyReceived + $qtyReject) - $item->qty_sent;
             if ($disc != 0) $hasDiscrepancy = true;
-            $item->update(['qty_received'=>$data['qty_received'],'discrepancy'=>$disc,'discrepancy_notes'=>$data['discrepancy_notes'] ?? null]);
+            $item->update([
+                'qty_received'      => $qtyReceived,
+                'qty_reject'        => $qtyReject,
+                'reject_notes'      => $data['reject_notes'] ?? null,
+                'discrepancy'       => $disc,
+                'discrepancy_notes' => $data['discrepancy_notes'] ?? null,
+            ]);
         }
         $status = $hasDiscrepancy ? 'discrepancy' : 'confirmed';
         $handover->update(['status'=>$status,'confirmed_by'=>auth()->id(),'confirmed_at'=>now()]);
@@ -182,8 +196,10 @@ class HandoverController extends Controller
         $note  = "Auto dari Handover {$handover->handover_no}";
 
         foreach ($handover->items as $item) {
-            $qty = $useReceived ? max(0, (int) $item->qty_received) : max(0, (int) $item->qty_sent);
-            if ($qty === 0) continue;
+            $qtyReceived = $useReceived ? max(0, (int) $item->qty_received) : max(0, (int) $item->qty_sent);
+            $qtyReject   = $useReceived ? max(0, (int) $item->qty_reject)   : 0;
+            $qtyOut      = $qtyReceived + $qtyReject;
+            if ($qtyOut === 0) continue;
 
             // qty_out for sender station (skip if from PO, no sender station)
             if ($handover->from_station_id) {
@@ -192,7 +208,7 @@ class HandoverController extends Controller
                     'sku_id'              => $item->sku_id,
                     'station_id'          => $handover->from_station_id,
                     'qty_in'              => 0,
-                    'qty_out'             => $qty,
+                    'qty_out'             => $qtyOut,
                     'qty_reject'          => 0,
                     'input_date'          => $today,
                     'notes'               => $note,
@@ -201,17 +217,35 @@ class HandoverController extends Controller
             }
 
             // qty_in for receiver station
-            WipEntry::create([
-                'production_order_id' => $handover->production_order_id,
-                'sku_id'              => $item->sku_id,
-                'station_id'          => $handover->to_station_id,
-                'qty_in'              => $qty,
-                'qty_out'             => 0,
-                'qty_reject'          => 0,
-                'input_date'          => $today,
-                'notes'               => $note,
-                'created_by'          => auth()->id(),
-            ]);
+            if ($qtyReceived > 0) {
+                WipEntry::create([
+                    'production_order_id' => $handover->production_order_id,
+                    'sku_id'              => $item->sku_id,
+                    'station_id'          => $handover->to_station_id,
+                    'qty_in'              => $qtyReceived,
+                    'qty_out'             => 0,
+                    'qty_reject'          => 0,
+                    'input_date'          => $today,
+                    'notes'               => $note,
+                    'created_by'          => auth()->id(),
+                ]);
+            }
+
+            // qty_reject recorded at receiver station
+            if ($qtyReject > 0) {
+                $rejectNote = $note . ($item->reject_notes ? " — Alasan reject: {$item->reject_notes}" : '');
+                WipEntry::create([
+                    'production_order_id' => $handover->production_order_id,
+                    'sku_id'              => $item->sku_id,
+                    'station_id'          => $handover->to_station_id,
+                    'qty_in'              => 0,
+                    'qty_out'             => 0,
+                    'qty_reject'          => $qtyReject,
+                    'input_date'          => $today,
+                    'notes'               => $rejectNote,
+                    'created_by'          => auth()->id(),
+                ]);
+            }
         }
     }
 
