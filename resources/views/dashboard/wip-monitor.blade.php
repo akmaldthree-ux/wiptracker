@@ -245,7 +245,7 @@
           <td class="text-muted">{{ $w->created_at->format('d/m H:i') }}</td>
           <td><span class="text-primary fw-semibold">{{ $w->order->order_no }}</span></td>
           <td><span class="font-monospace text-muted">{{ $w->sku->sku_code }}</span></td>
-          <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ $w->station->name }}</span></td>
+          <td><span class="badge bg-primary text-white">{{ $w->station->name }}</span></td>
           <td class="text-center text-success fw-semibold">+{{ number_format($w->qty_in) }}</td>
           <td class="text-center text-primary fw-semibold">+{{ number_format($w->qty_out) }}</td>
           <td class="text-center text-danger fw-semibold">{{ number_format($w->qty_reject) }}</td>

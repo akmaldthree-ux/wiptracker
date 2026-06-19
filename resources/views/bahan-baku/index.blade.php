@@ -48,7 +48,7 @@
         <tr class="{{ $lowStock ? 'table-danger' : '' }}">
           <td><span class="font-monospace fw-semibold">{{ $m->code }}</span></td>
           <td><a href="{{ url('bahan-baku/'.$m->id) }}" class="text-decoration-none fw-semibold {{ $lowStock?'text-danger':'' }}">{{ $m->name }}</a></td>
-          <td><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ $m->category_label }}</span></td>
+          <td><span class="badge bg-secondary text-white">{{ $m->category_label }}</span></td>
           <td>{{ $m->color ?? '-' }}</td>
           <td>{{ $m->unit }}</td>
           <td>{{ number_format($m->min_stock) }}</td>

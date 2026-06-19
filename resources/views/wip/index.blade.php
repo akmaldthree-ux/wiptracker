@@ -58,11 +58,11 @@
           <td><small>{{ $e->input_date->format('d M Y') }}</small></td>
           <td><a href="{{ route('orders.show',$e->order) }}" class="text-primary fw-semibold text-decoration-none">{{ $e->order->order_no }}</a></td>
           <td><small class="font-monospace">{{ $e->sku->sku_code }}</small><br><small class="text-muted">{{ optional($e->sku->color)->name }} / {{ optional($e->sku->size)->name }}</small></td>
-          <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ $e->station->name }}</span></td>
+          <td><span class="badge bg-primary text-white">{{ $e->station->name }}</span></td>
           <td class="text-center text-success fw-semibold">{{ number_format($e->qty_in) }}</td>
           <td class="text-center text-primary fw-semibold">{{ number_format($e->qty_out) }}</td>
           <td class="text-center text-danger fw-semibold">{{ number_format($e->qty_reject) }}</td>
-          <td class="text-center"><span class="badge bg-info bg-opacity-10 text-info fw-bold">{{ $e->qty_in_process }}</span></td>
+          <td class="text-center"><span class="badge bg-info text-white fw-bold">{{ $e->qty_in_process }}</span></td>
           <td><small>{{ $e->creator->name }}</small></td>
         </tr>
         @empty

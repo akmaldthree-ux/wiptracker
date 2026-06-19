@@ -131,11 +131,11 @@
               <td><small class="text-muted">{{ $w->created_at->format('d/m H:i') }}</small></td>
               <td><span class="text-primary fw-semibold">{{ $w->order->order_no }}</span></td>
               <td><span style="font-size:.78rem">{{ $w->sku->sku_code }}</span></td>
-              <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ $w->station->name }}</span></td>
+              <td><span class="badge bg-primary text-white">{{ $w->station->name }}</span></td>
               <td class="text-success fw-semibold">+{{ $w->qty_in }}</td>
               <td class="text-primary fw-semibold">+{{ $w->qty_out }}</td>
               <td class="text-danger fw-semibold">{{ $w->qty_reject }}</td>
-              <td><span class="badge bg-info bg-opacity-10 text-info">{{ $w->qty_in_process }}</span></td>
+              <td><span class="badge bg-info text-white">{{ $w->qty_in_process }}</span></td>
               <td><small>{{ $w->creator->name }}</small></td>
             </tr>
             @empty

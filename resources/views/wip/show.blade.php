@@ -46,11 +46,11 @@
         <tr>
           <td>{{ $e->input_date->format('d M Y') }}</td>
           <td><small class="font-monospace">{{ $e->sku->sku_code }}</small></td>
-          <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ $e->station->name }}</span></td>
+          <td><span class="badge bg-primary text-white">{{ $e->station->name }}</span></td>
           <td class="text-success fw-semibold">{{ $e->qty_in }}</td>
           <td class="text-primary fw-semibold">{{ $e->qty_out }}</td>
           <td class="text-danger fw-semibold">{{ $e->qty_reject }}</td>
-          <td><span class="badge bg-info bg-opacity-10 text-info">{{ $e->qty_in_process }}</span></td>
+          <td><span class="badge bg-info text-white">{{ $e->qty_in_process }}</span></td>
           <td><small>{{ $e->notes }}</small></td>
         </tr>
         @empty

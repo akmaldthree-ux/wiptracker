@@ -74,7 +74,7 @@
             @forelse($costEntries as $ce)
             <tr>
               <td><small>{{ $ce->entry_date->format('d M Y') }}</small></td>
-              <td><span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size:.7rem">{{ $ce->type_label }}</span></td>
+              <td><span class="badge bg-secondary text-white" style="font-size:.7rem">{{ $ce->type_label }}</span></td>
               <td>{{ $ce->description }}</td>
               <td class="fw-semibold">Rp {{ number_format($ce->amount) }}</td>
             </tr>
