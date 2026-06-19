@@ -17,7 +17,7 @@ body {
   justify-content: center;
   padding: 1.5rem;
   -webkit-font-smoothing: antialiased;
-  background: #0c1220;
+  background: #222831;
   overflow: hidden;
   position: relative;
 }
@@ -28,9 +28,9 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(196,148,26,.22) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(37,99,235,.18) 0%, transparent 55%),
-    #0c1220;
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(0,173,181,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(57,62,70,.8) 0%, transparent 55%),
+    #222831;
 }
 .bg-layer::after {
   content: '';
@@ -50,9 +50,9 @@ body {
   opacity: .3;
   animation: drift 14s ease-in-out infinite alternate;
 }
-.blob-1 { width: 520px; height: 520px; background: #C4941A; top: -180px; left: -120px; animation-delay: 0s; }
-.blob-2 { width: 380px; height: 380px; background: #1e3a8a; bottom: -120px; right: -80px; animation-delay: -5s; }
-.blob-3 { width: 240px; height: 240px; background: #2563eb; top: 45%; right: 12%; animation-delay: -9s; }
+.blob-1 { width: 520px; height: 520px; background: #00ADB5; top: -180px; left: -120px; animation-delay: 0s; }
+.blob-2 { width: 380px; height: 380px; background: #393E46; bottom: -120px; right: -80px; animation-delay: -5s; }
+.blob-3 { width: 240px; height: 240px; background: #00ADB5; top: 45%; right: 12%; animation-delay: -9s; }
 @keyframes drift {
   from { transform: translate(0, 0) scale(1); }
   to   { transform: translate(18px, 28px) scale(1.06); }
@@ -68,7 +68,7 @@ body {
   backdrop-filter: blur(24px);
   border-radius: 20px;
   box-shadow:
-    0 0 0 1px rgba(196,148,26,.15),
+    0 0 0 1px rgba(0,173,181,.1),
     0 32px 80px rgba(0,0,0,.45),
     0 8px 24px rgba(0,0,0,.2);
   overflow: hidden;
@@ -84,7 +84,7 @@ body {
   content: '';
   display: block;
   height: 4px;
-  background: linear-gradient(90deg, #0f172a, #C4941A, #E8B830, #C4941A, #0f172a);
+  background: linear-gradient(90deg, #222831, #00ADB5, #00d4de, #00ADB5, #222831);
 }
 
 /* ── CARD HEADER ── */
@@ -103,7 +103,7 @@ body {
 
 .header-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(196,148,26,.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0,173,181,.3), transparent);
   margin: .9rem 0 0;
 }
 
@@ -164,10 +164,10 @@ body {
 }
 .input-wrap input:focus {
   background: #fff;
-  border-color: #C4941A;
-  box-shadow: 0 0 0 3px rgba(196,148,26,.12);
+  border-color: #00ADB5;
+  box-shadow: 0 0 0 3px rgba(0,173,181,.12);
 }
-.input-wrap input:focus + .icon { color: #C4941A; }
+.input-wrap input:focus + .icon { color: #00ADB5; }
 .input-wrap input::placeholder { color: #cbd5e1; }
 
 .pw-toggle {
@@ -177,7 +177,7 @@ body {
   color: #94a3b8; font-size: .9rem; line-height: 1;
   transition: color .15s; padding: 2px;
 }
-.pw-toggle:hover { color: #C4941A; }
+.pw-toggle:hover { color: #00ADB5; }
 
 /* Remember row */
 .remember-row {
@@ -188,7 +188,7 @@ body {
 }
 .remember-row input[type="checkbox"] {
   width: 15px; height: 15px;
-  accent-color: #C4941A; cursor: pointer; flex-shrink: 0;
+  accent-color: #00ADB5; cursor: pointer; flex-shrink: 0;
 }
 .remember-row label { font-size: .82rem; color: #64748b; cursor: pointer; user-select: none; }
 
@@ -196,7 +196,7 @@ body {
 .btn-login {
   width: 100%;
   padding: .82rem;
-  background: linear-gradient(135deg, #C4941A 0%, #A07010 100%);
+  background: linear-gradient(135deg, #00ADB5 0%, #008a91 100%);
   border: none;
   border-radius: 10px;
   color: #fff;
@@ -205,7 +205,7 @@ body {
   font-family: inherit;
   cursor: pointer;
   letter-spacing: .3px;
-  box-shadow: 0 4px 16px rgba(196,148,26,.4);
+  box-shadow: 0 4px 16px rgba(0,173,181,.35);
   transition: all .2s;
   display: flex;
   align-items: center;
@@ -214,8 +214,8 @@ body {
 }
 .btn-login:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(196,148,26,.5);
-  background: linear-gradient(135deg, #D4A420 0%, #B08020 100%);
+  box-shadow: 0 8px 24px rgba(0,173,181,.45);
+  background: linear-gradient(135deg, #00c2cb 0%, #00ADB5 100%);
 }
 .btn-login:active { transform: translateY(0); }
 
