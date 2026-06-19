@@ -437,7 +437,14 @@ hr { border-color: #edf0f7; }
     </a>
     <a href="{{ route('dashboard.reject') }}" class="nav-link {{ request()->routeIs('dashboard.reject') ? 'active' : '' }}">
       <i class="bi bi-x-octagon"></i> Dashboard Reject
-      @php $rejectCount = \App\Models\HandoverItem::where('qty_reject','>',0)->whereNotNull('reject_type')->whereHas('handover',fn($q)=>$q->where('confirmed_at','>=',now()->startOfMonth()))->sum('qty_reject'); @endphp
+      @php
+        try {
+          $rejectCount = \App\Models\HandoverItem::where('qty_reject','>',0)
+            ->whereNotNull('reject_type')
+            ->whereHas('handover',fn($q)=>$q->where('confirmed_at','>=',now()->startOfMonth()))
+            ->sum('qty_reject');
+        } catch(\Throwable $e) { $rejectCount = 0; }
+      @endphp
       @if($rejectCount > 0)<span class="badge bg-danger ms-auto">{{ $rejectCount }}</span>@endif
     </a>
 
