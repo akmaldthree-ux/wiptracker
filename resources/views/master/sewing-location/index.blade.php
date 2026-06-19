@@ -6,11 +6,11 @@
         <h4 class="fw-bold mb-1"><i class="bi bi-building me-2 text-primary"></i>Master Tempat Sewing</h4>
         <p class="text-muted mb-0">Kelola data lokasi / tempat sewing yang tersedia</p>
     </div>
-    @can('admin-supervisor')
+    @if(in_array(auth()->user()->role, ['admin', 'supervisor']))
     <a href="{{ route('master.sewing-location.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-lg me-1"></i>Tambah Tempat Sewing
     </a>
-    @endcan
+    @endif
 </div>
 
 @if(session('success'))
@@ -54,7 +54,7 @@
                         @endif
                     </td>
                     <td class="text-center">
-                        @can('admin-supervisor')
+                        @if(in_array(auth()->user()->role, ['admin', 'supervisor']))
                         <div class="btn-group btn-group-sm">
                             <a href="{{ route('master.sewing-location.edit', $loc) }}" class="btn btn-outline-primary" title="Edit">
                                 <i class="bi bi-pencil"></i>
@@ -66,7 +66,7 @@
                                 </button>
                             </form>
                         </div>
-                        @endcan
+                        @endif
                     </td>
                 </tr>
                 @empty
