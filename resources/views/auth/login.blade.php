@@ -278,7 +278,7 @@ body {
 <div class="card">
 
   <div class="card-header">
-    <img src="{{ asset('images/dthree-logo.svg') }}" alt="DTHREE Logo" class="brand-logo">
+    <img src="https://mms.img.susercontent.com/a46d39218eb9dae49bf4abec2cd67815" alt="DTHREE Logo" class="brand-logo">
     <div class="header-divider"></div>
     <div class="system-label">Production Integration System</div>
   </div>
