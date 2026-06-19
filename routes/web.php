@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('handover', HandoverController::class);
     Route::post('handover/{handover}/confirm', [HandoverController::class, 'confirm'])->name('handover.confirm');
     Route::post('handover/{handover}/approve', [HandoverController::class, 'approve'])->name('handover.approve');
+    Route::post('orders/{order}/send-to-cutting', [HandoverController::class, 'sendFromOrder'])->name('orders.send-to-cutting');
 
     Route::resource('bahan-baku', RawMaterialController::class);
     Route::get('bahan-baku/{rawMaterial}/receipt', [RawMaterialController::class, 'receiptForm'])->name('bahan-baku.receipt');

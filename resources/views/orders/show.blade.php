@@ -27,6 +27,12 @@
     </div>
     @endif
     <a href="{{ route('wip.show',$order) }}" class="btn btn-outline-primary"><i class="bi bi-activity me-1"></i>Lihat WIP</a>
+    @if(in_array(auth()->user()->role,['admin','supervisor']) && $order->status === 'active')
+    <form method="POST" action="{{ route('orders.send-to-cutting',$order) }}" class="d-inline" onsubmit="return confirm('Kirim semua item order ini ke stasiun Cutting?')">
+      @csrf
+      <button type="submit" class="btn btn-warning"><i class="bi bi-scissors me-1"></i>Kirim ke Cutting</button>
+    </form>
+    @endif
     <a href="{{ route('handover.create') }}?order_id={{ $order->id }}" class="btn btn-primary"><i class="bi bi-arrow-left-right me-1"></i>Buat Handover</a>
   </div>
 </div>
@@ -124,7 +130,7 @@
             <span class="fw-semibold">{{ $h->handover_no }}</span>
             <span class="badge bg-{{ $h->status_color }}">{{ $h->status_label }}</span>
           </div>
-          <small class="text-muted">{{ $h->fromStation->name }} → {{ $h->toStation->name }}</small>
+          <small class="text-muted">{{ $h->fromStation?->name ?? 'Order Produksi' }} → {{ $h->toStation->name }}</small>
           @if($h->hasDiscrepancy())<div><span class="badge bg-danger" style="font-size:.65rem">Ada Discrepancy</span></div>@endif
         </a>
         @empty

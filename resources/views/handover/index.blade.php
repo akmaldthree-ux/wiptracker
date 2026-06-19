@@ -42,7 +42,7 @@
         <tr>
           <td><a href="{{ route('handover.show',$h) }}" class="fw-bold text-primary text-decoration-none">{{ $h->handover_no }}</a></td>
           <td><small>{{ $h->order->order_no }}</small><br><small class="text-muted">{{ $h->order->product->name }}</small></td>
-          <td>{{ $h->fromStation->name }} <i class="bi bi-arrow-right text-muted"></i> {{ $h->toStation->name }}</td>
+          <td>{{ $h->fromStation?->name ?? 'Order Produksi' }} <i class="bi bi-arrow-right text-muted"></i> {{ $h->toStation->name }}</td>
           <td class="fw-semibold">{{ $h->total_sent }}</td>
           <td class="fw-semibold">{{ $h->total_received ?? '-' }}</td>
           <td>

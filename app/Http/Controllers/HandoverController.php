@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Handover, HandoverItem, ProductionOrder, Station, Sku, WipEntry, Notification, User, SewingLocation};
+use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation};
 use Illuminate\Http\Request;
 
 class HandoverController extends Controller
@@ -106,7 +106,7 @@ class HandoverController extends Controller
 
         // Auto-create WIP entries when confirmed (no discrepancy)
         if (!$hasDiscrepancy) {
-            $this->createWipFromHandover($handover);
+            $this->createWipFromHandover($handover, useReceived: true);
         }
 
         if ($hasDiscrepancy) {
@@ -126,37 +126,79 @@ class HandoverController extends Controller
         $handover->update(['status'=>'approved','approved_by'=>auth()->id()]);
 
         // Auto-create WIP entries when discrepancy is approved (use qty_received as actuals)
-        $this->createWipFromHandover($handover);
+        $this->createWipFromHandover($handover, useReceived: true);
 
         return back()->with('success','Discrepancy handover telah disetujui. WIP diperbarui berdasarkan qty aktual yang diterima.');
     }
 
+    public function sendFromOrder(Request $request, ProductionOrder $order)
+    {
+        abort_if(!in_array(auth()->user()->role, ['admin', 'supervisor']), 403);
+        $toStation = Station::where('order_sequence', 1)->where('is_active', true)->first();
+        if (!$toStation) return back()->withErrors(['error' => 'Stasiun Cutting tidak ditemukan.']);
+
+        $ho = Handover::create([
+            'handover_no'          => 'HO-' . date('Y') . '-' . str_pad(Handover::count() + 1, 3, '0', STR_PAD_LEFT),
+            'production_order_id'  => $order->id,
+            'from_station_id'      => null,
+            'to_station_id'        => $toStation->id,
+            'status'               => 'pending',
+            'initiated_by'         => auth()->id(),
+            'notes'                => $request->notes,
+            'initiated_at'         => now(),
+        ]);
+
+        foreach ($order->items as $item) {
+            HandoverItem::create([
+                'handover_id' => $ho->id,
+                'sku_id'      => $item->sku_id,
+                'qty_sent'    => $item->target_qty,
+            ]);
+        }
+
+        $destPICs = User::where('station_id', $toStation->id)->get();
+        foreach ($destPICs as $pic) {
+            Notification::create([
+                'user_id' => $pic->id,
+                'title'   => "Handover Masuk dari Order: {$ho->handover_no}",
+                'message' => "Order produksi {$order->order_no} dikirim ke stasiun {$toStation->name}.",
+                'type'    => 'warning',
+                'link'    => "/handover/{$ho->id}",
+                'is_read' => false,
+            ]);
+        }
+
+        return redirect()->route('handover.show', $ho)->with('success', "Handover {$ho->handover_no} dari Order Produksi berhasil dibuat.");
+    }
+
     /**
-     * Create WIP out entry for sender station and WIP in entry for receiver station
-     * based on confirmed qty_received per handover item.
+     * Create WIP entries from a confirmed/approved handover.
+     * If from_station_id is null (PO→Cutting), only create qty_in for receiver.
      */
-    private function createWipFromHandover(Handover $handover): void
+    private function createWipFromHandover(Handover $handover, bool $useReceived = true): void
     {
         $handover->load('items');
         $today = now()->toDateString();
         $note  = "Auto dari Handover {$handover->handover_no}";
 
         foreach ($handover->items as $item) {
-            $qty = max(0, (int) $item->qty_received);
+            $qty = $useReceived ? max(0, (int) $item->qty_received) : max(0, (int) $item->qty_sent);
             if ($qty === 0) continue;
 
-            // qty_out for sender station
-            WipEntry::create([
-                'production_order_id' => $handover->production_order_id,
-                'sku_id'              => $item->sku_id,
-                'station_id'          => $handover->from_station_id,
-                'qty_in'              => 0,
-                'qty_out'             => $qty,
-                'qty_reject'          => 0,
-                'input_date'          => $today,
-                'notes'               => $note,
-                'created_by'          => auth()->id(),
-            ]);
+            // qty_out for sender station (skip if from PO, no sender station)
+            if ($handover->from_station_id) {
+                WipEntry::create([
+                    'production_order_id' => $handover->production_order_id,
+                    'sku_id'              => $item->sku_id,
+                    'station_id'          => $handover->from_station_id,
+                    'qty_in'              => 0,
+                    'qty_out'             => $qty,
+                    'qty_reject'          => 0,
+                    'input_date'          => $today,
+                    'notes'               => $note,
+                    'created_by'          => auth()->id(),
+                ]);
+            }
 
             // qty_in for receiver station
             WipEntry::create([

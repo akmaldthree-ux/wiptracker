@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>
     <h4 class="fw-bold mb-1">{{ $handover->handover_no }} <span class="badge bg-{{ $handover->status_color }}">{{ $handover->status_label }}</span></h4>
-    <p class="text-muted mb-0">{{ $handover->fromStation->name }} → {{ $handover->toStation->name }} | Order: {{ $handover->order->order_no }}</p>
+    <p class="text-muted mb-0">{{ $handover->fromStation?->name ?? 'Order Produksi' }} → {{ $handover->toStation->name }} | Order: {{ $handover->order->order_no }}</p>
   </div>
   <div class="d-flex gap-2">
     @if(in_array(auth()->user()->role,['admin','supervisor']) && $handover->status === 'discrepancy')
@@ -26,7 +26,7 @@
         <table class="table table-sm table-borderless mb-0">
           <tr><td class="text-muted" width="45%">No. Handover</td><td class="fw-semibold">{{ $handover->handover_no }}</td></tr>
           <tr><td class="text-muted">Order</td><td><a href="{{ route('orders.show',$handover->order) }}">{{ $handover->order->order_no }}</a></td></tr>
-          <tr><td class="text-muted">Dari Stasiun</td><td class="fw-semibold">{{ $handover->fromStation->name }}</td></tr>
+          <tr><td class="text-muted">Dari</td><td class="fw-semibold">{{ $handover->fromStation?->name ?? '📋 Order Produksi' }}</td></tr>
           <tr><td class="text-muted">Ke Stasiun</td><td class="fw-semibold">{{ $handover->toStation->name }}</td></tr>
           @if($handover->sewingLocation)
           <tr>
