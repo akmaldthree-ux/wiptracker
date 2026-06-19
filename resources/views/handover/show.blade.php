@@ -2,7 +2,7 @@
 @section('title','Detail Handover')
 @section('page-title','Detail Handover')
 @section('content')
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div>
     <h4 class="fw-bold mb-1">{{ $handover->handover_no }} <span class="badge bg-{{ $handover->status_color }}">{{ $handover->status_label }}</span></h4>
     <p class="text-muted mb-0">{{ $handover->fromStation?->name ?? 'Order Produksi' }} → {{ $handover->toStation->name }} | Order: {{ $handover->order->order_no }}</p>
@@ -94,8 +94,7 @@
   @if($handover->status === 'pending' && auth()->user()->station_id == $handover->to_station_id)
   <form method="POST" action="{{ route('handover.confirm',$handover) }}">
     @csrf
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
+    <div class="table-responsive">      <table class="table table-hover mb-0">
         <thead>
           <tr>
             <th>SKU</th><th>Warna</th><th>Ukuran</th><th>Qty Kirim</th>

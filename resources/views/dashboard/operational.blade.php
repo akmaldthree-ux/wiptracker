@@ -6,7 +6,7 @@
 <div class="row g-3 mb-4">
   @foreach($stations as $st)
   @php $statusColor = $st->is_bottleneck ? 'danger' : ($st->qty_in_process > $st->bottleneck_threshold*0.7 ? 'warning' : 'success'); @endphp
-  <div class="col-md-4 col-lg-2dot4" style="flex:0 0 auto;width:20%">
+  <div class="col-6 col-md-4 col-lg-2">
     <div class="card border-{{ $statusColor }}" style="border-top:4px solid !important;border-top-color:var(--bs-{{ $statusColor }}) !important">
       <div class="card-body text-center py-3">
         @if($st->is_bottleneck)<div class="badge bg-danger text-white mb-2">BOTTLENECK</div>@endif

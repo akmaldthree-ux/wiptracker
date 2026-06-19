@@ -85,15 +85,15 @@
       </div>
       <div id="itemsContainer">
         <div class="row g-2 align-items-end mb-2 item-row">
-          <div class="col-md-6">
+          <div class="col-12 col-md-6">
             <select name="items[0][sku_id]" class="form-select form-select-sm sku-sel"><option value="">-- Pilih SKU --</option></select>
           </div>
-          <div class="col-md-3">
+          <div class="col-6 col-md-3">
             <input type="number" name="items[0][qty_sent]" class="form-control form-control-sm qty-input" placeholder="Qty" min="1">
             <div class="form-text available-info text-success" style="display:none"></div>
           </div>
-          <div class="col-md-2"><span class="badge bg-secondary available-badge w-100 py-2" style="display:none;font-size:.75rem"></span></div>
-          <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 remove-item"><i class="bi bi-trash"></i></button></div>
+          <div class="col-4 col-md-2"><span class="badge bg-secondary available-badge w-100 py-2" style="display:none;font-size:.75rem"></span></div>
+          <div class="col-2 col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 remove-item"><i class="bi bi-trash"></i></button></div>
         </div>
       </div>
 

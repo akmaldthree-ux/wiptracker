@@ -7,7 +7,7 @@
     <h4 class="fw-bold mb-1">{{ $order->order_no }} <span class="badge badge-{{ $order->status }} fs-6">{{ $order->status_label }}</span></h4>
     <p class="text-muted mb-0">{{ $order->product->name }} — {{ optional($order->series)->name }}</p>
   </div>
-  <div class="d-flex gap-2">
+  <div class="d-flex gap-2 flex-wrap mt-2 mt-md-0">
     @if(in_array(auth()->user()->role,['admin','supervisor']))
     <div class="dropdown">
       <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Ubah Status</button>

@@ -3,19 +3,21 @@
 @section('content')
 
 {{-- Header --}}
-<div class="d-flex justify-content-between align-items-start mb-4">
-  <div>
-    <h4 class="fw-bold mb-1"><i class="bi bi-radar me-2 text-primary"></i>WIP Position Monitor</h4>
-    <p class="text-muted mb-0">Monitoring posisi qty produk di setiap stasiun secara realtime</p>
-  </div>
-  <div class="d-flex gap-2 align-items-center">
-    <select id="filterOrder" class="form-select form-select-sm" style="min-width:220px">
-      <option value="">Semua Order</option>
-      @foreach($activeOrders as $o)
-      <option value="{{ $o->id }}">{{ $o->order_no }} — {{ $o->product->name }}</option>
-      @endforeach
-    </select>
-    <button class="btn btn-sm btn-outline-primary" onclick="location.reload()"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+    <div>
+      <h4 class="fw-bold mb-1"><i class="bi bi-radar me-2 text-primary"></i>WIP Position Monitor</h4>
+      <p class="text-muted mb-0">Monitoring posisi qty produk di setiap stasiun secara realtime</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <select id="filterOrder" class="form-select form-select-sm" style="min-width:180px;max-width:100%">
+        <option value="">Semua Order</option>
+        @foreach($activeOrders as $o)
+        <option value="{{ $o->id }}">{{ $o->order_no }} — {{ $o->product->name }}</option>
+        @endforeach
+      </select>
+      <button class="btn btn-sm btn-outline-primary" onclick="location.reload()"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+    </div>
   </div>
 </div>
 
@@ -29,8 +31,8 @@
       <span class="badge text-white" style="background:#dc2626"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Bottleneck</span>
     </div>
   </div>
-  <div class="card-body p-4">
-    <div class="d-flex align-items-stretch gap-0" id="pipelineContainer">
+  <div class="card-body p-3 p-md-4">
+    <div class="d-flex align-items-stretch gap-0 overflow-x-auto pb-2" id="pipelineContainer" style="min-width:0">
       @foreach($stations as $idx => $station)
       @php
         $netWip = $station->net_wip ?? 0;
