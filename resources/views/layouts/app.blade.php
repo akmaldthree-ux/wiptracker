@@ -56,18 +56,17 @@ body {
 #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
 
 .sidebar-brand {
-  padding: 1.1rem 1.2rem;
-  display: flex; align-items: center; gap: .75rem;
-  border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0;
+  padding: 1rem 1.2rem;
+  display: flex; flex-direction: column; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.08); flex-shrink: 0;
+  gap: .3rem;
 }
-.brand-icon {
-  width: 36px; height: 36px; flex-shrink: 0;
-  background: linear-gradient(135deg, #2563eb, #60a5fa);
-  border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,.45);
+.brand-logo-img {
+  width: 90px; height: auto;
+  filter: brightness(0) saturate(100%) invert(73%) sepia(58%) saturate(450%) hue-rotate(6deg) brightness(95%);
+  opacity: .92;
 }
-.brand-text .name { color: #fff; font-weight: 700; font-size: .88rem; letter-spacing: .2px; }
-.brand-text .sub { color: rgba(255,255,255,.3); font-size: .63rem; margin-top: 1px; letter-spacing: .3px; }
+.brand-text .sub { color: rgba(255,255,255,.25); font-size: .6rem; letter-spacing: .4px; text-align: center; }
 
 .nav-section-title {
   color: rgba(255,255,255,.2); font-size: .6rem; font-weight: 700;
@@ -420,9 +419,8 @@ hr { border-color: #edf0f7; }
 <!-- Sidebar -->
 <div id="sidebar">
   <div class="sidebar-brand">
-    <div class="brand-icon"><i class="bi bi-factory"></i></div>
+    <img src="{{ asset('images/dthree-logo.svg') }}" alt="DTHREE" class="brand-logo-img">
     <div class="brand-text">
-      <div class="name">DPIS</div>
       <div class="sub">Production Integration System</div>
     </div>
   </div>

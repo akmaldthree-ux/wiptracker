@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" fill="none">
+  <!-- D3 Monogram -->
+  <g transform="translate(80, 20)">
+    <!-- D shape - vertical bar left -->
+    <path d="M 20 20 L 20 220" stroke="#C4941A" stroke-width="28" stroke-linecap="round"/>
+    <!-- D shape - top horizontal -->
+    <path d="M 20 20 L 100 20" stroke="#C4941A" stroke-width="28" stroke-linecap="round"/>
+    <!-- D shape - bottom horizontal -->
+    <path d="M 20 220 L 100 220" stroke="#C4941A" stroke-width="28" stroke-linecap="round"/>
+    <!-- D shape - curved right side (arc from top to bottom) -->
+    <path d="M 100 20 Q 220 120 100 220" stroke="#C4941A" stroke-width="28" stroke-linecap="round" fill="none"/>
+
+    <!-- 3 shape - top bump -->
+    <path d="M 80 20 Q 230 10 220 110 Q 210 120 160 120" stroke="#C4941A" stroke-width="28" stroke-linecap="round" fill="none"/>
+    <!-- 3 shape - bottom bump -->
+    <path d="M 160 120 Q 210 120 220 130 Q 240 230 80 220" stroke="#C4941A" stroke-width="28" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- R registered mark -->
+  <text x="310" y="55" font-family="serif" font-size="26" fill="#C4941A" font-weight="400">®</text>
+
+  <!-- DTHREE text -->
+  <text x="200" y="320" font-family="'Georgia', 'Times New Roman', serif" font-size="62" fill="#C4941A" font-weight="700" text-anchor="middle" letter-spacing="6">DTHREE</text>
+
+  <!-- Tagline -->
+  <text x="200" y="360" font-family="'Georgia', 'Times New Roman', serif" font-size="18" fill="#C4941A" font-weight="400" text-anchor="middle" letter-spacing="3">KELUARGA LEBIH ISTIMEWA</text>
+</svg>

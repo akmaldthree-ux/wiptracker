@@ -17,7 +17,7 @@ body {
   justify-content: center;
   padding: 1.5rem;
   -webkit-font-smoothing: antialiased;
-  background: #0f172a;
+  background: #1a1209;
   overflow: hidden;
   position: relative;
 }
@@ -28,16 +28,15 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(37,99,235,.35) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(99,102,241,.2) 0%, transparent 55%),
-    #0f172a;
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(196,148,26,.28) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(160,110,10,.18) 0%, transparent 55%),
+    #1a1209;
 }
-/* Subtle dot grid */
 .bg-layer::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -45,18 +44,18 @@ body {
 .blob {
   position: fixed;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(90px);
   pointer-events: none;
   z-index: 0;
-  opacity: .35;
-  animation: drift 12s ease-in-out infinite alternate;
+  opacity: .3;
+  animation: drift 14s ease-in-out infinite alternate;
 }
-.blob-1 { width: 500px; height: 500px; background: #3b82f6; top: -150px; left: -100px; animation-delay: 0s; }
-.blob-2 { width: 400px; height: 400px; background: #6366f1; bottom: -100px; right: -80px; animation-delay: -4s; }
-.blob-3 { width: 250px; height: 250px; background: #0ea5e9; top: 40%; right: 15%; animation-delay: -8s; }
+.blob-1 { width: 520px; height: 520px; background: #C4941A; top: -180px; left: -120px; animation-delay: 0s; }
+.blob-2 { width: 380px; height: 380px; background: #8B6010; bottom: -120px; right: -80px; animation-delay: -5s; }
+.blob-3 { width: 240px; height: 240px; background: #D4A820; top: 45%; right: 12%; animation-delay: -9s; }
 @keyframes drift {
   from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(20px, 30px) scale(1.05); }
+  to   { transform: translate(18px, 28px) scale(1.06); }
 }
 
 /* ── CARD ── */
@@ -66,11 +65,11 @@ body {
   width: 100%;
   max-width: 420px;
   background: rgba(255,255,255,.97);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
   border-radius: 20px;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,.1),
-    0 30px 80px rgba(0,0,0,.4),
+    0 0 0 1px rgba(196,148,26,.15),
+    0 32px 80px rgba(0,0,0,.45),
     0 8px 24px rgba(0,0,0,.2);
   overflow: hidden;
   animation: slideUp .4s cubic-bezier(.16,1,.3,1) both;
@@ -81,48 +80,44 @@ body {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Card top accent */
 .card::before {
   content: '';
   display: block;
   height: 4px;
-  background: linear-gradient(90deg, #2563eb, #6366f1, #0ea5e9);
+  background: linear-gradient(90deg, #C4941A, #E8B830, #A07010);
 }
 
 /* ── CARD HEADER ── */
 .card-header {
-  padding: 2rem 2.25rem 0;
+  padding: 1.8rem 2.25rem 0;
   text-align: center;
 }
 
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px; height: 56px;
-  background: linear-gradient(135deg, #2563eb, #6366f1);
-  border-radius: 16px;
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 1.1rem;
-  box-shadow: 0 8px 24px rgba(37,99,235,.35);
+.brand-logo {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 1rem;
+  filter: drop-shadow(0 4px 12px rgba(196,148,26,.25));
 }
 
-.card-header h1 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -.3px;
-  margin-bottom: .2rem;
+.header-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196,148,26,.25), transparent);
+  margin: .9rem 0 0;
 }
-.card-header p {
-  font-size: .8rem;
+
+.system-label {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   color: #94a3b8;
-  margin-bottom: 0;
+  margin-top: .75rem;
 }
 
 /* ── CARD BODY ── */
-.card-body { padding: 1.75rem 2.25rem 2.25rem; }
+.card-body { padding: 1.5rem 2.25rem 2.25rem; }
 
 /* Alert */
 .alert-box {
@@ -135,16 +130,16 @@ body {
   margin-bottom: 1.25rem;
 }
 .alert-box.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-.alert-box.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.alert-box.success { background: #fefce8; color: #92400e; border: 1px solid #fde68a; }
 
 /* Field */
 .field { margin-bottom: 1rem; }
 .field label {
   display: block;
-  font-size: .75rem;
+  font-size: .72rem;
   font-weight: 700;
-  color: #475569;
-  letter-spacing: .4px;
+  color: #64748b;
+  letter-spacing: .5px;
   text-transform: uppercase;
   margin-bottom: .4rem;
 }
@@ -169,11 +164,10 @@ body {
 }
 .input-wrap input:focus {
   background: #fff;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  border-color: #C4941A;
+  box-shadow: 0 0 0 3px rgba(196,148,26,.12);
 }
-.input-wrap input:focus ~ .icon,
-.input-wrap input:focus + .icon { color: #2563eb; }
+.input-wrap input:focus + .icon { color: #C4941A; }
 .input-wrap input::placeholder { color: #cbd5e1; }
 
 .pw-toggle {
@@ -183,7 +177,7 @@ body {
   color: #94a3b8; font-size: .9rem; line-height: 1;
   transition: color .15s; padding: 2px;
 }
-.pw-toggle:hover { color: #2563eb; }
+.pw-toggle:hover { color: #C4941A; }
 
 /* Remember row */
 .remember-row {
@@ -194,15 +188,15 @@ body {
 }
 .remember-row input[type="checkbox"] {
   width: 15px; height: 15px;
-  accent-color: #2563eb; cursor: pointer; flex-shrink: 0;
+  accent-color: #C4941A; cursor: pointer; flex-shrink: 0;
 }
 .remember-row label { font-size: .82rem; color: #64748b; cursor: pointer; user-select: none; }
 
 /* Submit */
 .btn-login {
   width: 100%;
-  padding: .8rem;
-  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  padding: .82rem;
+  background: linear-gradient(135deg, #C4941A 0%, #A07010 100%);
   border: none;
   border-radius: 10px;
   color: #fff;
@@ -210,8 +204,8 @@ body {
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  letter-spacing: .2px;
-  box-shadow: 0 4px 16px rgba(37,99,235,.35);
+  letter-spacing: .3px;
+  box-shadow: 0 4px 16px rgba(196,148,26,.4);
   transition: all .2s;
   display: flex;
   align-items: center;
@@ -220,8 +214,8 @@ body {
 }
 .btn-login:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(37,99,235,.45);
-  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+  box-shadow: 0 8px 24px rgba(196,148,26,.5);
+  background: linear-gradient(135deg, #D4A420 0%, #B08020 100%);
 }
 .btn-login:active { transform: translateY(0); }
 
@@ -229,7 +223,7 @@ body {
 .divider {
   display: flex; align-items: center; gap: .6rem;
   margin: 1.5rem 0 1rem;
-  font-size: .7rem; font-weight: 700; letter-spacing: .5px;
+  font-size: .68rem; font-weight: 700; letter-spacing: .6px;
   text-transform: uppercase; color: #cbd5e1;
 }
 .divider::before, .divider::after {
@@ -249,14 +243,14 @@ body {
   transition: all .15s;
 }
 .demo-btn:hover { transform: translateY(-1px); }
-.demo-btn.blue   { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
-.demo-btn.green  { border-color: #bbf7d0; color: #15803d; background: #f0fdf4; }
-.demo-btn.cyan   { border-color: #a5f3fc; color: #0e7490; background: #ecfeff; }
-.demo-btn.amber  { border-color: #fde68a; color: #92400e; background: #fffbeb; }
-.demo-btn:hover.blue  { background: #dbeafe; }
-.demo-btn:hover.green { background: #dcfce7; }
-.demo-btn:hover.cyan  { background: #cffafe; }
-.demo-btn:hover.amber { background: #fef9c3; }
+.demo-btn.gold   { border-color: #fde68a; color: #92400e; background: #fffbeb; }
+.demo-btn.amber  { border-color: #fed7aa; color: #9a3412; background: #fff7ed; }
+.demo-btn.yellow { border-color: #fef08a; color: #713f12; background: #fefce8; }
+.demo-btn.warm   { border-color: #fecaca; color: #991b1b; background: #fef2f2; }
+.demo-btn:hover.gold   { background: #fef9c3; }
+.demo-btn:hover.amber  { background: #ffedd5; }
+.demo-btn:hover.yellow { background: #fef9c3; }
+.demo-btn:hover.warm   { background: #fee2e2; }
 .demo-email { display: block; font-size: .72rem; font-weight: 700; }
 .demo-role  { display: block; font-size: .65rem; opacity: .7; margin-top: 1px; }
 .demo-hint {
@@ -268,7 +262,6 @@ body {
   color: #475569; font-family: ui-monospace, monospace;
 }
 
-/* Mobile */
 @media (max-width: 480px) {
   .card-header { padding: 1.5rem 1.5rem 0; }
   .card-body { padding: 1.5rem; }
@@ -283,12 +276,11 @@ body {
 <div class="blob blob-3"></div>
 
 <div class="card">
-  <!-- Color accent strip is via ::before -->
 
   <div class="card-header">
-    <div class="brand-mark"><i class="bi bi-factory"></i></div>
-    <h1>DPIS</h1>
-    <p>DTHREE Production Integration System</p>
+    <img src="{{ asset('images/dthree-logo.svg') }}" alt="DTHREE Logo" class="brand-logo">
+    <div class="header-divider"></div>
+    <div class="system-label">Production Integration System</div>
   </div>
 
   <div class="card-body">
@@ -306,18 +298,18 @@ body {
       <div class="field">
         <label>Email</label>
         <div class="input-wrap">
-          <i class="bi bi-envelope icon"></i>
           <input type="email" name="email" value="{{ old('email','admin@dpis.com') }}"
                  placeholder="email@perusahaan.com" required autocomplete="email">
+          <i class="bi bi-envelope icon"></i>
         </div>
       </div>
 
       <div class="field">
         <label>Password</label>
         <div class="input-wrap">
-          <i class="bi bi-lock icon"></i>
           <input type="password" name="password" id="pwInput"
                  placeholder="Masukkan password" required autocomplete="current-password">
+          <i class="bi bi-lock icon"></i>
           <button type="button" class="pw-toggle" onclick="togglePw()">
             <i class="bi bi-eye" id="pwIcon"></i>
           </button>
@@ -338,19 +330,19 @@ body {
     <div class="divider">Akun Demo</div>
 
     <div class="demo-grid">
-      <button class="demo-btn blue"  onclick="fillDemo('admin@dpis.com')">
+      <button class="demo-btn gold"   onclick="fillDemo('admin@dpis.com')">
         <span class="demo-email">admin@dpis.com</span>
         <span class="demo-role">Admin</span>
       </button>
-      <button class="demo-btn green" onclick="fillDemo('supervisor@dpis.com')">
+      <button class="demo-btn amber"  onclick="fillDemo('supervisor@dpis.com')">
         <span class="demo-email">supervisor@dpis.com</span>
         <span class="demo-role">Supervisor</span>
       </button>
-      <button class="demo-btn cyan"  onclick="fillDemo('cutting@dpis.com')">
+      <button class="demo-btn yellow" onclick="fillDemo('cutting@dpis.com')">
         <span class="demo-email">cutting@dpis.com</span>
         <span class="demo-role">PIC Cutting</span>
       </button>
-      <button class="demo-btn amber" onclick="fillDemo('manager@dpis.com')">
+      <button class="demo-btn warm"   onclick="fillDemo('manager@dpis.com')">
         <span class="demo-email">manager@dpis.com</span>
         <span class="demo-role">Manager</span>
       </button>
