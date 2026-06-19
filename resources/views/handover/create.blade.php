@@ -115,16 +115,19 @@ const stations = {
 };
 
 let wipAvailable = {}; // sku_id -> available qty
+let wipLoaded = false; // true after first fetch completes
 
 async function loadWipAvailable() {
   const oid = document.getElementById('orderSel').value;
   const sid = document.getElementById('stationSel').value;
   wipAvailable = {};
-  if (!oid || !sid) return;
+  wipLoaded = false;
+  if (!oid || !sid) { updateAllQtyLimits(); return; }
   try {
     const r = await fetch(`/api/wip-available/${oid}/${sid}`);
     wipAvailable = await r.json();
   } catch(e) {}
+  wipLoaded = true;
   updateAllQtyLimits();
 }
 
@@ -139,13 +142,14 @@ function updateQtyLimit(row) {
   const info = row.querySelector('.available-info');
   if (!skuSel || !qtyInput) return;
   const skuId = skuSel.value;
-  if (!skuId || wipAvailable[skuId] === undefined) {
+  if (!skuId || !wipLoaded) {
     qtyInput.removeAttribute('max');
     if (badge) badge.style.display = 'none';
     if (info) info.style.display = 'none';
     return;
   }
-  const avail = wipAvailable[skuId] ?? 0;
+  // Jika SKU tidak ada di wipAvailable, berarti stok = 0
+  const avail = wipAvailable[skuId] !== undefined ? wipAvailable[skuId] : 0;
   qtyInput.max = avail;
   if (avail === 0) {
     if (badge) { badge.className = 'badge bg-danger available-badge w-100 py-2'; badge.textContent = 'Stok: 0'; badge.style.display = ''; }
