@@ -24,6 +24,7 @@ class WipController extends Controller
 
     public function create()
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'Hanya Admin yang dapat input WIP manual.');
         $user = auth()->user();
         $stations = Station::where('is_active',true)->orderBy('order_sequence')->get();
         $orders = ProductionOrder::where('status','active')->with('product')->get();
@@ -33,6 +34,7 @@ class WipController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(auth()->user()->role !== 'admin', 403, 'Hanya Admin yang dapat input WIP manual.');
         $request->validate([
             'production_order_id'=>'required|exists:production_orders,id',
             'station_id'=>'required|exists:stations,id',

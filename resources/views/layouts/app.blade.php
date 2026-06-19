@@ -305,9 +305,6 @@ a { color: var(--primary); }
     <a href="{{ route('orders.index') }}" class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
       <i class="bi bi-clipboard-check"></i> Order Produksi
     </a>
-    <a href="{{ route('wip.index') }}" class="nav-link {{ request()->routeIs('wip.*') ? 'active' : '' }}">
-      <i class="bi bi-activity"></i> WIP Tracker
-    </a>
     <a href="{{ route('cutting.index') }}" class="nav-link {{ request()->routeIs('cutting.*') ? 'active' : '' }}">
       <i class="bi bi-scissors"></i> Cutting Plan
     </a>
@@ -331,6 +328,16 @@ a { color: var(--primary); }
     <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
       <i class="bi bi-file-bar-graph"></i> Laporan
     </a>
+
+    <div class="nav-section-title">Data WIP</div>
+    <a href="{{ route('wip.index') }}" class="nav-link {{ request()->routeIs('wip.index') || request()->routeIs('wip.show') ? 'active' : '' }}">
+      <i class="bi bi-activity"></i> WIP Tracker
+    </a>
+    @if(auth()->user()->role === 'admin')
+    <a href="{{ route('wip.create') }}" class="nav-link {{ request()->routeIs('wip.create') ? 'active' : '' }}">
+      <i class="bi bi-pencil-square"></i> Input WIP Manual
+    </a>
+    @endif
 
     @if(in_array(auth()->user()->role ?? '', ['admin','supervisor']))
     <div class="nav-section-title">Master Data</div>
