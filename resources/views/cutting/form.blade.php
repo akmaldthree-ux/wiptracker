@@ -227,7 +227,32 @@ function loadSKUs(sel) {
 }
 document.getElementById('orderSel').addEventListener('change', () => {
   document.querySelectorAll('.sku-sel').forEach(s => loadSKUs(s));
+  autoFillBundles();
 });
+
+async function autoFillBundles() {
+  const oid = document.getElementById('orderSel').value;
+  if (!oid) return;
+  const r = await fetch(`/api/order-skus/${oid}`);
+  const data = await r.json();
+  if (!data.length) return;
+  // Clear existing rows
+  document.getElementById('bundleContainer').innerHTML = '';
+  bIdx = 0;
+  data.forEach(item => {
+    if (!item.sku) return;
+    const div = document.createElement('div');
+    div.className = 'row g-2 align-items-end mb-2 bundle-row';
+    div.innerHTML = `<div class="col-md-7"><label class="form-label small mb-1">SKU</label><select name="bundles[${bIdx}][sku_id]" class="form-select form-select-sm sku-sel"><option value="${item.sku.id}">${item.sku.sku_code}</option></select></div><div class="col-md-3"><label class="form-label small mb-1">Qty (pcs)</label><input type="number" name="bundles[${bIdx}][qty]" class="form-control form-control-sm" value="${item.target_qty}" min="1"></div><div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger w-100 remove-bundle"><i class="bi bi-trash"></i></button></div>`;
+    document.getElementById('bundleContainer').appendChild(div);
+    div.querySelector('.remove-bundle').addEventListener('click', () => div.remove());
+    bIdx++;
+  });
+  // Update planned_qty with total target
+  const total = data.reduce((s, i) => s + (i.target_qty || 0), 0);
+  const qtyInput = document.querySelector('[name="planned_qty"]');
+  if (qtyInput && !qtyInput.value) qtyInput.value = total;
+}
 document.getElementById('addBundle').addEventListener('click', () => {
   const div = document.createElement('div');
   div.className = 'row g-2 align-items-end mb-2 bundle-row';

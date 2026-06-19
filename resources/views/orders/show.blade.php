@@ -93,6 +93,39 @@
   </div>
 </div>
 
+<!-- Cutting Plans -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-scissors me-2 text-warning"></i>Cutting Plan</span>
+    <a href="{{ route('cutting.create') }}?order_id={{ $order->id }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-plus"></i> Buat Manual</a>
+  </div>
+  @if($order->cuttingPlans->isEmpty())
+  <div class="card-body text-center text-muted py-4">
+    <i class="bi bi-scissors display-6 d-block mb-2 opacity-25"></i>
+    Belum ada cutting plan. Gunakan tombol <strong>Kirim ke Cutting</strong> untuk membuat otomatis.
+  </div>
+  @else
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>No. Plan</th><th>Tanggal</th><th>Target Qty</th><th>Realisasi</th><th>Bundle SKU</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        @foreach($order->cuttingPlans->sortByDesc('created_at') as $cp)
+        <tr>
+          <td class="fw-semibold"><a href="{{ route('cutting.show',$cp) }}">{{ $cp->plan_no }}</a></td>
+          <td>{{ $cp->planned_date->format('d M Y') }}</td>
+          <td>{{ number_format($cp->planned_qty) }} pcs</td>
+          <td class="{{ $cp->actual_qty ? 'text-success fw-semibold' : 'text-muted' }}">{{ $cp->actual_qty ? number_format($cp->actual_qty).' pcs' : '—' }}</td>
+          <td><span class="badge bg-secondary bg-opacity-15 text-secondary">{{ $cp->bundles->count() }} SKU</span></td>
+          <td><span class="badge bg-{{ $cp->status_color }}">{{ $cp->status_label }}</span></td>
+          <td><a href="{{ route('cutting.show',$cp) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a></td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+  @endif
+</div>
+
 <div class="row g-3">
   <!-- Items -->
   <div class="col-md-6">

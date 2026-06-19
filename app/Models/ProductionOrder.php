@@ -11,6 +11,7 @@ class ProductionOrder extends Model {
     public function wipEntries() { return $this->hasMany(WipEntry::class); }
     public function handovers() { return $this->hasMany(Handover::class); }
     public function budget() { return $this->hasOne(Budget::class); }
+    public function cuttingPlans() { return $this->hasMany(CuttingPlan::class); }
     public function materialAllocations() { return $this->hasMany(MaterialAllocation::class); }
     public function costEntries() { return $this->hasMany(CostEntry::class); }
 

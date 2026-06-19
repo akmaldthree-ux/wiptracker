@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation};
+use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle};
 use Illuminate\Http\Request;
 
 class HandoverController extends Controller
@@ -182,7 +182,29 @@ class HandoverController extends Controller
             ]);
         }
 
-        return redirect()->route('handover.show', $ho)->with('success', "Handover {$ho->handover_no} dari Order Produksi berhasil dibuat.");
+        // Auto-create draft Cutting Plan
+        $cp = CuttingPlan::create([
+            'plan_no'             => 'CP-' . date('Y') . '-' . str_pad(CuttingPlan::count() + 1, 3, '0', STR_PAD_LEFT),
+            'production_order_id' => $order->id,
+            'planned_date'        => now()->toDateString(),
+            'planned_qty'         => $order->getTotalTargetQty(),
+            'status'              => 'draft',
+            'notes'               => "Auto-dibuat dari Order {$order->order_no}",
+            'created_by'          => auth()->id(),
+        ]);
+        $bundleIdx = 1;
+        foreach ($order->items as $item) {
+            CuttingBundle::create([
+                'bundle_no'       => $cp->plan_no . '-B' . str_pad($bundleIdx, 2, '0', STR_PAD_LEFT),
+                'cutting_plan_id' => $cp->id,
+                'sku_id'          => $item->sku_id,
+                'qty'             => $item->target_qty,
+                'status'          => 'cut',
+            ]);
+            $bundleIdx++;
+        }
+
+        return redirect()->route('handover.show', $ho)->with('success', "Handover {$ho->handover_no} dan Cutting Plan {$cp->plan_no} berhasil dibuat.");
     }
 
     /**

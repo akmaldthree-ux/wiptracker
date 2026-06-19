@@ -46,7 +46,7 @@ class ProductionOrderController extends Controller
 
     public function show(ProductionOrder $order)
     {
-        $order->load(['product','series','creator','items.sku.color','items.sku.size','handovers.fromStation','handovers.toStation','budget']);
+        $order->load(['product','series','creator','items.sku.color','items.sku.size','handovers.fromStation','handovers.toStation','budget','cuttingPlans.bundles']);
         $stations = Station::orderBy('order_sequence')->get();
         $wipByStation = [];
         foreach ($stations as $st) {
