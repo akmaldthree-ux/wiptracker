@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary: #3FC1C9;
-  --primary-dark: #2fa8b0;
-  --primary-light: #e8f9fa;
-  --accent: #FC5185;
-  --accent-light: #fff0f4;
-  --sidebar-bg: #364F6B;
-  --sidebar-hover: rgba(63,193,201,.12);
-  --sidebar-active-bg: rgba(63,193,201,.2);
-  --sidebar-active-border: #3FC1C9;
-  --sidebar-text: rgba(245,245,245,.55);
-  --sidebar-text-active: #F5F5F5;
+  --primary: #B4846C;
+  --primary-dark: #7D5A50;
+  --primary-light: #fdf5f0;
+  --accent: #E5B299;
+  --accent-light: #fef9f5;
+  --sidebar-bg: #7D5A50;
+  --sidebar-hover: rgba(229,178,153,.12);
+  --sidebar-active-bg: rgba(229,178,153,.2);
+  --sidebar-active-border: #E5B299;
+  --sidebar-text: rgba(252,222,192,.6);
+  --sidebar-text-active: #FCDEC0;
   --sidebar-w: 256px;
   --topbar-h: 62px;
   --radius: 12px;
@@ -48,7 +48,7 @@ body {
 #sidebar {
   position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
   background: var(--sidebar-bg);
-  background-image: linear-gradient(180deg, rgba(63,193,201,.14) 0%, rgba(252,81,133,.05) 60%, transparent 100%);
+  background-image: linear-gradient(180deg, rgba(229,178,153,.15) 0%, rgba(180,132,108,.08) 50%, transparent 100%);
   z-index: 1040; transition: .3s cubic-bezier(.4,0,.2,1);
   overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;
 }
@@ -65,10 +65,10 @@ body {
   width: 90px; height: auto;
   opacity: .95;
 }
-.brand-text .sub { color: rgba(63,193,201,.8); font-size: .65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+.brand-text .sub { color: rgba(252,222,192,.7); font-size: .65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
 
 .nav-section-title {
-  color: rgba(245,245,245,.25); font-size: .6rem; font-weight: 700;
+  color: rgba(252,222,192,.3); font-size: .6rem; font-weight: 700;
   letter-spacing: 1.8px; text-transform: uppercase;
   padding: 1.2rem 1.2rem .35rem;
 }
@@ -91,7 +91,7 @@ body {
   height: 60%; width: 3px; border-radius: 0 3px 3px 0; background: var(--sidebar-active-border);
 }
 .sidebar-nav .nav-link i { font-size: .9rem; width: 17px; text-align: center; flex-shrink: 0; }
-.sidebar-nav .nav-link.active i { color: #3FC1C9; }
+.sidebar-nav .nav-link.active i { color: #FCDEC0; }
 .sidebar-nav .badge { font-size: .6rem; padding: .18em .5em; margin-left: auto; }
 .nav-submenu { padding: 0; }
 .nav-submenu .nav-link { padding: .4rem .9rem .4rem 2.6rem; font-size: .81rem; }

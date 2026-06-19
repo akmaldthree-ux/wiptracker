@@ -17,7 +17,7 @@ body {
   justify-content: center;
   padding: 1.5rem;
   -webkit-font-smoothing: antialiased;
-  background: #2a3f56;
+  background: #5c3f38;
   overflow: hidden;
   position: relative;
 }
@@ -28,9 +28,9 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(63,193,201,.28) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(252,81,133,.18) 0%, transparent 55%),
-    #2a3f56;
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(229,178,153,.3) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(125,90,80,.5) 0%, transparent 55%),
+    #5c3f38;
 }
 .bg-layer::after {
   content: '';
@@ -50,9 +50,9 @@ body {
   opacity: .3;
   animation: drift 14s ease-in-out infinite alternate;
 }
-.blob-1 { width: 520px; height: 520px; background: #3FC1C9; top: -180px; left: -120px; animation-delay: 0s; }
-.blob-2 { width: 380px; height: 380px; background: #FC5185; bottom: -120px; right: -80px; animation-delay: -5s; }
-.blob-3 { width: 240px; height: 240px; background: #364F6B; top: 45%; right: 12%; animation-delay: -9s; }
+.blob-1 { width: 520px; height: 520px; background: #E5B299; top: -180px; left: -120px; animation-delay: 0s; }
+.blob-2 { width: 380px; height: 380px; background: #7D5A50; bottom: -120px; right: -80px; animation-delay: -5s; }
+.blob-3 { width: 240px; height: 240px; background: #B4846C; top: 45%; right: 12%; animation-delay: -9s; }
 @keyframes drift {
   from { transform: translate(0, 0) scale(1); }
   to   { transform: translate(18px, 28px) scale(1.06); }
@@ -68,7 +68,7 @@ body {
   backdrop-filter: blur(24px);
   border-radius: 20px;
   box-shadow:
-    0 0 0 1px rgba(63,193,201,.12),
+    0 0 0 1px rgba(229,178,153,.2),
     0 32px 80px rgba(0,0,0,.45),
     0 8px 24px rgba(0,0,0,.2);
   overflow: hidden;
@@ -84,7 +84,7 @@ body {
   content: '';
   display: block;
   height: 4px;
-  background: linear-gradient(90deg, #364F6B, #3FC1C9, #FC5185, #3FC1C9, #364F6B);
+  background: linear-gradient(90deg, #7D5A50, #B4846C, #E5B299, #FCDEC0, #E5B299, #B4846C, #7D5A50);
 }
 
 /* ── CARD HEADER ── */
@@ -103,7 +103,7 @@ body {
 
 .header-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(63,193,201,.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(180,132,108,.35), transparent);
   margin: .9rem 0 0;
 }
 
@@ -164,10 +164,10 @@ body {
 }
 .input-wrap input:focus {
   background: #fff;
-  border-color: #3FC1C9;
-  box-shadow: 0 0 0 3px rgba(63,193,201,.15);
+  border-color: #B4846C;
+  box-shadow: 0 0 0 3px rgba(180,132,108,.15);
 }
-.input-wrap input:focus + .icon { color: #3FC1C9; }
+.input-wrap input:focus + .icon { color: #B4846C; }
 .input-wrap input::placeholder { color: #cbd5e1; }
 
 .pw-toggle {
@@ -177,7 +177,7 @@ body {
   color: #94a3b8; font-size: .9rem; line-height: 1;
   transition: color .15s; padding: 2px;
 }
-.pw-toggle:hover { color: #3FC1C9; }
+.pw-toggle:hover { color: #B4846C; }
 
 /* Remember row */
 .remember-row {
@@ -188,7 +188,7 @@ body {
 }
 .remember-row input[type="checkbox"] {
   width: 15px; height: 15px;
-  accent-color: #3FC1C9; cursor: pointer; flex-shrink: 0;
+  accent-color: #B4846C; cursor: pointer; flex-shrink: 0;
 }
 .remember-row label { font-size: .82rem; color: #64748b; cursor: pointer; user-select: none; }
 
@@ -196,7 +196,7 @@ body {
 .btn-login {
   width: 100%;
   padding: .82rem;
-  background: linear-gradient(135deg, #3FC1C9 0%, #2fa8b0 100%);
+  background: linear-gradient(135deg, #B4846C 0%, #7D5A50 100%);
   border: none;
   border-radius: 10px;
   color: #fff;
@@ -205,7 +205,7 @@ body {
   font-family: inherit;
   cursor: pointer;
   letter-spacing: .3px;
-  box-shadow: 0 4px 16px rgba(63,193,201,.4);
+  box-shadow: 0 4px 16px rgba(125,90,80,.4);
   transition: all .2s;
   display: flex;
   align-items: center;
@@ -214,8 +214,8 @@ body {
 }
 .btn-login:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(63,193,201,.5);
-  background: linear-gradient(135deg, #55cdd4 0%, #3FC1C9 100%);
+  box-shadow: 0 8px 24px rgba(125,90,80,.5);
+  background: linear-gradient(135deg, #c99480 0%, #B4846C 100%);
 }
 .btn-login:active { transform: translateY(0); }
 
