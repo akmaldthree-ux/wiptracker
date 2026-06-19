@@ -13,7 +13,7 @@
     </div>
     @endif
 
-    <form method="POST" action="{{ route('handover.store') }}" id="handoverForm">
+    <form method="POST" action="{{ route('handover.store') }}" id="handoverForm" enctype="multipart/form-data">
       @csrf
       <div class="row g-3">
         <div class="col-md-6">
@@ -71,6 +71,24 @@
         <div class="col-12">
           <label class="form-label fw-semibold">Catatan Handover</label>
           <textarea name="notes" class="form-control" rows="2" placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
+        </div>
+
+        {{-- Foto Bukti Pengiriman --}}
+        <div class="col-12">
+          <div class="p-3 border border-warning border-opacity-50 rounded" style="background:rgba(255,193,7,.05)">
+            <label class="form-label fw-semibold text-warning-emphasis">
+              <i class="bi bi-camera-fill me-1 text-warning"></i>Foto Bukti Pengiriman <span class="text-danger">*</span>
+            </label>
+            <input type="file" name="photo_sent" id="photoSentInput" class="form-control @error('photo_sent') is-invalid @enderror"
+                   accept="image/*" capture="environment" required>
+            @error('photo_sent')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text"><i class="bi bi-info-circle me-1"></i>Foto kondisi barang saat akan dikirim. Maks 10MB. Akan dikompres otomatis.</div>
+            <div id="photoSentPreview" class="mt-2" style="display:none">
+              <img id="photoSentImg" src="" alt="Preview" style="max-height:180px;border-radius:8px;border:2px solid #ffc107;object-fit:cover">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -251,5 +269,17 @@ document.getElementById('addItem').addEventListener('click', function () {
   idx++;
 });
 document.querySelectorAll('.remove-item').forEach(b => b.addEventListener('click', () => b.closest('.item-row').remove()));
+
+// Photo preview
+document.getElementById('photoSentInput').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('photoSentImg').src = e.target.result;
+    document.getElementById('photoSentPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+});
 </script>
 @endpush

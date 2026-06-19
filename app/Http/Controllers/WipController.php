@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{ProductionOrder, WipEntry, Station, Sku};
+use App\Models\{ProductionOrder, WipEntry, Station, Sku, Handover};
 use Illuminate\Http\Request;
 
 class WipController extends Controller
@@ -52,7 +52,10 @@ class WipController extends Controller
     {
         $order->load(['product','series','items.sku']);
         $stations = Station::orderBy('order_sequence')->get();
-        $entries = WipEntry::where('production_order_id',$order->id)->with(['sku.color','sku.size','station'])->get();
-        return view('wip.show', compact('order','stations','entries'));
+        $entries  = WipEntry::where('production_order_id',$order->id)->with(['sku.color','sku.size','station'])->get();
+        $handovers = Handover::where('production_order_id',$order->id)
+            ->with(['fromStation','toStation','initiatedBy','confirmedBy','items.sku'])
+            ->orderByDesc('created_at')->get();
+        return view('wip.show', compact('order','stations','entries','handovers'));
     }
 }

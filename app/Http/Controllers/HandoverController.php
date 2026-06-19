@@ -30,7 +30,6 @@ class HandoverController extends Controller
         $fromStation = Station::find($request->from_station_id);
         $toStation = $fromStation ? Station::where('order_sequence',$fromStation->order_sequence+1)->where('is_active',true)->first() : null;
 
-        // Wajib pilih tempat sewing jika tujuan adalah stasiun sewing (order_sequence=2)
         $requireSewingLocation = $toStation && $toStation->order_sequence == 2;
 
         $request->validate([
@@ -40,13 +39,16 @@ class HandoverController extends Controller
             'items'=>'required|array|min:1',
             'items.*.sku_id'=>'required|exists:skus,id',
             'items.*.qty_sent'=>'required|integer|min:1',
+            'photo_sent'=>'required|image|max:10240',
         ], [
             'sewing_location_id.required' => 'Tempat Sewing wajib dipilih saat handover ke stasiun Sewing.',
+            'photo_sent.required' => 'Foto bukti pengiriman wajib disertakan.',
+            'photo_sent.image'   => 'File harus berupa gambar (jpg, png, webp).',
+            'photo_sent.max'     => 'Ukuran foto maksimal 10MB.',
         ]);
 
         if (!$toStation) return back()->withErrors(['from_station_id'=>'Tidak ada stasiun tujuan setelah stasiun ini.']);
 
-        // Validate qty_sent does not exceed available WIP at from_station
         $wipEntries = WipEntry::where('production_order_id', $request->production_order_id)
             ->where('station_id', $request->from_station_id)
             ->selectRaw('sku_id, SUM(qty_in) as total_in, SUM(qty_out) as total_out, SUM(qty_reject) as total_reject')
@@ -63,19 +65,27 @@ class HandoverController extends Controller
             }
         }
 
+        $photoSentPath = $this->compressAndStore($request->file('photo_sent'), 'handovers/sent');
+
         $ho = Handover::create([
-            'handover_no' => 'HO-' . date('Y') . '-' . str_pad(Handover::count()+1,3,'0',STR_PAD_LEFT),
-            'production_order_id'=>$request->production_order_id,
-            'from_station_id'=>$request->from_station_id, 'to_station_id'=>$toStation->id,
-            'sewing_location_id'=>$request->sewing_location_id ?: null,
-            'status'=>'pending','initiated_by'=>auth()->id(),'notes'=>$request->notes,
-            'condition_notes'=>$request->condition_notes,'initiated_at'=>now(),
+            'handover_no'          => 'HO-' . date('Y') . '-' . str_pad(Handover::count()+1,3,'0',STR_PAD_LEFT),
+            'production_order_id'  => $request->production_order_id,
+            'from_station_id'      => $request->from_station_id,
+            'to_station_id'        => $toStation->id,
+            'sewing_location_id'   => $request->sewing_location_id ?: null,
+            'status'               => 'pending',
+            'initiated_by'         => auth()->id(),
+            'notes'                => $request->notes,
+            'condition_notes'      => $request->condition_notes,
+            'photo_sent'           => $photoSentPath,
+            'initiated_at'         => now(),
         ]);
+
         foreach ($request->items as $item) {
             if (!empty($item['sku_id']) && !empty($item['qty_sent']))
                 HandoverItem::create(['handover_id'=>$ho->id,'sku_id'=>$item['sku_id'],'qty_sent'=>$item['qty_sent']]);
         }
-        // Notify PIC of destination station
+
         $destPICs = User::where('station_id',$toStation->id)->get();
         foreach ($destPICs as $pic) {
             Notification::create(['user_id'=>$pic->id,'title'=>"Handover Masuk: {$ho->handover_no}",'message'=>"Handover dari stasiun {$fromStation->name} menunggu konfirmasi Anda.",'type'=>'warning','link'=>"/handover/{$ho->id}","is_read"=>false]);
@@ -92,33 +102,66 @@ class HandoverController extends Controller
     public function confirm(Request $request, Handover $handover)
     {
         abort_if($handover->status !== 'pending', 403);
+
         $request->validate([
             'items'                      => 'required|array',
             'items.*.qty_received'       => 'required|integer|min:0',
             'items.*.qty_reject'         => 'nullable|integer|min:0',
             'items.*.discrepancy_notes'  => 'nullable|string',
             'items.*.reject_notes'       => 'nullable|string',
+            'photo_received'             => 'required|image|max:10240',
+        ], [
+            'photo_received.required' => 'Foto bukti penerimaan wajib disertakan.',
+            'photo_received.image'    => 'File harus berupa gambar (jpg, png, webp).',
+            'photo_received.max'      => 'Ukuran foto maksimal 10MB.',
         ]);
+
+        // Validate photo_reject required per item when qty_reject > 0
+        foreach ($request->items as $id => $data) {
+            $qtyReject = (int) ($data['qty_reject'] ?? 0);
+            if ($qtyReject > 0) {
+                $hasPhoto = $request->hasFile("items.{$id}.photo_reject") ||
+                            $request->hasFile("photo_reject_{$id}");
+                if (!$hasPhoto) {
+                    $item = HandoverItem::find($id);
+                    return back()->withErrors(['photo_reject' => "Foto bukti cacat wajib disertakan untuk SKU {$item->sku->sku_code} (qty reject: {$qtyReject})."]);
+                }
+            }
+        }
+
+        $photoReceivedPath = $this->compressAndStore($request->file('photo_received'), 'handovers/received');
 
         $hasDiscrepancy = false;
         foreach ($request->items as $id => $data) {
-            $item = HandoverItem::find($id);
+            $item        = HandoverItem::find($id);
             $qtyReceived = (int) $data['qty_received'];
             $qtyReject   = (int) ($data['qty_reject'] ?? 0);
-            $disc = ($qtyReceived + $qtyReject) - $item->qty_sent;
+            $disc        = ($qtyReceived + $qtyReject) - $item->qty_sent;
             if ($disc != 0) $hasDiscrepancy = true;
+
+            $photoRejectPath = null;
+            if ($qtyReject > 0 && $request->hasFile("photo_reject_{$id}")) {
+                $photoRejectPath = $this->compressAndStore($request->file("photo_reject_{$id}"), 'handovers/reject');
+            }
+
             $item->update([
                 'qty_received'      => $qtyReceived,
                 'qty_reject'        => $qtyReject,
                 'reject_notes'      => $data['reject_notes'] ?? null,
+                'photo_reject'      => $photoRejectPath,
                 'discrepancy'       => $disc,
                 'discrepancy_notes' => $data['discrepancy_notes'] ?? null,
             ]);
         }
-        $status = $hasDiscrepancy ? 'discrepancy' : 'confirmed';
-        $handover->update(['status'=>$status,'confirmed_by'=>auth()->id(),'confirmed_at'=>now()]);
 
-        // Auto-create WIP entries when confirmed (no discrepancy)
+        $status = $hasDiscrepancy ? 'discrepancy' : 'confirmed';
+        $handover->update([
+            'status'          => $status,
+            'confirmed_by'    => auth()->id(),
+            'confirmed_at'    => now(),
+            'photo_received'  => $photoReceivedPath,
+        ]);
+
         if (!$hasDiscrepancy) {
             $this->createWipFromHandover($handover, useReceived: true);
         }
@@ -269,6 +312,46 @@ class HandoverController extends Controller
                 ]);
             }
         }
+    }
+
+    /**
+     * Compress and store uploaded photo using GD. Max 1920px wide, 80% JPEG quality.
+     */
+    private function compressAndStore(\Illuminate\Http\UploadedFile $file, string $folder): string
+    {
+        $filename = uniqid() . '_' . time() . '.jpg';
+        $destDir  = storage_path("app/public/{$folder}");
+        if (!is_dir($destDir)) mkdir($destDir, 0755, true);
+        $destPath = "{$destDir}/{$filename}";
+
+        $mime = $file->getMimeType();
+        $src  = match(true) {
+            str_contains($mime, 'png')  => imagecreatefrompng($file->getRealPath()),
+            str_contains($mime, 'webp') => imagecreatefromwebp($file->getRealPath()),
+            default                     => imagecreatefromjpeg($file->getRealPath()),
+        };
+
+        $srcW = imagesx($src);
+        $srcH = imagesy($src);
+        $maxW = 1920;
+
+        if ($srcW > $maxW) {
+            $ratio  = $maxW / $srcW;
+            $newW   = $maxW;
+            $newH   = (int) round($srcH * $ratio);
+            $canvas = imagecreatetruecolor($newW, $newH);
+            // Preserve transparency for PNG
+            imagealphablending($canvas, false);
+            imagesavealpha($canvas, true);
+            imagecopyresampled($canvas, $src, 0, 0, 0, 0, $newW, $newH, $srcW, $srcH);
+            imagedestroy($src);
+            $src = $canvas;
+        }
+
+        imagejpeg($src, $destPath, 80);
+        imagedestroy($src);
+
+        return "storage/{$folder}/{$filename}";
     }
 
     public function destroy(Handover $handover)
