@@ -98,7 +98,6 @@ body {
   width: 110px;
   height: auto;
   margin: 0 auto 1rem;
-  mix-blend-mode: multiply;
   filter: drop-shadow(0 4px 12px rgba(196,148,26,.2));
 }
 
@@ -279,7 +278,7 @@ body {
 <div class="card">
 
   <div class="card-header">
-    <img src="https://mms.img.susercontent.com/a46d39218eb9dae49bf4abec2cd67815" alt="DTHREE Logo" class="brand-logo">
+    <img src="{{ asset('images/dthree-logo.png') }}" alt="DTHREE Logo" class="brand-logo">
     <div class="header-divider"></div>
     <div class="system-label">Production Integration System</div>
   </div>

@@ -63,8 +63,7 @@ body {
 }
 .brand-logo-img {
   width: 90px; height: auto;
-  mix-blend-mode: screen;
-  opacity: .92;
+  opacity: .95;
 }
 .brand-text .sub { color: rgba(255,255,255,.25); font-size: .6rem; letter-spacing: .4px; text-align: center; }
 
@@ -419,7 +418,7 @@ hr { border-color: #edf0f7; }
 <!-- Sidebar -->
 <div id="sidebar">
   <div class="sidebar-brand">
-    <img src="https://mms.img.susercontent.com/a46d39218eb9dae49bf4abec2cd67815" alt="DTHREE" class="brand-logo-img">
+    <img src="{{ asset('images/dthree-logo.png') }}" alt="DTHREE" class="brand-logo-img">
     <div class="brand-text">
       <div class="sub">Production Integration System</div>
     </div>
