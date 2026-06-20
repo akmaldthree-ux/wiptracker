@@ -90,6 +90,20 @@ class HandoverController extends Controller
         foreach ($destPICs as $pic) {
             Notification::create(['user_id'=>$pic->id,'title'=>"Handover Masuk: {$ho->handover_no}",'message'=>"Handover dari stasiun {$fromStation->name} menunggu konfirmasi Anda.",'type'=>'warning','link'=>"/handover/{$ho->id}","is_read"=>false]);
         }
+
+        // Notifikasi ke admin & supervisor
+        $admins = User::whereIn('role', ['admin', 'supervisor'])->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title'   => "Handover Baru: {$ho->handover_no}",
+                'message' => "Handover dari {$fromStation->name} → {$toStation->name} telah dikirim oleh " . auth()->user()->name . ".",
+                'type'    => 'info',
+                'link'    => "/handover/{$ho->id}",
+                'is_read' => false,
+            ]);
+        }
+
         return redirect()->route('handover.show',$ho)->with('success',"Handover {$ho->handover_no} berhasil dibuat.");
     }
 
@@ -221,6 +235,21 @@ class HandoverController extends Controller
                     'is_read' => false,
                 ]);
             }
+        }
+        // Notifikasi ke admin & supervisor
+        $confirmMsg = $hasDiscrepancy
+            ? "Handover {$handover->handover_no} dikonfirmasi dengan DISCREPANCY oleh " . auth()->user()->name . "."
+            : "Handover {$handover->handover_no} ({$handover->fromStation?->name} → {$handover->toStation?->name}) telah dikonfirmasi oleh " . auth()->user()->name . ".";
+        $admins = User::whereIn('role', ['admin', 'supervisor'])->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title'   => ($hasDiscrepancy ? "⚠ Discrepancy" : "✓ Handover Dikonfirmasi") . ": {$handover->handover_no}",
+                'message' => $confirmMsg,
+                'type'    => $hasDiscrepancy ? 'danger' : 'success',
+                'link'    => "/handover/{$handover->id}",
+                'is_read' => false,
+            ]);
         }
 
         if ($hasDiscrepancy) {
