@@ -58,13 +58,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/produksi', [ReportController::class, 'production'])->name('laporan.produksi');
-    Route::get('/laporan/produksi/export-excel', [ReportController::class, 'exportProductionExcel'])->name('laporan.produksi.excel');
-    Route::get('/laporan/produksi/export-pdf', [ReportController::class, 'exportProductionPdf'])->name('laporan.produksi.pdf');
     Route::get('/laporan/handover', [ReportController::class, 'handover'])->name('laporan.handover');
-    Route::get('/laporan/handover/export-excel', [ReportController::class, 'exportHandoverExcel'])->name('laporan.handover.excel');
-    Route::get('/laporan/handover/export-pdf', [ReportController::class, 'exportHandoverPdf'])->name('laporan.handover.pdf');
     Route::get('/laporan/bahan-baku', [ReportController::class, 'material'])->name('laporan.bahan-baku');
     Route::get('/laporan/budget', [ReportController::class, 'budget'])->name('laporan.budget');
+
+    // Export routes
+    Route::get('/laporan/produksi/export-excel', [ReportController::class, 'exportProductionExcel'])->name('laporan.produksi.excel');
+    Route::get('/laporan/produksi/export-pdf', [ReportController::class, 'exportProductionPdf'])->name('laporan.produksi.pdf');
+    Route::get('/laporan/handover/export-excel', [ReportController::class, 'exportHandoverExcel'])->name('laporan.handover.excel');
+    Route::get('/laporan/handover/export-pdf', [ReportController::class, 'exportHandoverPdf'])->name('laporan.handover.pdf');
     Route::get('/laporan/reject/export-excel', [ReportController::class, 'exportRejectExcel'])->name('laporan.reject.excel');
     Route::get('/laporan/reject/export-pdf', [ReportController::class, 'exportRejectPdf'])->name('laporan.reject.pdf');
 
@@ -77,7 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifikasi/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifikasi/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
-    // QC Inspection
+    // QC Inspection routes
     Route::get('/qc', [QcInspectionController::class, 'index'])->name('qc.index');
     Route::get('/qc/create', [QcInspectionController::class, 'create'])->name('qc.create');
     Route::post('/qc', [QcInspectionController::class, 'store'])->name('qc.store');

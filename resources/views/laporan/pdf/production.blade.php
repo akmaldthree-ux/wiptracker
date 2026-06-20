@@ -4,55 +4,46 @@
 <meta charset="UTF-8">
 <title>Laporan Produksi</title>
 <style>
-  body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 20px; }
-  h1 { font-size: 16px; color: #00ADB5; margin-bottom: 4px; }
-  .meta { font-size: 10px; color: #666; margin-bottom: 16px; }
-  table { width: 100%; border-collapse: collapse; }
-  thead th { background: #00ADB5; color: #fff; padding: 7px 8px; text-align: left; font-size: 10px; }
-  tbody td { padding: 6px 8px; border-bottom: 1px solid #eee; }
-  tbody tr:nth-child(even) { background: #f9fafb; }
-  .badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 9px; font-weight: bold; }
-  .badge-active { background: #d1fae5; color: #065f46; }
-  .badge-draft { background: #fef3c7; color: #92400e; }
-  .badge-completed { background: #dbeafe; color: #1e40af; }
-  .badge-cancelled { background: #fee2e2; color: #991b1b; }
-  .footer { margin-top: 20px; font-size: 9px; color: #999; text-align: right; }
+body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #222; margin: 20px; }
+h1 { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+.subtitle { color: #666; font-size: 11px; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+thead th { background: #0d6efd; color: #fff; padding: 7px 10px; text-align: left; font-size: 11px; }
+tbody td { padding: 6px 10px; border-bottom: 1px solid #eee; font-size: 11px; }
+tbody tr:nth-child(even) { background: #f8f9fa; }
+.badge-active { color: #1d4ed8; } .badge-completed { color: #065f46; } .badge-draft { color: #475569; }
 </style>
 </head>
 <body>
-<h1>Laporan Produksi — DPIS</h1>
-<div class="meta">Periode: {{ $dateFrom }} s/d {{ $dateTo }} &nbsp;|&nbsp; Dicetak: {{ now()->format('d/m/Y H:i') }}</div>
+<h1>Laporan Produksi</h1>
+<div class="subtitle">Periode: {{ $dateFrom }} s/d {{ $dateTo }} &nbsp;|&nbsp; Dicetak: {{ now()->format('d M Y H:i') }}</div>
 <table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>No. Order</th>
-      <th>Produk</th>
-      <th>Series</th>
-      <th>Qty Target</th>
-      <th>Status</th>
-      <th>Target Tgl</th>
-    </tr>
-  </thead>
-  <tbody>
-    @forelse($orders as $i => $order)
-    <tr>
-      <td>{{ $i + 1 }}</td>
-      <td><strong>{{ $order->order_no }}</strong></td>
-      <td>{{ $order->product?->name ?? '-' }}</td>
-      <td>{{ $order->series?->name ?? '-' }}</td>
-      <td>{{ number_format($order->getTotalTargetQty()) }}</td>
-      <td>
-        @php $cls = match($order->status) { 'active'=>'badge-active','draft'=>'badge-draft','completed'=>'badge-completed',default=>'badge-cancelled' }; @endphp
-        <span class="badge {{ $cls }}">{{ strtoupper($order->status) }}</span>
-      </td>
-      <td>{{ $order->target_date ? \Carbon\Carbon::parse($order->target_date)->format('d/m/Y') : '-' }}</td>
-    </tr>
-    @empty
-    <tr><td colspan="7" style="text-align:center;padding:20px;color:#999">Tidak ada data</td></tr>
-    @endforelse
-  </tbody>
+    <thead>
+        <tr>
+            <th>No. Order</th>
+            <th>Produk</th>
+            <th>Series</th>
+            <th>Target Qty</th>
+            <th>Progress</th>
+            <th>Deadline</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($orders as $order)
+        <tr>
+            <td>{{ $order->order_no }}</td>
+            <td>{{ $order->product->name ?? '-' }}</td>
+            <td>{{ $order->series->name ?? '-' }}</td>
+            <td>{{ number_format($order->getTotalTargetQty()) }}</td>
+            <td>{{ $order->getProgressPercentage() }}%</td>
+            <td>{{ $order->target_date ? \Carbon\Carbon::parse($order->target_date)->format('d M Y') : '-' }}</td>
+            <td>{{ $order->getStatusLabelAttribute() }}</td>
+        </tr>
+        @empty
+        <tr><td colspan="7" style="text-align:center;padding:20px;color:#999">Tidak ada data</td></tr>
+        @endforelse
+    </tbody>
 </table>
-<div class="footer">DPIS &copy; {{ date('Y') }} — Dthree Production Integration System</div>
 </body>
 </html>

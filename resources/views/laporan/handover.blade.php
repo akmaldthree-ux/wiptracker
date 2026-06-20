@@ -6,10 +6,10 @@
         <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><a href="{{ route('laporan.index') }}">Laporan</a></li><li class="breadcrumb-item active">Handover</li></ol></nav>
         <h4 class="mb-0 fw-bold">Laporan Handover</h4>
     </div>
-    <div class="d-flex gap-2 flex-wrap">
-      <a href="{{ route('laporan.handover.excel', request()->query()) }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a>
-      <a href="{{ route('laporan.handover.pdf', request()->query()) }}" class="btn btn-danger btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</a>
-      <button onclick="window.print()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer me-1"></i>Cetak</button>
+    <div class="d-flex gap-2">
+        <a href="{{ route('laporan.handover.excel') }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel me-1"></i>Export Excel</a>
+        <a href="{{ route('laporan.handover.pdf') }}" class="btn btn-danger btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>Export PDF</a>
+        <button onclick="window.print()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer me-1"></i>Cetak</button>
     </div>
 </div>
 

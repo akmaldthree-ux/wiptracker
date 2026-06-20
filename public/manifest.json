@@ -1,22 +1,14 @@
 {
-    "name": "DPIS - Dthree Production Integration System",
-    "short_name": "DPIS",
-    "description": "Production management system for DTHREE garment factory",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#222831",
-    "theme_color": "#00ADB5",
-    "orientation": "any",
-    "icons": [
-        {
-            "src": "/images/dthree-logo.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/images/dthree-logo.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+  "name": "DPIS - Garment Production",
+  "short_name": "DPIS",
+  "description": "Garment Manufacturing Management System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "orientation": "any",
+  "icons": [
+    {"src": "/images/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/images/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
 }

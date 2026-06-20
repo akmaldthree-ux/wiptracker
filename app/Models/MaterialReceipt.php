@@ -6,5 +6,5 @@ class MaterialReceipt extends Model {
     protected $casts = ['receipt_date' => 'date', 'qty' => 'decimal:2', 'unit_price' => 'decimal:2', 'total_price' => 'decimal:2'];
     public function material() { return $this->belongsTo(RawMaterial::class, 'raw_material_id'); }
     public function confirmedBy() { return $this->belongsTo(User::class, 'confirmed_by'); }
-    public function supplier() { return $this->belongsTo(Supplier::class); }
+    public function supplierRelation() { return $this->belongsTo(Supplier::class, 'supplier_id'); }
 }

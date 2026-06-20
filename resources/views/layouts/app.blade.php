@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>@yield('title','DPIS') — Dthree Production Integration System</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#00ADB5">
+<meta name="theme-color" content="#0d6efd">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="DPIS">
+<title>@yield('title','DPIS') — Dthree Production Integration System</title>
 <link href="/css/bootstrap.min.css" rel="stylesheet">
 <link href="/css/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -440,9 +439,6 @@ hr { border-color: #edf0f7; }
     <a href="{{ route('dashboard.wip-monitor') }}" class="nav-link {{ request()->routeIs('dashboard.wip-monitor') ? 'active' : '' }}">
       <i class="bi bi-radar"></i> WIP Monitor
     </a>
-    <a href="{{ route('qc.index') }}" class="nav-link {{ request()->routeIs('qc.*') ? 'active' : '' }}">
-      <i class="bi bi-shield-check"></i> QC Inspection
-    </a>
     <a href="{{ route('dashboard.reject') }}" class="nav-link {{ request()->routeIs('dashboard.reject') ? 'active' : '' }}">
       <i class="bi bi-x-octagon"></i> Dashboard Reject
       @php
@@ -467,6 +463,9 @@ hr { border-color: #edf0f7; }
       <i class="bi bi-arrow-left-right"></i> Handover
       @php $pendingHo = \App\Models\Handover::where('status','pending')->count(); @endphp
       @if($pendingHo > 0)<span class="badge bg-warning text-dark ms-auto">{{ $pendingHo }}</span>@endif
+    </a>
+    <a href="{{ route('qc.index') }}" class="nav-link {{ request()->routeIs('qc.*') ? 'active' : '' }}">
+        <i class="bi bi-shield-check"></i> QC Inspeksi
     </a>
 
     <div class="nav-section-title">Bahan & Biaya</div>
@@ -510,7 +509,7 @@ hr { border-color: #edf0f7; }
         <a href="{{ route('master.ukuran.index') }}"          class="nav-link {{ request()->routeIs('master.ukuran.*') ? 'active' : '' }}"><i class="bi bi-rulers"></i> Ukuran</a>
         <a href="{{ route('master.stasiun.index') }}"         class="nav-link {{ request()->routeIs('master.stasiun.*') ? 'active' : '' }}"><i class="bi bi-geo-alt"></i> Stasiun</a>
         <a href="{{ route('master.sewing-location.index') }}" class="nav-link {{ request()->routeIs('master.sewing-location.*') ? 'active' : '' }}"><i class="bi bi-building"></i> Tempat Sewing</a>
-        <a href="{{ route('master.supplier.index') }}" class="nav-link {{ request()->routeIs('master.supplier.*') ? 'active' : '' }}"><i class="bi bi-truck"></i> Supplier</a>
+        <a href="{{ route('master.supplier.index') }}" class="nav-link {{ request()->routeIs('master.supplier.*') ? 'active' : '' }}"><i class="bi bi-building"></i> Supplier</a>
       </div>
     </div>
     @endif
@@ -635,11 +634,17 @@ function closeSidebar() {
   document.getElementById('overlay').classList.remove('show');
 }
 </script>
-@stack('scripts')
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      console.log('SW registered:', reg.scope);
+    }).catch(function(err) {
+      console.log('SW registration failed:', err);
+    });
+  });
 }
 </script>
+@stack('scripts')
 </body>
 </html>

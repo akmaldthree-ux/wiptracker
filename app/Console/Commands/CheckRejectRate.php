@@ -1,51 +1,50 @@
 <?php
 namespace App\Console\Commands;
-
 use App\Mail\HighRejectRateMail;
-use App\Models\{HandoverItem, WipEntry, User};
+use App\Models\{HandoverItem, User};
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class CheckRejectRate extends Command
 {
-    protected $signature   = 'check:reject-rate';
-    protected $description = 'Check monthly reject rate and notify if it exceeds 5%';
+    protected $signature = 'check:reject-rate';
+    protected $description = 'Check monthly reject rate and notify if above threshold';
 
     public function handle(): void
     {
-        $start = now()->startOfMonth();
-        $end   = now()->endOfMonth();
-        $month = now()->format('Y-m');
+        $month = now()->format('F Y');
 
-        $totalReject = HandoverItem::whereNotNull('reject_type')
-            ->where('qty_reject', '>', 0)
-            ->whereHas('handover', fn($q) => $q->whereIn('status', ['confirmed', 'approved', 'discrepancy'])
-                ->whereBetween('confirmed_at', [$start, $end]))
-            ->sum('qty_reject');
+        $totalSent = HandoverItem::whereHas('handover', function($q) {
+            $q->whereMonth('confirmed_at', now()->month)
+              ->whereYear('confirmed_at', now()->year)
+              ->whereNotNull('confirmed_at');
+        })->sum('qty_sent');
 
-        $totalProduced = WipEntry::whereBetween('input_date', [$start->toDateString(), $end->toDateString()])
-            ->sum('qty_out');
+        $totalReject = HandoverItem::whereHas('handover', function($q) {
+            $q->whereMonth('confirmed_at', now()->month)
+              ->whereYear('confirmed_at', now()->year)
+              ->whereNotNull('confirmed_at');
+        })->where('qty_reject', '>', 0)->sum('qty_reject');
 
-        if ($totalProduced == 0) {
-            $this->info('No production data yet for this month.');
+        if ($totalSent == 0) {
+            $this->info('No data to analyze.');
             return;
         }
 
-        $rejectRate = round(($totalReject / $totalProduced) * 100, 2);
+        $rejectRate = ($totalReject / $totalSent) * 100;
 
-        if ($rejectRate <= 5) {
-            $this->info("Reject rate {$rejectRate}% — within acceptable range.");
-            return;
+        if ($rejectRate > 5) {
+            $recipients = User::whereIn('role', ['admin', 'supervisor'])->get();
+            foreach ($recipients as $user) {
+                if ($user->email) {
+                    Mail::to($user->email)->send(new HighRejectRateMail($rejectRate, $month));
+                }
+            }
+            Log::warning("CheckRejectRate: Reject rate {$rejectRate}% for {$month} — alerts sent.");
+            $this->warn("Reject rate {$rejectRate}% exceeds threshold. Alerts sent.");
+        } else {
+            $this->info("Reject rate {$rejectRate}% is within acceptable range.");
         }
-
-        $recipients = User::whereIn('role', ['admin', 'supervisor'])
-            ->whereNotNull('email')
-            ->pluck('email');
-
-        foreach ($recipients as $email) {
-            Mail::to($email)->send(new HighRejectRateMail($rejectRate, (int) $totalReject, $month));
-        }
-
-        $this->info("Reject rate {$rejectRate}% exceeds 5%. Notified {$recipients->count()} recipients.");
     }
 }

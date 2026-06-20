@@ -1,27 +1,35 @@
 const CACHE_NAME = 'dpis-v1';
+const urlsToCache = ['/', '/css/app.css', '/js/app.js'];
 
-self.addEventListener('install', (e) => {
-    self.skipWaiting();
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
-self.addEventListener('activate', (e) => {
-    e.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-        )
-    );
-    self.clients.claim();
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      if (response) return response;
+      return fetch(event.request).catch(function() {
+        return caches.match('/');
+      });
+    })
+  );
 });
 
-self.addEventListener('fetch', (e) => {
-    // Only handle GET requests, skip POST/PUT/PATCH/DELETE
-    if (e.request.method !== 'GET') return;
-    // Skip cross-origin requests
-    if (!e.request.url.startsWith(self.location.origin)) return;
-
-    e.respondWith(
-        fetch(e.request).catch(() =>
-            caches.match(e.request).then(cached => cached || new Response('Offline', { status: 503 }))
-        )
-    );
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.filter(function(cacheName) {
+          return cacheName !== CACHE_NAME;
+        }).map(function(cacheName) {
+          return caches.delete(cacheName);
+        })
+      );
+    })
+  );
 });

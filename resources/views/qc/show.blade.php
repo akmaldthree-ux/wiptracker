@@ -2,97 +2,94 @@
 @section('title','Detail Inspeksi QC')
 @section('page-title','Detail Inspeksi QC')
 @section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item"><a href="{{ route('qc.index') }}">QC Inspeksi</a></li>
+            <li class="breadcrumb-item active">Detail #{{ $qc->id }}</li>
+        </ol></nav>
+        <h4 class="mb-0 fw-bold">Inspeksi #{{ $qc->id }}</h4>
+    </div>
+    <a href="{{ route('qc.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+</div>
 
-<div class="row g-3">
-  {{-- Summary Card --}}
-  <div class="col-12 col-lg-5">
-    <div class="card h-100">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <span><i class="bi bi-shield-check me-2"></i>Ringkasan Inspeksi</span>
-        @if($qc->status === 'pass')
-          <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>PASS</span>
-        @elseif($qc->status === 'fail')
-          <span class="badge bg-danger fs-6"><i class="bi bi-x-circle me-1"></i>FAIL</span>
-        @else
-          <span class="badge bg-warning text-dark fs-6"><i class="bi bi-exclamation-circle me-1"></i>CONDITIONAL</span>
-        @endif
-      </div>
-      <div class="card-body">
-        <dl class="row mb-0" style="font-size:.875rem">
-          <dt class="col-5 text-muted">Order</dt>
-          <dd class="col-7 fw-semibold">{{ $qc->order?->order_no }}</dd>
-          <dt class="col-5 text-muted">Produk</dt>
-          <dd class="col-7">{{ $qc->order?->product?->name ?? '-' }}</dd>
-          <dt class="col-5 text-muted">Inspector</dt>
-          <dd class="col-7">{{ $qc->inspector?->name }}</dd>
-          <dt class="col-5 text-muted">Tanggal</dt>
-          <dd class="col-7">{{ $qc->inspected_at?->format('d M Y H:i') }}</dd>
-          <dt class="col-5 text-muted">Total Diperiksa</dt>
-          <dd class="col-7 fw-bold">{{ number_format($qc->total_checked) }} pcs</dd>
-          <dt class="col-5 text-muted">Total Defect</dt>
-          <dd class="col-7 fw-bold text-{{ $qc->total_defect > 0 ? 'danger' : 'success' }}">{{ $qc->total_defect }} pcs</dd>
-          <dt class="col-5 text-muted">Defect Rate</dt>
-          <dd class="col-7">
-            <span class="badge {{ $qc->defect_rate == 0 ? 'bg-success' : ($qc->defect_rate > 5 ? 'bg-danger' : 'bg-warning text-dark') }} fs-6">
-              {{ $qc->defect_rate }}%
-            </span>
-          </dd>
-          @if($qc->notes)
-          <dt class="col-5 text-muted">Catatan</dt>
-          <dd class="col-7">{{ $qc->notes }}</dd>
-          @endif
-        </dl>
-
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-info-circle me-2"></i>Informasi Inspeksi</div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm">
+                    <tr><th class="text-muted fw-normal" style="width:40%">No. Order</th><td class="fw-semibold">{{ $qc->order->order_no ?? '-' }}</td></tr>
+                    <tr><th class="text-muted fw-normal">Produk</th><td>{{ $qc->order->product->name ?? '-' }}</td></tr>
+                    <tr><th class="text-muted fw-normal">Inspektor</th><td>{{ $qc->inspector->name ?? '-' }}</td></tr>
+                    <tr><th class="text-muted fw-normal">Tanggal</th><td>{{ $qc->inspected_at->format('d M Y H:i') }}</td></tr>
+                    <tr><th class="text-muted fw-normal">Total Diperiksa</th><td>{{ number_format($qc->total_checked) }} pcs</td></tr>
+                    <tr><th class="text-muted fw-normal">Total Defect</th><td>{{ number_format($qc->total_defect) }} pcs</td></tr>
+                    <tr>
+                        <th class="text-muted fw-normal">Defect Rate</th>
+                        <td class="fw-bold {{ $qc->defect_rate > 5 ? 'text-danger' : ($qc->defect_rate > 0 ? 'text-warning' : 'text-success') }}">
+                            {{ number_format($qc->defect_rate, 2) }}%
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted fw-normal">Status</th>
+                        <td>
+                            @if($qc->status === 'pass')
+                                <span class="badge bg-success fs-6">Pass</span>
+                            @elseif($qc->status === 'fail')
+                                <span class="badge bg-danger fs-6">Fail</span>
+                            @else
+                                <span class="badge bg-warning fs-6">Conditional</span>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
+                @if($qc->notes)
+                <div class="mt-2 p-2 bg-light rounded small">{{ $qc->notes }}</div>
+                @endif
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
         @if($qc->photo_evidence)
-        <div class="mt-3">
-          <p class="fw-semibold mb-2" style="font-size:.85rem">Foto Bukti:</p>
-          <a href="{{ asset($qc->photo_evidence) }}" target="_blank">
-            <img src="{{ asset($qc->photo_evidence) }}" alt="Foto Inspeksi"
-                 style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--primary);object-fit:cover">
-          </a>
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-image me-2"></i>Foto Bukti</div>
+            <div class="card-body text-center">
+                <img src="{{ asset($qc->photo_evidence) }}" alt="Foto Bukti" class="img-fluid rounded" style="max-height:300px">
+            </div>
         </div>
         @endif
-      </div>
+        <div class="card">
+            <div class="card-header"><i class="bi bi-list-check me-2"></i>Hasil Checklist</div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-center">Hasil</th>
+                            <th>Catatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($qc->checklistItems as $item)
+                        <tr>
+                            <td>{{ $item->checklist_item }}</td>
+                            <td class="text-center">
+                                @if($item->result === 'ok')
+                                    <span class="badge bg-success">OK</span>
+                                @elseif($item->result === 'fail')
+                                    <span class="badge bg-danger">Fail</span>
+                                @else
+                                    <span class="badge bg-secondary">N/A</span>
+                                @endif
+                            </td>
+                            <td class="small text-muted">{{ $item->notes ?? '-' }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
-
-  {{-- Checklist --}}
-  <div class="col-12 col-lg-7">
-    <div class="card h-100">
-      <div class="card-header"><i class="bi bi-list-check me-2"></i>Hasil Checklist</div>
-      <div class="table-responsive">
-        <table class="table mb-0" style="font-size:.875rem">
-          <thead>
-            <tr>
-              <th>Item Pemeriksaan</th>
-              <th class="text-center">Hasil</th>
-              <th>Catatan</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($qc->items as $item)
-            <tr>
-              <td class="fw-semibold">{{ $item->checklist_item }}</td>
-              <td class="text-center">
-                @if($item->result === 'ok')
-                  <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>OK</span>
-                @elseif($item->result === 'fail')
-                  <span class="badge bg-danger"><i class="bi bi-x-lg me-1"></i>FAIL</span>
-                @else
-                  <span class="badge bg-secondary">N/A</span>
-                @endif
-              </td>
-              <td class="text-muted">{{ $item->notes ?: '-' }}</td>
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12">
-    <a href="{{ route('qc.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
-  </div>
 </div>
 @endsection
