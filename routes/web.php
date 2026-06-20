@@ -14,10 +14,12 @@ use App\Http\Controllers\MasterData\ColorController;
 use App\Http\Controllers\MasterData\SizeController;
 use App\Http\Controllers\MasterData\StationController;
 use App\Http\Controllers\MasterData\SewingLocationController;
+use App\Http\Controllers\MasterData\SupplierController;
 use App\Http\Controllers\CuttingPlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RejectController;
+use App\Http\Controllers\QcInspectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
@@ -56,9 +58,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/produksi', [ReportController::class, 'production'])->name('laporan.produksi');
+    Route::get('/laporan/produksi/export-excel', [ReportController::class, 'exportProductionExcel'])->name('laporan.produksi.excel');
+    Route::get('/laporan/produksi/export-pdf', [ReportController::class, 'exportProductionPdf'])->name('laporan.produksi.pdf');
     Route::get('/laporan/handover', [ReportController::class, 'handover'])->name('laporan.handover');
+    Route::get('/laporan/handover/export-excel', [ReportController::class, 'exportHandoverExcel'])->name('laporan.handover.excel');
+    Route::get('/laporan/handover/export-pdf', [ReportController::class, 'exportHandoverPdf'])->name('laporan.handover.pdf');
     Route::get('/laporan/bahan-baku', [ReportController::class, 'material'])->name('laporan.bahan-baku');
     Route::get('/laporan/budget', [ReportController::class, 'budget'])->name('laporan.budget');
+    Route::get('/laporan/reject/export-excel', [ReportController::class, 'exportRejectExcel'])->name('laporan.reject.excel');
+    Route::get('/laporan/reject/export-pdf', [ReportController::class, 'exportRejectPdf'])->name('laporan.reject.pdf');
 
     Route::resource('cutting', CuttingPlanController::class);
     Route::patch('cutting/{cutting}/status', [CuttingPlanController::class, 'updateStatus'])->name('cutting.status');
@@ -69,6 +77,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifikasi/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifikasi/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
+    // QC Inspection
+    Route::get('/qc', [QcInspectionController::class, 'index'])->name('qc.index');
+    Route::get('/qc/create', [QcInspectionController::class, 'create'])->name('qc.create');
+    Route::post('/qc', [QcInspectionController::class, 'store'])->name('qc.store');
+    Route::get('/qc/{qc}', [QcInspectionController::class, 'show'])->name('qc.show');
+
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('produk', ProductController::class);
         Route::resource('series', SeriesController::class);
@@ -76,6 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('ukuran', SizeController::class);
         Route::resource('stasiun', StationController::class);
         Route::resource('sewing-location', SewingLocationController::class);
+        Route::resource('supplier', SupplierController::class);
     });
 
     Route::resource('users', UserController::class);

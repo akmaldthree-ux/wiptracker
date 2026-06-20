@@ -1,7 +1,11 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{ProductionOrder, WipEntry, Handover, RawMaterial, Budget, Station};
+
+use App\Exports\{ProductionReportExport, HandoverReportExport, RejectReportExport};
+use App\Models\{ProductionOrder, WipEntry, Handover, HandoverItem, RawMaterial, Budget, Station};
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -21,6 +25,23 @@ class ReportController extends Controller
         return view('laporan.produksi', compact('data','orders','dateFrom','dateTo','stations','products'));
     }
 
+    public function exportProductionExcel(Request $request)
+    {
+        $dateFrom = $request->date_from ?? now()->startOfMonth()->toDateString();
+        $dateTo   = $request->date_to ?? today()->toDateString();
+        $orders   = ProductionOrder::with(['product','series'])->whereBetween('created_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->get();
+        return Excel::download(new ProductionReportExport($orders), 'laporan-produksi-'.$dateFrom.'-'.$dateTo.'.xlsx');
+    }
+
+    public function exportProductionPdf(Request $request)
+    {
+        $dateFrom = $request->date_from ?? now()->startOfMonth()->toDateString();
+        $dateTo   = $request->date_to ?? today()->toDateString();
+        $orders   = ProductionOrder::with(['product','series'])->whereBetween('created_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->get();
+        $pdf = Pdf::loadView('laporan.pdf.production', compact('orders','dateFrom','dateTo'))->setPaper('a4','landscape');
+        return $pdf->download('laporan-produksi-'.$dateFrom.'-'.$dateTo.'.pdf');
+    }
+
     public function handover(Request $request)
     {
         $dateFrom = $request->date_from ?? now()->startOfMonth()->toDateString();
@@ -29,6 +50,23 @@ class ReportController extends Controller
             ->whereBetween('initiated_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->latest()->get();
         $discrepancyTotal = $handovers->sum(fn($h) => abs($h->items->sum('discrepancy') ?? 0));
         return view('laporan.handover', compact('handovers','dateFrom','dateTo','discrepancyTotal'));
+    }
+
+    public function exportHandoverExcel(Request $request)
+    {
+        $dateFrom = $request->date_from ?? now()->startOfMonth()->toDateString();
+        $dateTo   = $request->date_to ?? today()->toDateString();
+        $handovers = Handover::with(['order','fromStation','toStation','items'])->whereBetween('initiated_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->latest()->get();
+        return Excel::download(new HandoverReportExport($handovers), 'laporan-handover-'.$dateFrom.'-'.$dateTo.'.xlsx');
+    }
+
+    public function exportHandoverPdf(Request $request)
+    {
+        $dateFrom = $request->date_from ?? now()->startOfMonth()->toDateString();
+        $dateTo   = $request->date_to ?? today()->toDateString();
+        $handovers = Handover::with(['order','fromStation','toStation','items'])->whereBetween('initiated_at',[$dateFrom.' 00:00:00',$dateTo.' 23:59:59'])->latest()->get();
+        $pdf = Pdf::loadView('laporan.pdf.handover', compact('handovers','dateFrom','dateTo'))->setPaper('a4','landscape');
+        return $pdf->download('laporan-handover-'.$dateFrom.'-'.$dateTo.'.pdf');
     }
 
     public function material(Request $request)
@@ -43,5 +81,30 @@ class ReportController extends Controller
     {
         $budgets = Budget::with(['order.product'])->get();
         return view('laporan.budget', compact('budgets'));
+    }
+
+    public function exportRejectExcel(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $start = \Carbon\Carbon::parse($month.'-01')->startOfMonth();
+        $end   = $start->copy()->endOfMonth();
+        $rejects = HandoverItem::with(['handover.order','handover.toStation','sku'])
+            ->whereNotNull('reject_type')->where('qty_reject', '>', 0)
+            ->whereHas('handover', fn($q) => $q->whereIn('status',['confirmed','approved','discrepancy'])->whereBetween('confirmed_at',[$start,$end]))
+            ->orderByDesc('updated_at')->get();
+        return Excel::download(new RejectReportExport($rejects), 'laporan-reject-'.$month.'.xlsx');
+    }
+
+    public function exportRejectPdf(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $start = \Carbon\Carbon::parse($month.'-01')->startOfMonth();
+        $end   = $start->copy()->endOfMonth();
+        $recentRejects = HandoverItem::with(['handover.order','handover.toStation','sku'])
+            ->whereNotNull('reject_type')->where('qty_reject', '>', 0)
+            ->whereHas('handover', fn($q) => $q->whereIn('status',['confirmed','approved','discrepancy'])->whereBetween('confirmed_at',[$start,$end]))
+            ->orderByDesc('updated_at')->get();
+        $pdf = Pdf::loadView('laporan.pdf.reject', compact('recentRejects','month'))->setPaper('a4','landscape');
+        return $pdf->download('laporan-reject-'.$month.'.pdf');
     }
 }
