@@ -196,6 +196,33 @@ class HandoverController extends Controller
             }
         }
 
+        // Notifikasi ke pengirim: handover sudah dikonfirmasi
+        $senderUser = $handover->initiatedBy;
+        if ($senderUser) {
+            Notification::create([
+                'user_id' => $senderUser->id,
+                'title'   => "Handover Dikonfirmasi: {$handover->handover_no}",
+                'message' => "Handover Anda ke stasiun {$handover->toStation?->name} telah dikonfirmasi oleh " . auth()->user()->name . ".",
+                'type'    => 'success',
+                'link'    => "/handover/{$handover->id}",
+                'is_read' => false,
+            ]);
+        }
+        // Notifikasi ke PIC stasiun pengirim juga
+        if ($handover->from_station_id) {
+            $senderPICs = User::where('station_id', $handover->from_station_id)->where('id', '!=', $senderUser?->id ?? 0)->get();
+            foreach ($senderPICs as $pic) {
+                Notification::create([
+                    'user_id' => $pic->id,
+                    'title'   => "Handover Dikonfirmasi: {$handover->handover_no}",
+                    'message' => "Handover dari stasiun {$handover->fromStation?->name} ke {$handover->toStation?->name} telah dikonfirmasi.",
+                    'type'    => 'success',
+                    'link'    => "/handover/{$handover->id}",
+                    'is_read' => false,
+                ]);
+            }
+        }
+
         if ($hasDiscrepancy) {
             $supervisors = User::where('role','supervisor')->orWhere('role','admin')->get();
             foreach ($supervisors as $s) {
@@ -217,6 +244,27 @@ class HandoverController extends Controller
 
         // Auto-create WIP entries when discrepancy is approved (use qty_received as actuals)
         $this->createWipFromHandover($handover, useReceived: true);
+
+        // Notifikasi ke pengirim dan penerima bahwa discrepancy sudah disetujui
+        $notifyUsers = collect();
+        if ($handover->initiatedBy) $notifyUsers->push($handover->initiatedBy);
+        if ($handover->confirmedBy) $notifyUsers->push($handover->confirmedBy);
+        if ($handover->from_station_id) {
+            User::where('station_id', $handover->from_station_id)->get()->each(fn($u) => $notifyUsers->push($u));
+        }
+        if ($handover->to_station_id) {
+            User::where('station_id', $handover->to_station_id)->get()->each(fn($u) => $notifyUsers->push($u));
+        }
+        foreach ($notifyUsers->unique('id') as $u) {
+            Notification::create([
+                'user_id' => $u->id,
+                'title'   => "Handover Disetujui: {$handover->handover_no}",
+                'message' => "Discrepancy pada handover {$handover->handover_no} telah disetujui oleh " . auth()->user()->name . ". WIP sudah diperbarui.",
+                'type'    => 'success',
+                'link'    => "/handover/{$handover->id}",
+                'is_read' => false,
+            ]);
+        }
 
         return back()->with('success','Discrepancy handover telah disetujui. WIP diperbarui berdasarkan qty aktual yang diterima.');
     }
