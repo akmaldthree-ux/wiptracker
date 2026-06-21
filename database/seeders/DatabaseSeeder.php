@@ -497,6 +497,17 @@ class DatabaseSeeder extends Seeder
         QcChecklistItem::create(['qc_inspection_id'=>$qc3->id,'checklist_item'=>'Kancing','result'=>'ok']);
 
         // ─────────────────────────────────────────────
+        // WIP CUTTING — ORD-006 Abaya Bordir (ACTIVE cutting, belum ke sewing)
+        // Status order diubah ke active agar WIP masuk akal
+        $ord6->update(['status'=>'active']);
+        // Cutting baru berjalan sebagian — 35 dari 50 pcs BLK-M sudah di-cut, 40 OLV-L baru masuk
+        WipEntry::create(['production_order_id'=>$ord6->id,'sku_id'=>$skus['SKU-ABY-BRD-BLK-M']->id,'station_id'=>$stCut->id,'qty_in'=>50,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-19','created_by'=>$uCut->id,'notes'=>'Kain masuk cutting, proses pemotongan pola bordir']);
+        WipEntry::create(['production_order_id'=>$ord6->id,'sku_id'=>$skus['SKU-ABY-BRD-OLV-L']->id,'station_id'=>$stCut->id,'qty_in'=>40,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-19','created_by'=>$uCut->id,'notes'=>'Kain olive masuk cutting']);
+        // Sebagian sudah selesai dipotong tapi belum dikirim ke sewing
+        WipEntry::create(['production_order_id'=>$ord6->id,'sku_id'=>$skus['SKU-ABY-BRD-BLK-M']->id,'station_id'=>$stCut->id,'qty_in'=>0,'qty_out'=>20,'qty_reject'=>0,'input_date'=>'2026-06-20','created_by'=>$uCut->id,'notes'=>'20 pcs selesai dipotong, menunggu bundle']);
+        // Sisa 30 BLK-M + 40 OLV-L masih dalam proses cutting = 70 pcs di cutting
+
+        // ─────────────────────────────────────────────
         // NOTIFIKASI
         // ─────────────────────────────────────────────
         Notification::create(['user_id'=>$uAdmin->id,'title'=>'✅ Order ORD-2026-001 Selesai','message'=>'Order jubah Ramadan Premium telah selesai dan masuk gudang. Total 496 pcs diterima.','type'=>'success','link'=>'/orders/'.$ord1->id,'is_read'=>true]);
