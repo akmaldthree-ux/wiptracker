@@ -36,11 +36,18 @@
                         <label class="form-label fw-semibold">Deskripsi</label>
                         <textarea name="description" class="form-control" rows="3">{{ old('description', $station->description ?? '') }}</textarea>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', ($station->is_active ?? true) ? '1' : '0') == '1' ? 'checked' : '' }}>
                             <label class="form-check-label fw-semibold" for="is_active">Stasiun Aktif</label>
                         </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_final" id="is_final" value="1" {{ old('is_final', ($station->is_final ?? false) ? '1' : '0') == '1' ? 'checked' : '' }}>
+                            <label class="form-check-label fw-semibold" for="is_final">Stasiun Akhir (Gudang)</label>
+                        </div>
+                        <div class="form-text">Centang jika ini adalah stasiun terakhir dalam alur produksi (misal: Gudang). PIC stasiun ini dapat menyelesaikan order untuk menutup WIP.</div>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Simpan</button>

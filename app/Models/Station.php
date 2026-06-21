@@ -5,8 +5,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Station extends Model
 {
-    protected $fillable = ['name', 'code', 'order_sequence', 'description', 'bottleneck_threshold', 'is_active'];
-    protected $casts = ['is_active' => 'boolean'];
+    protected $fillable = ['name', 'code', 'order_sequence', 'description', 'bottleneck_threshold', 'is_active', 'is_final'];
+    protected $casts = ['is_active' => 'boolean', 'is_final' => 'boolean'];
 
     public function users(): HasMany { return $this->hasMany(User::class); }
     public function wipEntries(): HasMany { return $this->hasMany(WipEntry::class); }

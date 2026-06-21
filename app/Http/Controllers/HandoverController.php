@@ -298,6 +298,59 @@ class HandoverController extends Controller
         return back()->with('success','Discrepancy handover telah disetujui. WIP diperbarui berdasarkan qty aktual yang diterima.');
     }
 
+    public function completeOrder(Request $request, Handover $handover)
+    {
+        $order = $handover->order;
+        abort_if(!$handover->toStation?->is_final, 403, 'Hanya stasiun akhir yang dapat menyelesaikan order.');
+        abort_if($order->status === 'completed', 409, 'Order sudah diselesaikan.');
+        abort_if(!in_array($handover->status, ['confirmed', 'approved']), 403, 'Handover harus sudah dikonfirmasi.');
+
+        $canComplete = in_array(auth()->user()->role, ['admin', 'supervisor'])
+            || auth()->user()->station_id == $handover->to_station_id;
+        abort_if(!$canComplete, 403);
+
+        $order->update(['status' => 'completed']);
+
+        // WIP flush: record qty_out for the final station to close out remaining WIP
+        $today = now()->toDateString();
+        foreach ($handover->items as $item) {
+            $qty = (int) ($item->qty_received ?? $item->qty_sent);
+            if ($qty <= 0) continue;
+            WipEntry::create([
+                'production_order_id' => $order->id,
+                'sku_id'              => $item->sku_id,
+                'station_id'          => $handover->to_station_id,
+                'qty_in'              => 0,
+                'qty_out'             => $qty,
+                'qty_reject'          => 0,
+                'input_date'          => $today,
+                'notes'               => "Selesai — Order {$order->order_no} ditutup oleh " . auth()->user()->name,
+                'created_by'          => auth()->id(),
+            ]);
+        }
+
+        // Notify all relevant parties
+        $notifyUsers = collect();
+        User::whereIn('role', ['admin', 'supervisor'])->get()->each(fn($u) => $notifyUsers->push($u));
+        if ($handover->initiatedBy) $notifyUsers->push($handover->initiatedBy);
+        if ($handover->confirmedBy) $notifyUsers->push($handover->confirmedBy);
+        User::where('station_id', $handover->to_station_id)->get()->each(fn($u) => $notifyUsers->push($u));
+
+        foreach ($notifyUsers->unique('id') as $u) {
+            Notification::create([
+                'user_id' => $u->id,
+                'title'   => "Order Selesai: {$order->order_no}",
+                'message' => "Order produksi {$order->order_no} telah diselesaikan oleh " . auth()->user()->name . " di stasiun {$handover->toStation->name}. WIP telah ditutup.",
+                'type'    => 'success',
+                'link'    => "/orders/{$order->id}",
+                'is_read' => false,
+            ]);
+        }
+
+        return redirect()->route('orders.show', $order)
+            ->with('success', "Order {$order->order_no} berhasil diselesaikan. Semua WIP di stasiun {$handover->toStation->name} telah ditutup.");
+    }
+
     public function sendFromOrder(Request $request, ProductionOrder $order)
     {
         abort_if(!in_array(auth()->user()->role, ['admin', 'supervisor']), 403);

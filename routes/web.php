@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('handover', HandoverController::class);
     Route::post('handover/{handover}/confirm', [HandoverController::class, 'confirm'])->name('handover.confirm');
     Route::post('handover/{handover}/approve', [HandoverController::class, 'approve'])->name('handover.approve');
+    Route::post('handover/{handover}/complete-order', [HandoverController::class, 'completeOrder'])->name('handover.complete-order');
     Route::post('orders/{order}/send-to-cutting', [HandoverController::class, 'sendFromOrder'])->name('orders.send-to-cutting');
 
     Route::resource('bahan-baku', RawMaterialController::class);

@@ -14,6 +14,18 @@
       <button type="submit" class="btn btn-success" onclick="return confirm('Setujui discrepancy ini?')"><i class="bi bi-check-circle me-2"></i>Setujui Discrepancy</button>
     </form>
     @endif
+    @if($handover->toStation?->is_final
+        && in_array($handover->status, ['confirmed','approved'])
+        && $handover->order->status !== 'completed'
+        && (in_array(auth()->user()->role,['admin','supervisor']) || auth()->user()->station_id == $handover->to_station_id))
+    <form method="POST" action="{{ route('handover.complete-order',$handover) }}"
+          onsubmit="return confirm('Selesaikan order {{ $handover->order->order_no }}? Semua WIP di stasiun ini akan ditutup dan order tidak bisa diaktifkan kembali.')">
+      @csrf
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-flag-fill me-2"></i>Selesaikan Order
+      </button>
+    </form>
+    @endif
     <a href="{{ route('handover.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
   </div>
 </div>
