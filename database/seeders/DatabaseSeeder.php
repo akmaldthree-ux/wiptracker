@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         // ════════════════════════════════════════
         //  CLEAR EXISTING DATA (order matters for FKs)
         // ════════════════════════════════════════
-        DB::statement('PRAGMA foreign_keys = OFF');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
         $tables = [
             'notifications','qc_checklist_items','qc_inspections',
             'cutting_bundles','cutting_plans',
@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             'users','stations',
         ];
         foreach ($tables as $t) { DB::table($t)->truncate(); }
-        DB::statement('PRAGMA foreign_keys = ON');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         // ════════════════════════════════════════
         //  STATIONS
