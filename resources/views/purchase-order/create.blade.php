@@ -114,16 +114,16 @@ function calcGrand() {
 
 function addRow() {
   const idx = rowCount++;
-  const matOpts = materials.map(m => `<option value="${m.id}" data-price="${m.price}">${m.name} (${m.unit})</option>`).join('');
+  const matOpts = materials.map(m => '<option value="' + m.id + '" data-price="' + m.price + '">' + m.name + ' (' + m.unit + ')</option>').join('');
   const tr = document.createElement('tr');
   tr.id = 'row_' + idx;
-  tr.innerHTML = `
-    <td><select name="items[${idx}][raw_material_id]" class="form-select form-select-sm" required onchange="updatePrice(${idx}, this)"><option value="">— Pilih —</option>${matOpts}</select></td>
-    <td><input type="number" name="items[${idx}][qty_ordered]" class="form-control form-control-sm qty-input" data-idx="${idx}" step="0.01" min="0.01" required oninput="calcRow(${idx})"></td>
-    <td><input type="number" name="items[${idx}][unit_price]" class="form-control form-control-sm price-input" data-idx="${idx}" step="100" min="0" required oninput="calcRow(${idx})"></td>
-    <td><div class="fw-semibold pt-1 total-display" id="total_${idx}">Rp 0</div></td>
-    <td><input type="text" name="items[${idx}][notes]" class="form-control form-control-sm" placeholder="Opsional"></td>
-    <td><button type="button" onclick="removeRow(${idx})" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></button></td>`;
+  tr.innerHTML =
+    '<td><select name="items[' + idx + '][raw_material_id]" class="form-select form-select-sm" required onchange="updatePrice(' + idx + ', this)"><option value="">— Pilih —</option>' + matOpts + '</select></td>' +
+    '<td><input type="number" name="items[' + idx + '][qty_ordered]" class="form-control form-control-sm qty-input" data-idx="' + idx + '" step="0.01" min="0.01" required oninput="calcRow(' + idx + ')"></td>' +
+    '<td><input type="number" name="items[' + idx + '][unit_price]" class="form-control form-control-sm price-input" data-idx="' + idx + '" step="100" min="0" required oninput="calcRow(' + idx + ')"></td>' +
+    '<td><div class="fw-semibold pt-1 total-display" id="total_' + idx + '">Rp 0</div></td>' +
+    '<td><input type="text" name="items[' + idx + '][notes]" class="form-control form-control-sm" placeholder="Opsional"></td>' +
+    '<td><button type="button" onclick="removeRow(' + idx + ')" class="btn btn-sm btn-outline-danger"><i class=\'bi bi-x\'></i></button></td>';
   document.getElementById('itemBody').appendChild(tr);
 }
 
