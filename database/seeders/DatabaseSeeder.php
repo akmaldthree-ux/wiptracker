@@ -358,10 +358,11 @@ class DatabaseSeeder extends Seeder
             WipEntry::create(['production_order_id'=>$ord1->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stSew->id,'qty_in'=>0,'qty_out'=>$q,'qty_reject'=>0,'input_date'=>'2026-06-07','created_by'=>$uSew->id]);
         }
 
-        $ho2 = Handover::create(['handover_no'=>'HO-2026-002','production_order_id'=>$ord1->id,'from_station_id'=>$stSew->id,'to_station_id'=>$stFin->id,'sewing_location_id'=>$swLoc1->id,'status'=>'confirmed','initiated_by'=>$uSew->id,'confirmed_by'=>$uFin->id,'notes'=>'Sewing selesai, transfer ke finishing','initiated_at'=>'2026-06-07 13:00:00','confirmed_at'=>'2026-06-07 14:30:00']);
-        foreach ([['SKU-JBH-RAM-WHT-M',120,120],['SKU-JBH-RAM-WHT-L',150,150],['SKU-JBH-RAM-BLK-M',100,100],['SKU-JBH-RAM-BLK-L',130,130]] as [$sc,$s,$r]) {
-            HandoverItem::create(['handover_id'=>$ho2->id,'sku_id'=>$skus[$sc]->id,'qty_sent'=>$s,'qty_received'=>$r]);
-        }
+        $ho2 = Handover::create(['handover_no'=>'HO-2026-002','production_order_id'=>$ord1->id,'from_station_id'=>$stSew->id,'to_station_id'=>$stFin->id,'sewing_location_id'=>$swLoc1->id,'status'=>'confirmed','initiated_by'=>$uSew->id,'confirmed_by'=>$uFin->id,'notes'=>'Sewing selesai, ada beberapa reject rework','initiated_at'=>'2026-06-07 13:00:00','confirmed_at'=>'2026-06-07 14:30:00']);
+        HandoverItem::create(['handover_id'=>$ho2->id,'sku_id'=>$skus['SKU-JBH-RAM-WHT-M']->id,'qty_sent'=>120,'qty_received'=>118,'qty_reject'=>2,'reject_type'=>'rework','reject_notes'=>'2 pcs jahitan placket tidak simetris, dikembalikan untuk rework']);
+        HandoverItem::create(['handover_id'=>$ho2->id,'sku_id'=>$skus['SKU-JBH-RAM-WHT-L']->id,'qty_sent'=>150,'qty_received'=>149,'qty_reject'=>1,'reject_type'=>'rework','reject_notes'=>'1 pcs kancing lepas, rework pasang ulang']);
+        HandoverItem::create(['handover_id'=>$ho2->id,'sku_id'=>$skus['SKU-JBH-RAM-BLK-M']->id,'qty_sent'=>100,'qty_received'=>100,'qty_reject'=>0]);
+        HandoverItem::create(['handover_id'=>$ho2->id,'sku_id'=>$skus['SKU-JBH-RAM-BLK-L']->id,'qty_sent'=>130,'qty_received'=>129,'qty_reject'=>1,'reject_type'=>'second','reject_notes'=>'1 pcs ada noda kecil, dijual sebagai second quality']);
 
         // Finishing in/out
         foreach ([['SKU-JBH-RAM-WHT-M',120],['SKU-JBH-RAM-WHT-L',150],['SKU-JBH-RAM-BLK-M',100],['SKU-JBH-RAM-BLK-L',130]] as [$sc,$q]) {
@@ -369,10 +370,11 @@ class DatabaseSeeder extends Seeder
             WipEntry::create(['production_order_id'=>$ord1->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stFin->id,'qty_in'=>0,'qty_out'=>$q,'qty_reject'=>0,'input_date'=>'2026-06-10','created_by'=>$uFin->id]);
         }
 
-        $ho3 = Handover::create(['handover_no'=>'HO-2026-003','production_order_id'=>$ord1->id,'from_station_id'=>$stFin->id,'to_station_id'=>$stQc->id,'status'=>'confirmed','initiated_by'=>$uFin->id,'confirmed_by'=>$uQc->id,'notes'=>'Transfer ke QC untuk inspeksi akhir','initiated_at'=>'2026-06-10 08:00:00','confirmed_at'=>'2026-06-10 09:30:00']);
-        foreach ([['SKU-JBH-RAM-WHT-M',120,120],['SKU-JBH-RAM-WHT-L',150,150],['SKU-JBH-RAM-BLK-M',100,100],['SKU-JBH-RAM-BLK-L',130,128]] as [$sc,$s,$r]) {
-            HandoverItem::create(['handover_id'=>$ho3->id,'sku_id'=>$skus[$sc]->id,'qty_sent'=>$s,'qty_received'=>$r]);
-        }
+        $ho3 = Handover::create(['handover_no'=>'HO-2026-003','production_order_id'=>$ord1->id,'from_station_id'=>$stFin->id,'to_station_id'=>$stQc->id,'status'=>'confirmed','initiated_by'=>$uFin->id,'confirmed_by'=>$uQc->id,'notes'=>'Transfer ke QC. Ada 3 pcs reject finishing','initiated_at'=>'2026-06-10 08:00:00','confirmed_at'=>'2026-06-10 09:30:00']);
+        HandoverItem::create(['handover_id'=>$ho3->id,'sku_id'=>$skus['SKU-JBH-RAM-WHT-M']->id,'qty_sent'=>118,'qty_received'=>117,'qty_reject'=>1,'reject_type'=>'scrap','reject_notes'=>'1 pcs cacat permanen di bagian krah, di-scrap']);
+        HandoverItem::create(['handover_id'=>$ho3->id,'sku_id'=>$skus['SKU-JBH-RAM-WHT-L']->id,'qty_sent'=>149,'qty_received'=>149,'qty_reject'=>0]);
+        HandoverItem::create(['handover_id'=>$ho3->id,'sku_id'=>$skus['SKU-JBH-RAM-BLK-M']->id,'qty_sent'=>100,'qty_received'=>98,'qty_reject'=>2,'reject_type'=>'rework','reject_notes'=>'2 pcs obras tidak rapi, dikembalikan finishing untuk obras ulang']);
+        HandoverItem::create(['handover_id'=>$ho3->id,'sku_id'=>$skus['SKU-JBH-RAM-BLK-L']->id,'qty_sent'=>129,'qty_received'=>129,'qty_reject'=>0]);
 
         // QC in/out (2 reject)
         foreach ([['SKU-JBH-RAM-WHT-M',120,0,0],['SKU-JBH-RAM-WHT-L',150,0,0],['SKU-JBH-RAM-BLK-M',100,0,0],['SKU-JBH-RAM-BLK-L',128,0,0]] as [$sc,$i,$o,$r]) {
@@ -417,10 +419,11 @@ class DatabaseSeeder extends Seeder
             WipEntry::create(['production_order_id'=>$ord2->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stSew->id,'qty_in'=>$q,'qty_out'=>$q,'qty_reject'=>0,'input_date'=>'2026-06-07','created_by'=>$uSew->id]);
         }
 
-        $ho6 = Handover::create(['handover_no'=>'HO-2026-006','production_order_id'=>$ord2->id,'from_station_id'=>$stSew->id,'to_station_id'=>$stFin->id,'status'=>'confirmed','initiated_by'=>$uSew->id,'confirmed_by'=>$uFin->id,'notes'=>'Transfer abaya ke finishing','initiated_at'=>'2026-06-14 08:00:00','confirmed_at'=>'2026-06-14 09:30:00']);
-        foreach ([['SKU-ABY-SYR-BLK-M',80,80],['SKU-ABY-SYR-BLK-L',100,98],['SKU-ABY-SYR-NVY-L',70,70],['SKU-ABY-SYR-MRN-XL',50,50]] as [$sc,$s,$r]) {
-            HandoverItem::create(['handover_id'=>$ho6->id,'sku_id'=>$skus[$sc]->id,'qty_sent'=>$s,'qty_received'=>$r]);
-        }
+        $ho6 = Handover::create(['handover_no'=>'HO-2026-006','production_order_id'=>$ord2->id,'from_station_id'=>$stSew->id,'to_station_id'=>$stFin->id,'status'=>'confirmed','initiated_by'=>$uSew->id,'confirmed_by'=>$uFin->id,'notes'=>'Transfer abaya ke finishing, ada reject rework dan second','initiated_at'=>'2026-06-14 08:00:00','confirmed_at'=>'2026-06-14 09:30:00']);
+        HandoverItem::create(['handover_id'=>$ho6->id,'sku_id'=>$skus['SKU-ABY-SYR-BLK-M']->id,'qty_sent'=>80,'qty_received'=>78,'qty_reject'=>2,'reject_type'=>'rework','reject_notes'=>'2 pcs resleting miring, rework pasang ulang']);
+        HandoverItem::create(['handover_id'=>$ho6->id,'sku_id'=>$skus['SKU-ABY-SYR-BLK-L']->id,'qty_sent'=>100,'qty_received'=>98,'qty_reject'=>2,'reject_type'=>'second','reject_notes'=>'2 pcs ada benang sisa tidak rapi, dijual second']);
+        HandoverItem::create(['handover_id'=>$ho6->id,'sku_id'=>$skus['SKU-ABY-SYR-NVY-L']->id,'qty_sent'=>70,'qty_received'=>69,'qty_reject'=>1,'reject_type'=>'rework','reject_notes'=>'1 pcs sambungan lengan tidak rata']);
+        HandoverItem::create(['handover_id'=>$ho6->id,'sku_id'=>$skus['SKU-ABY-SYR-MRN-XL']->id,'qty_sent'=>50,'qty_received'=>50,'qty_reject'=>0]);
 
         // Finishing in (belum out, masih proses)
         foreach ([['SKU-ABY-SYR-BLK-M',80],['SKU-ABY-SYR-BLK-L',98],['SKU-ABY-SYR-NVY-L',70],['SKU-ABY-SYR-MRN-XL',50]] as [$sc,$q]) {
@@ -439,13 +442,18 @@ class DatabaseSeeder extends Seeder
             HandoverItem::create(['handover_id'=>$ho7->id,'sku_id'=>$skus[$sc]->id,'qty_sent'=>$s,'qty_received'=>$r]);
         }
 
-        // Sewing in (belum selesai semua - bottleneck)
-        foreach ([['SKU-KKO-SLM-WHT-M',60],['SKU-KKO-SLM-WHT-L',80],['SKU-KKO-SLM-NVY-L',70],['SKU-KKO-SLM-GRY-XL',50]] as [$sc,$q]) {
+        // Sewing in — ORD-003 BOTTLENECK: threshold 400, total in akan >400
+        // Tambah tambahan volume dari repeat order koko classic yg masuk sewing bersamaan
+        foreach ([['SKU-KKO-SLM-WHT-M',60],['SKU-KKO-SLM-WHT-L',80],['SKU-KKO-SLM-NVY-L',70],['SKU-KKO-SLM-GRY-XL',50],['SKU-KKO-SLM-MCC-L',80]] as [$sc,$q]) {
             WipEntry::create(['production_order_id'=>$ord3->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stSew->id,'qty_in'=>$q,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-05','created_by'=>$uSew->id]);
         }
-        // Sebagian sudah keluar
-        WipEntry::create(['production_order_id'=>$ord3->id,'sku_id'=>$skus['SKU-KKO-SLM-WHT-M']->id,'station_id'=>$stSew->id,'qty_in'=>0,'qty_out'=>40,'qty_reject'=>0,'input_date'=>'2026-06-12','created_by'=>$uSew->id]);
-        WipEntry::create(['production_order_id'=>$ord3->id,'sku_id'=>$skus['SKU-KKO-SLM-WHT-L']->id,'station_id'=>$stSew->id,'qty_in'=>0,'qty_out'=>50,'qty_reject'=>0,'input_date'=>'2026-06-12','created_by'=>$uSew->id]);
+        // Tambah WIP dari ord2 Abaya yang juga masih di sewing (belum semua keluar)
+        WipEntry::create(['production_order_id'=>$ord2->id,'sku_id'=>$skus['SKU-ABY-SYR-BLK-L']->id,'station_id'=>$stSew->id,'qty_in'=>120,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-15','created_by'=>$uSew->id,'notes'=>'Tambahan order abaya masuk sewing']);
+        WipEntry::create(['production_order_id'=>$ord2->id,'sku_id'=>$skus['SKU-ABY-SYR-NVY-L']->id,'station_id'=>$stSew->id,'qty_in'=>100,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-15','created_by'=>$uSew->id]);
+        // Total di sewing sekarang: 60+80+70+50+80+120+100 = 560 (> threshold 400 = BOTTLENECK)
+        // Hanya sedikit yang sudah keluar
+        WipEntry::create(['production_order_id'=>$ord3->id,'sku_id'=>$skus['SKU-KKO-SLM-WHT-M']->id,'station_id'=>$stSew->id,'qty_in'=>0,'qty_out'=>25,'qty_reject'=>3,'input_date'=>'2026-06-12','created_by'=>$uSew->id,'notes'=>'3 pcs reject jahitan tidak rapi']);
+        WipEntry::create(['production_order_id'=>$ord3->id,'sku_id'=>$skus['SKU-KKO-SLM-WHT-L']->id,'station_id'=>$stSew->id,'qty_in'=>0,'qty_out'=>30,'qty_reject'=>0,'input_date'=>'2026-06-12','created_by'=>$uSew->id]);
 
         // ─────────────────────────────────────────────
         // WIP & HANDOVER — ORD-004 (ACTIVE, sedang di QC)
