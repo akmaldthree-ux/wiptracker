@@ -301,6 +301,17 @@ class DatabaseSeeder extends Seeder
         ProductionOrderItem::create(['production_order_id'=>$ord6->id,'sku_id'=>$skus['SKU-ABY-BRD-BLK-M']->id,'target_qty'=>50]);
         ProductionOrderItem::create(['production_order_id'=>$ord6->id,'sku_id'=>$skus['SKU-ABY-BRD-OLV-L']->id,'target_qty'=>40]);
 
+        // ORD-007 Mukena Voal Premium — ACTIVE, near deadline (2 hari lagi)
+        $ord7 = ProductionOrder::create(['order_no'=>'ORD-2026-007','product_id'=>$pMukena->id,'series_id'=>$serMukenaPremium->id,'target_date'=>'2026-06-23','status'=>'active','selling_price'=>185000,'notes'=>'ORDER MENDESAK: untuk pameran Islamic Fashion Fair, deadline 23 Juni','created_by'=>$uAdmin->id,'created_at'=>'2026-06-14']);
+        ProductionOrderItem::create(['production_order_id'=>$ord7->id,'sku_id'=>$skus['SKU-MKN-VOL-WHT-M']->id,'target_qty'=>60]);
+        ProductionOrderItem::create(['production_order_id'=>$ord7->id,'sku_id'=>$skus['SKU-MKN-VOL-CRM-L']->id,'target_qty'=>50]);
+        ProductionOrderItem::create(['production_order_id'=>$ord7->id,'sku_id'=>$skus['SKU-MKN-VOL-GRY-L']->id,'target_qty'=>40]);
+
+        // ORD-008 Koko Classic — ACTIVE, near deadline (3 hari lagi)
+        $ord8 = ProductionOrder::create(['order_no'=>'ORD-2026-008','product_id'=>$pKoko->id,'series_id'=>$serKokoClassic->id,'target_date'=>'2026-06-24','status'=>'active','selling_price'=>175000,'notes'=>'Pesanan reseller Jakarta, harus selesai akhir Juni','created_by'=>$uSupv->id,'created_at'=>'2026-06-15']);
+        ProductionOrderItem::create(['production_order_id'=>$ord8->id,'sku_id'=>$skus['SKU-KKO-CLS-WHT-L']->id,'target_qty'=>70]);
+        ProductionOrderItem::create(['production_order_id'=>$ord8->id,'sku_id'=>$skus['SKU-KKO-CLS-BLK-L']->id,'target_qty'=>60]);
+
         // ─────────────────────────────────────────────
         // BUDGET
         // ─────────────────────────────────────────────
@@ -308,6 +319,10 @@ class DatabaseSeeder extends Seeder
         Budget::create(['production_order_id'=>$ord2->id,'material_cost_plan'=>22000000,'process_cost_plan'=>7000000,'overhead_cost_plan'=>3500000,'total_plan'=>32500000,'material_cost_actual'=>21000000,'process_cost_actual'=>6500000,'overhead_cost_actual'=>3200000,'total_actual'=>30700000,'created_by'=>$uAdmin->id]);
         Budget::create(['production_order_id'=>$ord3->id,'material_cost_plan'=>15000000,'process_cost_plan'=>5000000,'overhead_cost_plan'=>2500000,'total_plan'=>22500000,'material_cost_actual'=>15800000,'process_cost_actual'=>5500000,'overhead_cost_actual'=>2800000,'total_actual'=>24100000,'created_by'=>$uAdmin->id]);
         Budget::create(['production_order_id'=>$ord4->id,'material_cost_plan'=>18000000,'process_cost_plan'=>5500000,'overhead_cost_plan'=>3000000,'total_plan'=>26500000,'material_cost_actual'=>17000000,'process_cost_actual'=>5000000,'overhead_cost_actual'=>2800000,'total_actual'=>24800000,'created_by'=>$uAdmin->id]);
+        Budget::create(['production_order_id'=>$ord5->id,'material_cost_plan'=>16000000,'process_cost_plan'=>5000000,'overhead_cost_plan'=>2800000,'total_plan'=>23800000,'material_cost_actual'=>0,'process_cost_actual'=>0,'overhead_cost_actual'=>0,'total_actual'=>0,'created_by'=>$uAdmin->id]);
+        Budget::create(['production_order_id'=>$ord6->id,'material_cost_plan'=>9500000,'process_cost_plan'=>3500000,'overhead_cost_plan'=>2000000,'total_plan'=>15000000,'material_cost_actual'=>0,'process_cost_actual'=>0,'overhead_cost_actual'=>0,'total_actual'=>0,'created_by'=>$uSupv->id]);
+        Budget::create(['production_order_id'=>$ord7->id,'material_cost_plan'=>17500000,'process_cost_plan'=>5200000,'overhead_cost_plan'=>2800000,'total_plan'=>25500000,'material_cost_actual'=>16800000,'process_cost_actual'=>5000000,'overhead_cost_actual'=>2700000,'total_actual'=>24500000,'created_by'=>$uAdmin->id]);
+        Budget::create(['production_order_id'=>$ord8->id,'material_cost_plan'=>13000000,'process_cost_plan'=>4200000,'overhead_cost_plan'=>2300000,'total_plan'=>19500000,'material_cost_actual'=>12500000,'process_cost_actual'=>4000000,'overhead_cost_actual'=>2200000,'total_actual'=>18700000,'created_by'=>$uAdmin->id]);
 
         // ─────────────────────────────────────────────
         // CUTTING PLANS
@@ -508,6 +523,58 @@ class DatabaseSeeder extends Seeder
         // Sisa 30 BLK-M + 40 OLV-L masih dalam proses cutting = 70 pcs di cutting
 
         // ─────────────────────────────────────────────
+        // WIP & HANDOVER — ORD-007 (ACTIVE, near deadline, sedang di Finishing)
+        // ─────────────────────────────────────────────
+        $cp5 = CuttingPlan::create(['plan_no'=>'CP-2026-005','production_order_id'=>$ord7->id,'planned_date'=>'2026-06-15','marker_length'=>7.8,'fabric_width'=>150,'total_layers'=>20,'planned_qty'=>150,'actual_qty'=>150,'efficiency'=>88.0,'shift'=>'pagi','notes'=>'Cutting mukena voal premium selesai','status'=>'completed','created_by'=>$uCut->id]);
+        CuttingBundle::create(['cutting_plan_id'=>$cp5->id,'bundle_no'=>'CP-2026-005-A','sku_id'=>$skus['SKU-MKN-VOL-WHT-M']->id,'qty'=>60,'status'=>'completed']);
+        CuttingBundle::create(['cutting_plan_id'=>$cp5->id,'bundle_no'=>'CP-2026-005-B','sku_id'=>$skus['SKU-MKN-VOL-CRM-L']->id,'qty'=>50,'status'=>'completed']);
+        CuttingBundle::create(['cutting_plan_id'=>$cp5->id,'bundle_no'=>'CP-2026-005-C','sku_id'=>$skus['SKU-MKN-VOL-GRY-L']->id,'qty'=>40,'status'=>'completed']);
+
+        foreach ([['SKU-MKN-VOL-WHT-M',60],['SKU-MKN-VOL-CRM-L',50],['SKU-MKN-VOL-GRY-L',40]] as [$sc,$q]) {
+            WipEntry::create(['production_order_id'=>$ord7->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stCut->id,'qty_in'=>$q,'qty_out'=>$q,'qty_reject'=>0,'input_date'=>'2026-06-15','created_by'=>$uCut->id]);
+        }
+
+        $ho11 = Handover::create(['handover_no'=>'HO-2026-011','production_order_id'=>$ord7->id,'from_station_id'=>$stCut->id,'to_station_id'=>$stSew->id,'sewing_location_id'=>$swLoc1->id,'status'=>'confirmed','initiated_by'=>$uCut->id,'confirmed_by'=>$uSew->id,'notes'=>'Transfer mukena voal ke sewing internal','initiated_at'=>'2026-06-16 07:00:00','confirmed_at'=>'2026-06-16 08:00:00']);
+        foreach ([['SKU-MKN-VOL-WHT-M',60,60],['SKU-MKN-VOL-CRM-L',50,50],['SKU-MKN-VOL-GRY-L',40,40]] as [$sc,$s,$r]) {
+            HandoverItem::create(['handover_id'=>$ho11->id,'sku_id'=>$skus[$sc]->id,'qty_sent'=>$s,'qty_received'=>$r]);
+        }
+
+        foreach ([['SKU-MKN-VOL-WHT-M',60],['SKU-MKN-VOL-CRM-L',50],['SKU-MKN-VOL-GRY-L',40]] as [$sc,$q]) {
+            WipEntry::create(['production_order_id'=>$ord7->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stSew->id,'qty_in'=>$q,'qty_out'=>$q,'qty_reject'=>0,'input_date'=>'2026-06-16','created_by'=>$uSew->id]);
+        }
+
+        // HO-2026-012 — DISCREPANCY: qty dikirim tidak sesuai qty diterima (mismatch)
+        $ho12 = Handover::create(['handover_no'=>'HO-2026-012','production_order_id'=>$ord7->id,'from_station_id'=>$stSew->id,'to_station_id'=>$stFin->id,'status'=>'discrepancy','initiated_by'=>$uSew->id,'confirmed_by'=>$uFin->id,'notes'=>'Ada selisih penerimaan — sewing kirim 150 pcs tapi finishing hanya terima 143 pcs. Investigasi kehilangan 7 pcs sedang berjalan.','initiated_at'=>'2026-06-18 13:00:00','confirmed_at'=>'2026-06-18 15:30:00']);
+        HandoverItem::create(['handover_id'=>$ho12->id,'sku_id'=>$skus['SKU-MKN-VOL-WHT-M']->id,'qty_sent'=>60,'qty_received'=>56,'qty_reject'=>0,'reject_notes'=>'4 pcs tidak ditemukan saat penerimaan']);
+        HandoverItem::create(['handover_id'=>$ho12->id,'sku_id'=>$skus['SKU-MKN-VOL-CRM-L']->id,'qty_sent'=>50,'qty_received'=>47,'qty_reject'=>0,'reject_notes'=>'3 pcs selisih, sedang dicari']);
+        HandoverItem::create(['handover_id'=>$ho12->id,'sku_id'=>$skus['SKU-MKN-VOL-GRY-L']->id,'qty_sent'=>40,'qty_received'=>40,'qty_reject'=>0]);
+
+        // Finishing in untuk ORD-007 (masih proses, near deadline)
+        foreach ([['SKU-MKN-VOL-WHT-M',56],['SKU-MKN-VOL-CRM-L',47],['SKU-MKN-VOL-GRY-L',40]] as [$sc,$q]) {
+            WipEntry::create(['production_order_id'=>$ord7->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stFin->id,'qty_in'=>$q,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-18','created_by'=>$uFin->id]);
+        }
+
+        // ─────────────────────────────────────────────
+        // WIP & HANDOVER — ORD-008 (ACTIVE, near deadline, sedang di Sewing)
+        // ─────────────────────────────────────────────
+        $cp6 = CuttingPlan::create(['plan_no'=>'CP-2026-006','production_order_id'=>$ord8->id,'planned_date'=>'2026-06-16','marker_length'=>6.8,'fabric_width'=>150,'total_layers'=>35,'planned_qty'=>130,'actual_qty'=>130,'efficiency'=>89.5,'shift'=>'pagi','notes'=>'Cutting koko classic selesai','status'=>'completed','created_by'=>$uCut->id]);
+        CuttingBundle::create(['cutting_plan_id'=>$cp6->id,'bundle_no'=>'CP-2026-006-A','sku_id'=>$skus['SKU-KKO-CLS-WHT-L']->id,'qty'=>70,'status'=>'completed']);
+        CuttingBundle::create(['cutting_plan_id'=>$cp6->id,'bundle_no'=>'CP-2026-006-B','sku_id'=>$skus['SKU-KKO-CLS-BLK-L']->id,'qty'=>60,'status'=>'completed']);
+
+        foreach ([['SKU-KKO-CLS-WHT-L',70],['SKU-KKO-CLS-BLK-L',60]] as [$sc,$q]) {
+            WipEntry::create(['production_order_id'=>$ord8->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stCut->id,'qty_in'=>$q,'qty_out'=>$q,'qty_reject'=>0,'input_date'=>'2026-06-16','created_by'=>$uCut->id]);
+        }
+
+        $ho13 = Handover::create(['handover_no'=>'HO-2026-013','production_order_id'=>$ord8->id,'from_station_id'=>$stCut->id,'to_station_id'=>$stSew->id,'sewing_location_id'=>$swLoc2->id,'status'=>'confirmed','initiated_by'=>$uCut->id,'confirmed_by'=>$uSew->id,'notes'=>'Transfer koko classic ke sewing internal lt.2','initiated_at'=>'2026-06-17 07:30:00','confirmed_at'=>'2026-06-17 08:30:00']);
+        HandoverItem::create(['handover_id'=>$ho13->id,'sku_id'=>$skus['SKU-KKO-CLS-WHT-L']->id,'qty_sent'=>70,'qty_received'=>70]);
+        HandoverItem::create(['handover_id'=>$ho13->id,'sku_id'=>$skus['SKU-KKO-CLS-BLK-L']->id,'qty_sent'=>60,'qty_received'=>60]);
+
+        // Sewing ORD-008 masih berjalan (in, belum out)
+        foreach ([['SKU-KKO-CLS-WHT-L',70],['SKU-KKO-CLS-BLK-L',60]] as [$sc,$q]) {
+            WipEntry::create(['production_order_id'=>$ord8->id,'sku_id'=>$skus[$sc]->id,'station_id'=>$stSew->id,'qty_in'=>$q,'qty_out'=>0,'qty_reject'=>0,'input_date'=>'2026-06-17','created_by'=>$uSew->id]);
+        }
+
+        // ─────────────────────────────────────────────
         // NOTIFIKASI
         // ─────────────────────────────────────────────
         Notification::create(['user_id'=>$uAdmin->id,'title'=>'✅ Order ORD-2026-001 Selesai','message'=>'Order jubah Ramadan Premium telah selesai dan masuk gudang. Total 496 pcs diterima.','type'=>'success','link'=>'/orders/'.$ord1->id,'is_read'=>true]);
@@ -523,5 +590,10 @@ class DatabaseSeeder extends Seeder
         Notification::create(['user_id'=>$uGdg->id,'title'=>'PO-2026-001 Diterima Lengkap','message'=>'Semua kain dari PT Tekstil Nusantara telah diterima. Stok diperbarui otomatis.','type'=>'success','link'=>'/purchase-order/'.$po1->id,'is_read'=>true]);
         Notification::create(['user_id'=>$uFin->id,'title'=>'Handover Dikonfirmasi: HO-2026-006','message'=>'Abaya dari sewing telah dikonfirmasi masuk ke stasiun Finishing.','type'=>'success','link'=>'/handover/'.$ho6->id,'is_read'=>true]);
         Notification::create(['user_id'=>$uSew->id,'title'=>'⚠ Bottleneck Sewing: ORD-2026-003','message'=>'Order Koko Slim masih tertahan di sewing makloon. 90 pcs dari 260 belum selesai jahit.','type'=>'warning','link'=>'/orders/'.$ord3->id,'is_read'=>false]);
+        Notification::create(['user_id'=>$uAdmin->id,'title'=>'🚨 Discrepancy HO-2026-012','message'=>'Selisih 7 pcs pada handover Mukena Voal dari Sewing ke Finishing. Investigasi sedang berjalan.','type'=>'danger','link'=>'/handover/'.$ho12->id,'is_read'=>false]);
+        Notification::create(['user_id'=>$uSupv->id,'title'=>'🚨 Discrepancy HO-2026-012','message'=>'HO-2026-012 menunjukkan selisih penerimaan 7 pcs mukena voal. Perlu pengecekan segera.','type'=>'danger','link'=>'/handover/'.$ho12->id,'is_read'=>false]);
+        Notification::create(['user_id'=>$uAdmin->id,'title'=>'⏰ Deadline 2 Hari: ORD-2026-007','message'=>'Order Mukena Voal Premium (ORD-2026-007) harus selesai 23 Juni 2026. Saat ini masih di Finishing.','type'=>'warning','link'=>'/orders/'.$ord7->id,'is_read'=>false]);
+        Notification::create(['user_id'=>$uAdmin->id,'title'=>'⏰ Deadline 3 Hari: ORD-2026-008','message'=>'Order Koko Classic (ORD-2026-008) harus selesai 24 Juni 2026. Saat ini masih di Sewing.','type'=>'warning','link'=>'/orders/'.$ord8->id,'is_read'=>false]);
+        Notification::create(['user_id'=>$uSupv->id,'title'=>'⏰ Deadline Mendekat: ORD-2026-007 & ORD-2026-008','message'=>'2 order mendekati deadline. ORD-007 (23 Jun) dan ORD-008 (24 Jun) perlu percepatan produksi.','type'=>'warning','link'=>'/orders','is_read'=>false]);
     }
 }
