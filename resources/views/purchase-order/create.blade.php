@@ -82,19 +82,24 @@
 @endsection
 
 @push('scripts')
+@php
+$materialsJson = $materials->map(function($m) {
+  return ['id'=>$m->id,'name'=>$m->name,'unit'=>$m->unit,'price'=>$m->unit_price];
+})->values();
+@endphp
 <script>
-const materials = @json($materials->map(fn($m) => ['id'=>$m->id,'name'=>$m->name,'unit'=>$m->unit,'price'=>$m->unit_price]));
+const materials = @json($materialsJson);
 let rowCount = 1;
 
 function updatePrice(idx, sel) {
   const mat = materials.find(m => m.id == sel.value);
-  if (mat) document.querySelector(`[name="items[${idx}][unit_price]"]`).value = mat.price;
+  if (mat) document.querySelector('[name="items[' + idx + '][unit_price]"]').value = mat.price;
   calcRow(idx);
 }
 
 function calcRow(idx) {
-  const qty   = parseFloat(document.querySelector(`[name="items[${idx}][qty_ordered]"]`)?.value) || 0;
-  const price = parseFloat(document.querySelector(`[name="items[${idx}][unit_price]"]`)?.value) || 0;
+  const qty   = parseFloat(document.querySelector('[name="items[' + idx + '][qty_ordered]"]')?.value) || 0;
+  const price = parseFloat(document.querySelector('[name="items[' + idx + '][unit_price]"]')?.value) || 0;
   const total = qty * price;
   const el = document.getElementById('total_' + idx);
   if (el) el.textContent = 'Rp ' + total.toLocaleString('id-ID');
@@ -106,7 +111,7 @@ function calcGrand() {
   document.querySelectorAll('.qty-input').forEach(q => {
     const idx   = q.dataset.idx;
     const qty   = parseFloat(q.value) || 0;
-    const price = parseFloat(document.querySelector(`[name="items[${idx}][unit_price]"]`)?.value) || 0;
+    const price = parseFloat(document.querySelector('[name="items[' + idx + '][unit_price]"]')?.value) || 0;
     grand += qty * price;
   });
   document.getElementById('grandTotal').textContent = 'Rp ' + grand.toLocaleString('id-ID');
