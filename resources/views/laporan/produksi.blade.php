@@ -72,7 +72,7 @@
                 @forelse($orders as $order)
                 <tr>
                     <td>
-                        <a href="{{ route('orders.show', $order) }}" class="fw-semibold text-decoration-none">{{ $order->order_number }}</a>
+                        <a href="{{ route('orders.show', $order) }}" class="fw-semibold text-decoration-none">{{ $order->order_no }}</a>
                         <div class="small text-muted">{{ $order->created_at->format('d M Y') }}</div>
                     </td>
                     <td>

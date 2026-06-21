@@ -32,10 +32,10 @@ tbody tr:nth-child(even) { background: #f8f9fa; }
     <tbody>
         @forelse($handovers as $h)
         <tr>
-            <td>{{ $h->handover_number }}</td>
-            <td>{{ $h->order->order_number ?? '-' }}</td>
-            <td>{{ $h->fromStation->name ?? '-' }} → {{ $h->toStation->name ?? '-' }}</td>
-            <td>{{ $h->handover_date ? \Carbon\Carbon::parse($h->handover_date)->format('d M Y') : '-' }}</td>
+            <td>{{ $h->handover_no }}</td>
+            <td>{{ $h->order->order_no ?? '-' }}</td>
+            <td>{{ $h->fromStation->name ?? '-' }} → {{ $h->toStation?->name ?? '-' ?? '-' }}</td>
+            <td>{{ $h->initiated_at ? \Carbon\Carbon::parse($h->initiated_at)->format('d M Y') : '-' }}</td>
             <td>{{ number_format($h->getTotalSentAttribute()) }}</td>
             <td>{{ number_format($h->getTotalReceivedAttribute()) }}</td>
             <td>{{ $h->getTotalDiscrepancyAttribute() }}</td>

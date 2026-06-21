@@ -41,7 +41,7 @@
             <small class="text-muted">{{ $h->initiated_at ? $h->initiated_at->diffForHumans() : '-' }}</small>
           </div>
           <div class="small text-muted mt-1">
-            {{ $h->fromStation?->name ?? 'Order Produksi' }} → {{ $h->toStation->name }} |
+            {{ $h->fromStation?->name ?? 'Order Produksi' }} → {{ $h->toStation?->name ?? '-' }} |
             <strong>{{ $h->order->order_no }}</strong> |
             {{ $h->items->sum('qty_sent') }} pcs
           </div>
@@ -66,7 +66,7 @@
             <span class="fw-semibold text-danger">{{ $h->handover_no }}</span>
             <span class="badge bg-danger">Discrepancy</span>
           </div>
-          <div class="small text-muted mt-1">{{ $h->fromStation?->name ?? 'Order Produksi' }} → {{ $h->toStation->name }} | {{ $h->order->order_no }}</div>
+          <div class="small text-muted mt-1">{{ $h->fromStation?->name ?? 'Order Produksi' }} → {{ $h->toStation?->name ?? '-' }} | {{ $h->order->order_no }}</div>
         </a>
         @empty
         <div class="list-group-item text-center text-muted py-4"><i class="bi bi-check-circle text-success me-1"></i>Tidak ada discrepancy</div>

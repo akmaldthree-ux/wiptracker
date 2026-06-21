@@ -31,8 +31,8 @@ tbody tr:nth-child(even) { background: #f8f9fa; }
     <tbody>
         @forelse($rejectItems as $item)
         <tr>
-            <td>{{ $item->handover->handover_number ?? '-' }}</td>
-            <td>{{ $item->handover->order->order_number ?? '-' }}</td>
+            <td>{{ $item->handover->handover_no ?? '-' }}</td>
+            <td>{{ $item->handover->order->order_no ?? '-' }}</td>
             <td>{{ $item->sku->sku_code ?? '-' }}</td>
             <td>{{ number_format($item->qty_reject) }}</td>
             <td>{{ $item->reject_type ?? '-' }}</td>

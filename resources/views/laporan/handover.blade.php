@@ -87,10 +87,10 @@
             <tbody>
                 @forelse($handovers as $h)
                 <tr>
-                    <td><a href="{{ route('handover.show', $h) }}" class="fw-semibold text-decoration-none">{{ $h->handover_number }}</a></td>
-                    <td>{{ $h->order->order_number ?? '-' }}</td>
+                    <td><a href="{{ route('handover.show', $h) }}" class="fw-semibold text-decoration-none">{{ $h->handover_no }}</a></td>
+                    <td>{{ $h->order->order_no ?? '-' }}</td>
                     <td>{{ $h->fromStation->name ?? '-' }} → {{ $h->toStation->name ?? '-' }}</td>
-                    <td>{{ $h->handover_date ? \Carbon\Carbon::parse($h->handover_date)->format('d M Y') : '-' }}</td>
+                    <td>{{ $h->initiated_at ? \Carbon\Carbon::parse($h->initiated_at)->format('d M Y') : '-' }}</td>
                     <td class="text-end">{{ number_format($h->getTotalSentAttribute()) }}</td>
                     <td class="text-end">{{ number_format($h->getTotalReceivedAttribute()) }}</td>
                     <td class="text-end {{ $h->getTotalDiscrepancyAttribute() > 0 ? 'text-danger fw-bold' : '' }}">

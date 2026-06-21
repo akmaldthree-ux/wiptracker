@@ -61,7 +61,7 @@
                     <td class="fw-semibold">{{ $m->code }}</td>
                     <td>
                         <a href="{{ route('bahan-baku.show', $m) }}" class="text-decoration-none">{{ $m->name }}</a>
-                        <div class="small text-muted">{{ $m->supplier ?? '-' }}</div>
+                        <div class="small text-muted">{{ $m->supplier?->name ?? '-' }}</div>
                     </td>
                     <td><span class="badge bg-secondary">{{ $m->getCategoryLabelAttribute() }}</span></td>
                     <td class="text-end fw-semibold {{ $critical ? 'text-danger' : '' }}">{{ number_format($m->current_stock, 2) }} {{ $m->unit }}</td>

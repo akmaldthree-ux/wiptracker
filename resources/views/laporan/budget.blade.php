@@ -11,8 +11,8 @@
 
 <div class="row g-3 mb-4">
     @php
-        $totalPlan = $budgets->sum('total_budget_plan');
-        $totalActual = $budgets->sum('total_budget_actual');
+        $totalPlan = $budgets->sum('total_plan');
+        $totalActual = $budgets->sum('total_actual');
         $totalVariance = $totalPlan - $totalActual;
         $overCount = $budgets->filter(fn($b)=>$b->isOverBudget())->count();
     @endphp
@@ -69,8 +69,8 @@
                         </a>
                     </td>
                     <td>{{ $b->order->product->name ?? '-' }}</td>
-                    <td class="text-end">Rp {{ number_format($b->total_budget_plan,0,',','.') }}</td>
-                    <td class="text-end">Rp {{ number_format($b->total_budget_actual,0,',','.') }}</td>
+                    <td class="text-end">Rp {{ number_format($b->total_plan,0,',','.') }}</td>
+                    <td class="text-end">Rp {{ number_format($b->total_actual,0,',','.') }}</td>
                     <td class="text-end fw-semibold {{ $variance >= 0 ? 'text-success' : 'text-danger' }}">
                         {{ $variance >= 0 ? '+' : '' }}Rp {{ number_format($variance,0,',','.') }}
                     </td>
