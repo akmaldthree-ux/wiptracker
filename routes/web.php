@@ -20,6 +20,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RejectController;
 use App\Http\Controllers\QcInspectionController;
+use App\Http\Controllers\BomController;
+use App\Http\Controllers\PurchaseOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
@@ -76,6 +78,15 @@ Route::middleware('auth')->group(function () {
     Route::post('cutting/{cutting}/bundle', [CuttingPlanController::class, 'storeBundle'])->name('cutting.bundle.store');
     Route::patch('cutting/bundle/{bundle}/status', [CuttingPlanController::class, 'updateBundle'])->name('cutting.bundle.status');
 
+    Route::get('/bom', [BomController::class, 'index'])->name('bom.index');
+    Route::post('/bom', [BomController::class, 'store'])->name('bom.store');
+    Route::delete('/bom/{bom}', [BomController::class, 'destroy'])->name('bom.destroy');
+
+    Route::resource('purchase-order', PurchaseOrderController::class);
+    Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'send'])->name('purchase-order.send');
+    Route::post('purchase-order/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-order.receive');
+    Route::post('purchase-order/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])->name('purchase-order.cancel');
+
     Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifikasi/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifikasi/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
@@ -103,6 +114,7 @@ Route::middleware('auth')->group(function () {
 
 // API routes for dynamic selects
 Route::middleware('auth')->prefix('api')->group(function() {
+    Route::get('bom/calculate', [BomController::class, 'calculate'])->name('api.bom.calculate');
     Route::get('series-by-product/{product}', fn(\App\Models\Product $product) => response()->json($product->series()->where('is_active',true)->get(['id','name','code'])));
     Route::get('skus-by-series/{series}', fn(\App\Models\Series $series) => response()->json($series->skus()->where('is_active',true)->with(['color','size'])->get()));
     Route::get('order-skus/{order}', fn(\App\Models\ProductionOrder $order) => response()->json($order->items()->with(['sku.color','sku.size'])->get()));

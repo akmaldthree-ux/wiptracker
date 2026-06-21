@@ -489,6 +489,12 @@ hr { border-color: #edf0f7; }
       @php $lowStock = \App\Models\RawMaterial::whereRaw('current_stock < min_stock')->count(); @endphp
       @if($lowStock > 0)<span class="badge bg-danger ms-auto">{{ $lowStock }}</span>@endif
     </a>
+    <a href="{{ route('bom.index') }}" class="nav-link {{ request()->routeIs('bom.*') ? 'active' : '' }}">
+      <i class="bi bi-diagram-3"></i> Bill of Materials
+    </a>
+    <a href="{{ route('purchase-order.index') }}" class="nav-link {{ request()->routeIs('purchase-order.*') ? 'active' : '' }}">
+      <i class="bi bi-cart-check"></i> Purchase Order
+    </a>
     <a href="{{ route('budget.index') }}" class="nav-link {{ request()->routeIs('budget.*') ? 'active' : '' }}">
       <i class="bi bi-wallet2"></i> Budget & Biaya
     </a>

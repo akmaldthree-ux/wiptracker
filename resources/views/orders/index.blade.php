@@ -7,10 +7,18 @@
     <h5 class="mb-0 fw-bold">Daftar Order Produksi</h5>
     <p class="text-muted small mb-0">Kelola dan pantau semua order produksi</p>
   </div>
-  @if(in_array(auth()->user()->role,['admin','supervisor']))
-  <a href="{{ route('orders.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Buat Order Baru</a>
-  @endif
+  <div class="d-flex gap-2">
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-outline-secondary view-btn active" data-view="list" title="Tampilan List"><i class="bi bi-list-ul"></i></button>
+      <button class="btn btn-outline-secondary view-btn" data-view="calendar" title="Kalender"><i class="bi bi-calendar3"></i></button>
+      <button class="btn btn-outline-secondary view-btn" data-view="gantt" title="Gantt Chart"><i class="bi bi-bar-chart-steps"></i></button>
+    </div>
+    @if(in_array(auth()->user()->role,['admin','supervisor']))
+    <a href="{{ route('orders.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-2"></i>Buat Order Baru</a>
+    @endif
+  </div>
 </div>
+
 <!-- Filter -->
 <div class="card mb-3">
   <div class="card-body py-2 px-3">
@@ -32,6 +40,9 @@
     </form>
   </div>
 </div>
+
+{{-- ── LIST VIEW ── --}}
+<div id="view-list" class="view-panel">
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
@@ -76,4 +87,154 @@
   <div class="card-footer py-3">{{ $orders->appends(request()->query())->links() }}</div>
   @endif
 </div>
+</div>
+
+{{-- ── CALENDAR VIEW ── --}}
+<div id="view-calendar" class="view-panel" style="display:none">
+  <div class="card">
+    <div class="card-body p-0">
+      <div id="calendarEl" style="padding:1rem"></div>
+    </div>
+  </div>
+</div>
+
+{{-- ── GANTT VIEW ── --}}
+<div id="view-gantt" class="view-panel" style="display:none">
+  <div class="card">
+    <div class="card-header d-flex align-items-center gap-2">
+      <i class="bi bi-bar-chart-steps text-primary"></i>
+      <span>Gantt Chart — Timeline Order Produksi</span>
+      <small class="text-muted ms-auto">Skala: per hari</small>
+    </div>
+    <div class="card-body p-3" style="overflow-x:auto">
+      @php
+        $allOrders = $orders->getCollection();
+        $minDate = $allOrders->min(fn($o) => $o->created_at)->startOfDay();
+        $maxDate = $allOrders->max(fn($o) => $o->target_date)->addDays(3);
+        $totalDays = $minDate->diffInDays($maxDate) + 1;
+        $today = now()->startOfDay();
+        $todayOffset = max(0, $minDate->diffInDays($today));
+        $statusColors = ['draft'=>'#94a3b8','active'=>'#00ADB5','completed'=>'#22c55e','on_hold'=>'#f59e0b','cancelled'=>'#ef4444'];
+      @endphp
+
+      {{-- Header: bulan + hari --}}
+      <div style="display:flex;min-width:{{ max(900, $totalDays * 28) }}px">
+        <div style="width:220px;flex-shrink:0"></div>
+        <div style="flex:1;position:relative">
+          {{-- Month labels --}}
+          <div style="display:flex;height:22px;border-bottom:1px solid #e2e8f0">
+            @php $cur = $minDate->copy(); $mStart = 0; @endphp
+            @while($cur <= $maxDate)
+              @php $daysInMonth = min($cur->daysInMonth - $cur->day + 1, $maxDate->diffInDays($cur) + 1); @endphp
+              <div style="width:{{ $daysInMonth * 28 }}px;flex-shrink:0;font-size:.7rem;font-weight:700;color:#64748b;padding:3px 4px;overflow:hidden;border-right:1px solid #e2e8f0">
+                {{ $cur->format('M Y') }}
+              </div>
+              @php $cur->addDays($daysInMonth) @endphp
+            @endwhile
+          </div>
+          {{-- Day numbers --}}
+          <div style="display:flex;height:20px;background:#fafbfd">
+            @for($d = 0; $d < $totalDays; $d++)
+              @php $dayDate = $minDate->copy()->addDays($d); $isToday = $dayDate->isToday(); $isWknd = $dayDate->isWeekend(); @endphp
+              <div style="width:28px;flex-shrink:0;text-align:center;font-size:.62rem;color:{{ $isToday?'#00ADB5':($isWknd?'#ef4444':'#94a3b8') }};font-weight:{{ $isToday?'800':'400' }};border-right:1px solid #f1f5f9;padding-top:3px">
+                {{ $dayDate->format('d') }}
+              </div>
+            @endfor
+          </div>
+        </div>
+      </div>
+
+      {{-- Rows per order --}}
+      @foreach($allOrders as $o)
+      @php
+        $start     = $minDate->diffInDays($o->created_at->startOfDay());
+        $end       = $minDate->diffInDays(\Carbon\Carbon::parse($o->target_date)->startOfDay());
+        $barWidth  = max(1, $end - $start + 1) * 28;
+        $barLeft   = $start * 28;
+        $progress  = $o->getProgressPercentage();
+        $color     = $statusColors[$o->status] ?? '#94a3b8';
+        $overdue   = $o->isOverdue();
+      @endphp
+      <div style="display:flex;min-width:{{ max(900, $totalDays * 28) }}px;height:44px;border-bottom:1px solid #f1f5f9;align-items:center">
+        <div style="width:220px;flex-shrink:0;padding:0 12px;overflow:hidden">
+          <a href="{{ route('orders.show',$o) }}" class="text-decoration-none fw-semibold" style="font-size:.8rem;color:#0f172a">{{ $o->order_no }}</a>
+          <div style="font-size:.7rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $o->product->name }}</div>
+        </div>
+        <div style="flex:1;position:relative;height:100%;background:{{ $loop->even ? '#fafbfd' : '#fff' }}">
+          {{-- today line --}}
+          <div style="position:absolute;top:0;bottom:0;left:{{ $todayOffset * 28 }}px;width:2px;background:rgba(0,173,181,.4);z-index:1"></div>
+          {{-- bar --}}
+          <div style="position:absolute;top:10px;left:{{ $barLeft }}px;width:{{ $barWidth }}px;height:24px;background:{{ $color }};border-radius:4px;opacity:.85;overflow:hidden" title="{{ $o->order_no }}: {{ $o->product->name }}">
+            {{-- progress fill --}}
+            <div style="height:100%;width:{{ $progress }}%;background:rgba(255,255,255,.35);border-radius:4px 0 0 4px"></div>
+          </div>
+          {{-- label --}}
+          <div style="position:absolute;top:14px;left:{{ $barLeft + 6 }}px;font-size:.67rem;color:#fff;font-weight:700;white-space:nowrap;z-index:2;pointer-events:none">
+            {{ $progress }}%{{ $overdue ? ' ⚠' : '' }}
+          </div>
+        </div>
+      </div>
+      @endforeach
+
+      {{-- Legend --}}
+      <div class="d-flex gap-3 mt-3 flex-wrap">
+        @foreach(['draft'=>['#94a3b8','Draft'],'active'=>['#00ADB5','Aktif'],'completed'=>['#22c55e','Selesai'],'on_hold'=>['#f59e0b','Ditahan'],'cancelled'=>['#ef4444','Dibatalkan']] as $s=>[$c,$l])
+        <div class="d-flex align-items-center gap-1"><div style="width:12px;height:12px;border-radius:2px;background:{{ $c }}"></div><small class="text-muted">{{ $l }}</small></div>
+        @endforeach
+        <div class="d-flex align-items-center gap-1"><div style="width:2px;height:14px;background:rgba(0,173,181,.6)"></div><small class="text-muted">Hari ini</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
+
+@push('styles')
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css' rel='stylesheet'>
+@endpush
+
+@push('scripts')
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+<script>
+// View toggle
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const v = this.dataset.view;
+    document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('view-' + v).style.display = 'block';
+    if (v === 'calendar' && !window._calInit) initCalendar();
+  });
+});
+
+// FullCalendar
+const events = @json($orders->getCollection()->map(fn($o) => [
+  'id'    => $o->id,
+  'title' => $o->order_no . ' — ' . $o->product->name,
+  'start' => $o->created_at->toDateString(),
+  'end'   => \Carbon\Carbon::parse($o->target_date)->addDay()->toDateString(),
+  'url'   => route('orders.show', $o),
+  'color' => match($o->status) { 'active'=>'#00ADB5', 'completed'=>'#22c55e', 'on_hold'=>'#f59e0b', 'cancelled'=>'#ef4444', default=>'#94a3b8' },
+  'extendedProps' => ['status' => $o->status_label, 'progress' => $o->getProgressPercentage()],
+]));
+
+function initCalendar() {
+  window._calInit = true;
+  const cal = new FullCalendar.Calendar(document.getElementById('calendarEl'), {
+    initialView: 'dayGridMonth',
+    locale: 'id',
+    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
+    events: events,
+    eventClick(info) { info.jsEvent.preventDefault(); window.location = info.event.url; },
+    eventDidMount(info) {
+      const p = info.event.extendedProps;
+      info.el.title = `${info.event.title}\nStatus: ${p.status}\nProgress: ${p.progress}%`;
+    },
+    buttonText: { today: 'Hari Ini', month: 'Bulan', list: 'List' },
+    height: 'auto',
+  });
+  cal.render();
+}
+</script>
+@endpush
