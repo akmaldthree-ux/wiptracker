@@ -298,8 +298,8 @@ body {
       <div class="field">
         <label>Email</label>
         <div class="input-wrap">
-          <input type="email" name="email" value="{{ old('email','admin@dpis.com') }}"
-                 placeholder="email@perusahaan.com" required autocomplete="email">
+          <input type="email" name="email" value="{{ old('email','admin@dthree.id') }}"
+                 placeholder="email@dthree.id" required autocomplete="email">
           <i class="bi bi-envelope icon"></i>
         </div>
       </div>
@@ -330,24 +330,24 @@ body {
     <div class="divider">Akun Demo</div>
 
     <div class="demo-grid">
-      <button class="demo-btn gold"   onclick="fillDemo('admin@dpis.com')">
-        <span class="demo-email">admin@dpis.com</span>
+      <button class="demo-btn gold"   onclick="fillDemo('admin@dthree.id')">
+        <span class="demo-email">admin@dthree.id</span>
         <span class="demo-role">Admin</span>
       </button>
-      <button class="demo-btn amber"  onclick="fillDemo('supervisor@dpis.com')">
-        <span class="demo-email">supervisor@dpis.com</span>
+      <button class="demo-btn amber"  onclick="fillDemo('supervisor@dthree.id')">
+        <span class="demo-email">supervisor@dthree.id</span>
         <span class="demo-role">Supervisor</span>
       </button>
-      <button class="demo-btn yellow" onclick="fillDemo('cutting@dpis.com')">
-        <span class="demo-email">cutting@dpis.com</span>
-        <span class="demo-role">PIC Cutting</span>
-      </button>
-      <button class="demo-btn warm"   onclick="fillDemo('manager@dpis.com')">
-        <span class="demo-email">manager@dpis.com</span>
+      <button class="demo-btn yellow" onclick="fillDemo('manager@dthree.id')">
+        <span class="demo-email">manager@dthree.id</span>
         <span class="demo-role">Manager</span>
       </button>
+      <button class="demo-btn warm"   onclick="fillDemo('cutting@dthree.id')">
+        <span class="demo-email">cutting@dthree.id</span>
+        <span class="demo-role">Staff Cutting</span>
+      </button>
     </div>
-    <div class="demo-hint">Password: <code>password123</code></div>
+    <div class="demo-hint">Password: <code>password</code></div>
 
   </div>
 </div>
@@ -355,7 +355,7 @@ body {
 <script>
 function fillDemo(email) {
   document.querySelector('input[name="email"]').value = email;
-  document.querySelector('#pwInput').value = 'password123';
+  document.querySelector('#pwInput').value = 'password';
 }
 function togglePw() {
   const inp = document.getElementById('pwInput');
