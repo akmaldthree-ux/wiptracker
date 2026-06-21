@@ -2,6 +2,12 @@
 @section('title','Handover')
 @section('page-title','Manajemen Handover')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Handover</li>
+  </ol>
+</nav>
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
   <div>
     <h5 class="mb-0 fw-bold">Daftar Handover</h5>
@@ -71,13 +77,13 @@
             <div class="d-flex align-items-center gap-1" style="font-size:.8rem">
               <span class="text-muted">{{ $h->fromStation?->name ?? 'Order Produksi' }}</span>
               <i class="bi bi-arrow-right text-muted" style="font-size:.7rem"></i>
-              <span class="fw-semibold">{{ $h->toStation->name }}</span>
+              <span class="fw-semibold">{{ $h->toStation?->name ?? '-' }}</span>
             </div>
           </td>
           <td class="text-center fw-semibold">{{ $h->total_sent }}</td>
           <td class="text-center {{ $h->total_received !== null ? 'fw-semibold text-success' : 'text-muted' }}">{{ $h->total_received ?? '—' }}</td>
           <td class="text-center">
-            @if($h->total_discrepancy != 0)
+            @if(($h->total_discrepancy ?? 0) != 0)
             <span class="badge bg-danger">{{ $h->total_discrepancy }}</span>
             @else<span class="text-muted">—</span>@endif
           </td>

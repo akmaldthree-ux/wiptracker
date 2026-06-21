@@ -2,6 +2,12 @@
 @section('title','Bill of Materials')
 @section('page-title','Bill of Materials')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Bill of Materials</li>
+  </ol>
+</nav>
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h5 class="mb-0 fw-bold">Bill of Materials (BOM)</h5>

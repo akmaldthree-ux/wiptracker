@@ -80,7 +80,15 @@
 
 {{-- Item Table + Receive Form --}}
 <div class="card">
-  <div class="card-header"><i class="bi bi-list-ul me-2"></i>Detail Item</div>
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-list-ul me-2"></i>Detail Item</span>
+    @php $pendingItems = $purchaseOrder->items->filter(fn($i) => $i->qty_ordered - $i->qty_received > 0)->count(); @endphp
+    @if($pendingItems > 0 && !in_array($purchaseOrder->status,['received','cancelled']))
+    <span class="badge bg-warning"><i class="bi bi-clock me-1"></i>{{ $pendingItems }} item belum lengkap</span>
+    @elseif($purchaseOrder->status === 'received')
+    <span class="badge bg-success"><i class="bi bi-check-all me-1"></i>Semua item diterima lengkap</span>
+    @endif
+  </div>
   @if(in_array($purchaseOrder->status,['sent','partial']) && in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
   <form method="POST" action="{{ route('purchase-order.receive',$purchaseOrder) }}">
     @csrf
@@ -122,7 +130,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="{{ in_array($purchaseOrder->status,['sent','partial']) ? 6 : 6 }}" class="text-end fw-bold">TOTAL:</td>
+          <td colspan="6" class="text-end fw-bold">TOTAL:</td>
           <td class="text-end fw-bold text-primary">Rp {{ number_format($purchaseOrder->total_amount, 0, ',', '.') }}</td>
           @if(in_array($purchaseOrder->status,['sent','partial']))<td></td>@endif
         </tr>
@@ -131,7 +139,7 @@
   </div>
   @if(in_array($purchaseOrder->status,['sent','partial']) && in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
   <div class="card-footer d-flex justify-content-end">
-    <button type="submit" class="btn btn-success"><i class="bi bi-box-arrow-in-down me-2"></i>Catat Penerimaan & Update Stok</button>
+    <button type="submit" class="btn btn-success" id="receiveBtn" onclick="this.disabled=true;this.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></span>Memproses...';this.form.submit()"><i class="bi bi-box-arrow-in-down me-2"></i>Catat Penerimaan & Update Stok</button>
   </div>
   </form>
   @endif

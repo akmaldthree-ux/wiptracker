@@ -2,6 +2,12 @@
 @section('title','Order Produksi')
 @section('page-title','Order Produksi')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">Order Produksi</li>
+  </ol>
+</nav>
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h5 class="mb-0 fw-bold">Daftar Order Produksi</h5>
@@ -49,13 +55,20 @@
       <thead><tr><th>No. Order</th><th>Produk / Series</th><th>Target Tanggal</th><th>Total Qty</th><th>Progress</th><th>Status</th><th>Dibuat</th><th>Aksi</th></tr></thead>
       <tbody>
         @forelse($orders as $o)
-        @php $progress = $o->getProgressPercentage(); $overdue = $o->isOverdue(); @endphp
-        <tr class="{{ $overdue ? 'table-danger' : '' }}">
+        @php
+          $progress = $o->getProgressPercentage();
+          $overdue = $o->isOverdue();
+          $daysLeft = now()->startOfDay()->diffInDays($o->target_date->startOfDay(), false);
+          $nearDeadline = !$overdue && $daysLeft <= 3 && $o->status === 'active';
+        @endphp
+        <tr class="{{ $overdue ? 'table-danger' : ($nearDeadline ? 'table-warning' : '') }}">
           <td><a href="{{ route('orders.show',$o) }}" class="fw-bold text-primary text-decoration-none">{{ $o->order_no }}</a></td>
           <td><div class="fw-semibold">{{ $o->product->name }}</div><small class="text-muted">{{ optional($o->series)->name }}</small></td>
           <td>
-            <span class="{{ $overdue ? 'text-danger fw-semibold' : '' }}">{{ $o->target_date->format('d M Y') }}</span>
-            @if($overdue)<div><span class="badge bg-danger" style="font-size:.65rem">TERLAMBAT</span></div>@endif
+            <span class="{{ $overdue ? 'text-danger fw-semibold' : ($nearDeadline ? 'text-warning fw-semibold' : '') }}">{{ $o->target_date->format('d M Y') }}</span>
+            @if($overdue)<div><span class="badge bg-danger" style="font-size:.65rem">TERLAMBAT</span></div>
+            @elseif($nearDeadline)<div><span class="badge bg-warning" style="font-size:.65rem">{{ $daysLeft <= 0 ? 'HARI INI' : $daysLeft.' HARI LAGI' }}</span></div>
+            @endif
           </td>
           <td>{{ number_format($o->getTotalTargetQty()) }} pcs</td>
           <td style="min-width:120px">

@@ -249,10 +249,11 @@
       </div>
     </div>
 
-    <div class="card-footer">
-      <button type="submit" class="btn btn-success">
+    <div class="card-footer d-flex align-items-center gap-3">
+      <button type="submit" class="btn btn-success" onclick="this.disabled=true;this.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></span>Memproses...';this.form.submit()">
         <i class="bi bi-check-circle me-2"></i>Konfirmasi Penerimaan
       </button>
+      <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Pastikan semua data sudah benar sebelum konfirmasi</small>
     </div>
   </form>
 

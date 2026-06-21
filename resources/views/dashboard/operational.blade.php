@@ -5,25 +5,56 @@
 <!-- Station Cards -->
 <div class="row g-3 mb-4">
   @foreach($stations as $st)
-  @php $statusColor = $st->is_bottleneck ? 'danger' : ($st->qty_in_process > $st->bottleneck_threshold*0.7 ? 'warning' : 'success'); @endphp
+  @php
+    $statusColor = $st->is_bottleneck ? 'danger' : ($st->qty_in_process > $st->bottleneck_threshold*0.7 ? 'warning' : 'success');
+    $borderColor = $statusColor === 'danger' ? '#ef4444' : ($statusColor === 'warning' ? '#f59e0b' : '#22c55e');
+    $bgColor = $statusColor === 'danger' ? 'rgba(239,68,68,.04)' : ($statusColor === 'warning' ? 'rgba(245,158,11,.04)' : 'rgba(34,197,94,.04)');
+    $pct = $st->bottleneck_threshold > 0 ? min(100, round($st->qty_in_process / $st->bottleneck_threshold * 100)) : 0;
+    $barColor = $statusColor === 'danger' ? '#ef4444' : ($statusColor === 'warning' ? '#f59e0b' : '#22c55e');
+  @endphp
   <div class="col-6 col-md-4 col-lg-2">
-    <div class="card border-{{ $statusColor }}" style="border-top:4px solid !important;border-top-color:var(--bs-{{ $statusColor }}) !important">
-      <div class="card-body text-center py-3">
-        @if($st->is_bottleneck)<div class="badge bg-danger text-white mb-2">BOTTLENECK</div>@endif
-        <div class="fw-bold text-{{ $statusColor == 'danger' ? 'danger' : 'primary' }}">{{ $st->station->name ?? $st->name }}</div>
-        <div class="display-6 fw-bold mt-1">{{ number_format($st->qty_in_process) }}</div>
-        <small class="text-muted">dalam proses</small>
-        <hr class="my-2">
+    <div class="card h-100" style="border-top:3px solid {{ $borderColor }};background:{{ $bgColor }}">
+      <div class="card-body py-3 px-3">
+        @if($st->is_bottleneck)
+        <div class="d-flex justify-content-center mb-2">
+          <span class="badge bg-danger" style="font-size:.6rem;letter-spacing:.5px;animation:pulse 1.5s infinite">⚠ BOTTLENECK</span>
+        </div>
+        @endif
+        <div class="text-center">
+          <div class="fw-bold text-{{ $statusColor == 'danger' ? 'danger' : ($statusColor == 'warning' ? 'warning' : 'dark') }}" style="font-size:.8rem;letter-spacing:.3px;text-transform:uppercase">{{ $st->name }}</div>
+          <div class="fw-bold mt-1" style="font-size:1.8rem;line-height:1;color:{{ $borderColor }}">{{ number_format($st->qty_in_process) }}</div>
+          <div style="font-size:.68rem;color:#94a3b8;margin-bottom:.5rem">pcs dalam proses</div>
+          <div class="progress mb-2" style="height:5px;border-radius:3px;background:rgba(0,0,0,.07)">
+            <div class="progress-bar" style="width:{{ $pct }}%;background:{{ $barColor }};border-radius:3px;transition:width .6s ease"></div>
+          </div>
+          <div style="font-size:.62rem;color:#94a3b8">{{ $pct }}% dari threshold {{ number_format($st->bottleneck_threshold) }}</div>
+        </div>
+        <hr class="my-2" style="border-color:rgba(0,0,0,.07)">
         <div class="row text-center g-0">
-          <div class="col"><div class="text-success fw-semibold">{{ number_format($st->qty_in_total) }}</div><div style="font-size:.65rem" class="text-muted">Masuk</div></div>
-          <div class="col"><div class="text-primary fw-semibold">{{ number_format($st->qty_out_total) }}</div><div style="font-size:.65rem" class="text-muted">Keluar</div></div>
-          <div class="col"><div class="text-danger fw-semibold">{{ number_format($st->qty_reject_total) }}</div><div style="font-size:.65rem" class="text-muted">Reject</div></div>
+          <div class="col">
+            <div class="fw-semibold text-success" style="font-size:.85rem">{{ number_format($st->qty_in_total) }}</div>
+            <div style="font-size:.6rem" class="text-muted">Masuk</div>
+          </div>
+          <div class="col">
+            <div class="fw-semibold text-primary" style="font-size:.85rem">{{ number_format($st->qty_out_total) }}</div>
+            <div style="font-size:.6rem" class="text-muted">Keluar</div>
+          </div>
+          <div class="col">
+            <div class="fw-semibold text-danger" style="font-size:.85rem">{{ number_format($st->qty_reject_total) }}</div>
+            <div style="font-size:.6rem" class="text-muted">Reject</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
   @endforeach
 </div>
+
+@push('styles')
+<style>
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+</style>
+@endpush
 
 <div class="row g-3">
   <!-- Pending Handovers -->
@@ -97,16 +128,25 @@
 
   <!-- Near Deadline -->
   <div class="col-md-6">
-    <div class="card">
-      <div class="card-header"><i class="bi bi-clock-history me-2 text-warning"></i>Mendekati Deadline (3 hari)</div>
+    <div class="card {{ $nearDeadlineOrders->count() > 0 ? 'border-warning border-opacity-50' : '' }}">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-clock-history me-2 text-warning"></i>Mendekati Deadline ({{ $nearDeadlineOrders->count() }})</span>
+        @if($nearDeadlineOrders->count() > 0)<span class="badge bg-warning" style="font-size:.6rem">{{ $nearDeadlineOrders->count() }} order</span>@endif
+      </div>
       <div class="list-group list-group-flush">
         @forelse($nearDeadlineOrders as $o)
-        <a href="{{ route('orders.show',$o) }}" class="list-group-item list-group-item-action py-3">
-          <div class="d-flex justify-content-between">
+        @php $daysLeft = now()->startOfDay()->diffInDays($o->target_date->startOfDay(), false); @endphp
+        <a href="{{ route('orders.show',$o) }}" class="list-group-item list-group-item-action py-3" style="border-left:3px solid #f59e0b">
+          <div class="d-flex justify-content-between align-items-start">
             <span class="fw-semibold text-warning">{{ $o->order_no }}</span>
-            <small class="text-warning">{{ $o->target_date->diffForHumans() }}</small>
+            <span class="badge {{ $daysLeft <= 1 ? 'bg-danger' : 'bg-warning' }}" style="font-size:.65rem">
+              {{ $daysLeft <= 0 ? 'Hari ini!' : $daysLeft.' hari lagi' }}
+            </span>
           </div>
-          <small class="text-muted">{{ $o->product->name }} | Target: {{ $o->target_date->format('d M Y') }}</small>
+          <div class="small text-muted mt-1">{{ $o->product->name }}</div>
+          <div class="small fw-semibold mt-1" style="color:#f59e0b">
+            <i class="bi bi-calendar-event me-1"></i>Target: {{ $o->target_date->format('d M Y') }}
+          </div>
         </a>
         @empty
         <div class="list-group-item text-center text-muted py-4"><i class="bi bi-check-circle text-success me-1"></i>Tidak ada order mendekati deadline</div>

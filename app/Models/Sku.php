@@ -10,6 +10,6 @@ class Sku extends Model {
     public function size() { return $this->belongsTo(Size::class); }
     public function wipEntries() { return $this->hasMany(WipEntry::class); }
     public function getFullNameAttribute() {
-        return "{$this->product->name} - {$this->series->name} / {$this->color->name} / {$this->size->name}";
+        return ($this->product?->name ?? '?') . ' - ' . ($this->series?->name ?? '?') . ' / ' . ($this->color?->name ?? '?') . ' / ' . ($this->size?->name ?? '?');
     }
 }
