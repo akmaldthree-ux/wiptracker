@@ -42,7 +42,7 @@
                     @endif
                 </tr>
                 @empty
-                <tr><td colspan="5" class="text-center py-4 text-muted">Belum ada ukuran</td></tr>
+                <tr><td colspan="5"><div class="empty-state"><i class="bi bi-rulers"></i><p class="fw-semibold mb-1">Belum ada ukuran</p><p>Tambahkan ukuran produk</p></div></td></tr>
                 @endforelse
             </tbody>
         </table>

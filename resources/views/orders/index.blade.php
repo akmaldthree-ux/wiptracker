@@ -27,7 +27,7 @@
       </div>
       <div class="col-auto d-flex gap-1">
         <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-search me-1"></i>Cari</button>
-        <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x"></i></a>
+        <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
       </div>
     </form>
   </div>

@@ -2,6 +2,12 @@
 @section('title','WIP Detail Order')
 @section('page-title','WIP Detail Order')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('wip.index') }}">WIP Tracker</a></li>
+    <li class="breadcrumb-item active">{{ $order->order_no }}</li>
+  </ol>
+</nav>
 <div class="mb-4 d-flex justify-content-between align-items-center">
   <div>
     <h5 class="mb-1 fw-bold">{{ $order->order_no }}</h5>

@@ -2,6 +2,12 @@
 @section('title','Detail Bahan Baku')
 @section('page-title','Detail Bahan Baku')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('bahan-baku.index') }}">Bahan Baku</a></li>
+    <li class="breadcrumb-item active">{{ $rawMaterial->name }}</li>
+  </ol>
+</nav>
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>
     <h4 class="fw-bold mb-1">{{ $rawMaterial->name }} <span class="badge bg-secondary">{{ $rawMaterial->code }}</span></h4>

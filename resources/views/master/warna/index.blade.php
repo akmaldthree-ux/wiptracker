@@ -50,7 +50,7 @@
                     @endif
                 </tr>
                 @empty
-                <tr><td colspan="6" class="text-center py-4 text-muted">Belum ada warna</td></tr>
+                <tr><td colspan="6"><div class="empty-state"><i class="bi bi-palette"></i><p class="fw-semibold mb-1">Belum ada warna</p><p>Tambahkan warna produk</p></div></td></tr>
                 @endforelse
             </tbody>
         </table>

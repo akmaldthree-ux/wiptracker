@@ -404,6 +404,21 @@ hr { border-color: #edf0f7; }
 .overflow-x-auto { overflow-x: auto; }
 
 /* ────────────────────────────────
+   BREADCRUMB
+──────────────────────────────── */
+.breadcrumb { font-size: .78rem; margin-bottom: 0; }
+.breadcrumb-item a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb-item a:hover { color: var(--primary); }
+.breadcrumb-item.active { color: var(--text-muted); }
+.breadcrumb-item + .breadcrumb-item::before { color: #cbd5e1; }
+
+/* ────────────────────────────────
+   FILTER BAR
+──────────────────────────────── */
+.filter-bar { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: .6rem 1rem; margin-bottom: 1rem; }
+.filter-bar .form-control, .filter-bar .form-select { border-color: #e8edf5; }
+
+/* ────────────────────────────────
    ANIMATIONS
 ──────────────────────────────── */
 @keyframes fadeInUp {
@@ -584,9 +599,9 @@ hr { border-color: #edf0f7; }
   </div>
 
   <!-- Alerts -->
-  <div class="px-4 pt-3" style="margin-bottom:-1rem">
+  <div class="px-4 pt-3 pb-0" id="flash-area">
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 js-auto-dismiss" role="alert">
       <i class="bi bi-check-circle-fill flex-shrink-0"></i>
       <span>{{ session('success') }}</span>
       <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
@@ -607,9 +622,10 @@ hr { border-color: #edf0f7; }
     </div>
     @endif
     @if($errors->any())
-    <div class="alert alert-danger">
+    <div class="alert alert-danger alert-dismissible fade show">
       <div class="d-flex align-items-center gap-2 mb-1">
-        <i class="bi bi-exclamation-triangle-fill"></i><strong>Terdapat kesalahan:</strong>
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i><strong>Terdapat kesalahan:</strong>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
       </div>
       <ul class="mb-0 ps-3">@foreach($errors->all() as $err)<li>{{ $err }}</li>@endforeach</ul>
     </div>
@@ -637,13 +653,30 @@ function closeSidebar() {
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(function(reg) {
-      console.log('SW registered:', reg.scope);
-    }).catch(function(err) {
-      console.log('SW registration failed:', err);
-    });
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
   });
 }
+
+// Auto-dismiss success alerts after 4.5s
+document.querySelectorAll('.js-auto-dismiss').forEach(function(el) {
+  setTimeout(function() {
+    var bsAlert = bootstrap.Alert.getOrCreateInstance(el);
+    if (bsAlert) bsAlert.close();
+  }, 4500);
+});
+
+// Form submit protection: disable submit button, show spinner (POST forms only)
+document.querySelectorAll('form:not([method="GET"]):not([method="get"])').forEach(function(form) {
+  form.addEventListener('submit', function() {
+    var btn = form.querySelector('[type="submit"]');
+    if (!btn || btn.dataset.noSpinner) return;
+    btn.disabled = true;
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>' + btn.textContent.trim();
+    // Re-enable after 10s as safety fallback
+    setTimeout(function() { btn.disabled = false; btn.innerHTML = orig; }, 10000);
+  });
+});
 </script>
 @stack('scripts')
 </body>

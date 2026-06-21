@@ -54,7 +54,7 @@
                     @endif
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center py-4 text-muted">Belum ada stasiun</td></tr>
+                <tr><td colspan="7"><div class="empty-state"><i class="bi bi-geo-alt"></i><p class="fw-semibold mb-1">Belum ada stasiun</p><p>Tambahkan stasiun produksi</p></div></td></tr>
                 @endforelse
             </tbody>
         </table>

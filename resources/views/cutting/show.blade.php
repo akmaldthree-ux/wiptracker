@@ -1,7 +1,13 @@
 @extends('layouts.app')
 @section('title', 'Detail Cutting Plan')
+@section('page-title', 'Detail Cutting Plan')
 @section('content')
-
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('cutting.index') }}">Cutting Plan</a></li>
+    <li class="breadcrumb-item active">{{ $cutting->plan_no }}</li>
+  </ol>
+</nav>
 {{-- Header --}}
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>

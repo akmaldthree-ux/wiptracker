@@ -67,7 +67,7 @@
                     @endif
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center py-4 text-muted">Belum ada pengguna</td></tr>
+                <tr><td colspan="7"><div class="empty-state"><i class="bi bi-people"></i><p class="fw-semibold mb-1">Belum ada pengguna</p><p>Tambahkan pengguna untuk mulai menggunakan sistem</p></div></td></tr>
                 @endforelse
             </tbody>
         </table>

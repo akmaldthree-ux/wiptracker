@@ -57,7 +57,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center py-4 text-muted">Belum ada data supplier</td></tr>
+                <tr><td colspan="7"><div class="empty-state"><i class="bi bi-building"></i><p class="fw-semibold mb-1">Belum ada supplier</p><p>Tambahkan supplier pertama</p></div></td></tr>
                 @endforelse
             </tbody>
         </table>

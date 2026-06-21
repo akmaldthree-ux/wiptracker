@@ -2,6 +2,12 @@
 @section('title','Detail Order')
 @section('page-title','Detail Order Produksi')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('orders.index') }}">Order Produksi</a></li>
+    <li class="breadcrumb-item active">{{ $order->order_no }}</li>
+  </ol>
+</nav>
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>
     <h4 class="fw-bold mb-1">{{ $order->order_no }} <span class="badge badge-{{ $order->status }} fs-6">{{ $order->status_label }}</span></h4>

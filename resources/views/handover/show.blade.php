@@ -2,6 +2,12 @@
 @section('title','Detail Handover')
 @section('page-title','Detail Handover')
 @section('content')
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb small mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('handover.index') }}">Handover</a></li>
+    <li class="breadcrumb-item active">{{ $handover->handover_no }}</li>
+  </ol>
+</nav>
 <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div>
     <h4 class="fw-bold mb-1">{{ $handover->handover_no }} <span class="badge bg-{{ $handover->status_color }}">{{ $handover->status_label }}</span></h4>

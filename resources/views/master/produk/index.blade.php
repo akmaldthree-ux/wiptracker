@@ -50,7 +50,7 @@
                     @endif
                 </tr>
                 @empty
-                <tr><td colspan="6" class="text-center py-4 text-muted">Belum ada produk</td></tr>
+                <tr><td colspan="6"><div class="empty-state"><i class="bi bi-tag"></i><p class="fw-semibold mb-1">Belum ada produk</p><p>Tambahkan produk pertama</p></div></td></tr>
                 @endforelse
             </tbody>
         </table>
