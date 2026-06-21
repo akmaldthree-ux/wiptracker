@@ -215,15 +215,20 @@ document.querySelectorAll('.view-btn').forEach(btn => {
 });
 
 // FullCalendar
-const events = @json($orders->getCollection()->map(fn($o) => [
-  'id'    => $o->id,
-  'title' => $o->order_no . ' — ' . $o->product->name,
-  'start' => $o->created_at->toDateString(),
-  'end'   => \Carbon\Carbon::parse($o->target_date)->addDay()->toDateString(),
-  'url'   => route('orders.show', $o),
-  'color' => match($o->status) { 'active'=>'#00ADB5', 'completed'=>'#22c55e', 'on_hold'=>'#f59e0b', 'cancelled'=>'#ef4444', default=>'#94a3b8' },
-  'extendedProps' => ['status' => $o->status_label, 'progress' => $o->getProgressPercentage()],
-]));
+@php
+$calEvents = $orders->getCollection()->map(function($o) {
+  return [
+    'id'    => $o->id,
+    'title' => $o->order_no . ' — ' . $o->product->name,
+    'start' => $o->created_at->toDateString(),
+    'end'   => \Carbon\Carbon::parse($o->target_date)->addDay()->toDateString(),
+    'url'   => route('orders.show', $o),
+    'color' => match($o->status) { 'active'=>'#00ADB5', 'completed'=>'#22c55e', 'on_hold'=>'#f59e0b', 'cancelled'=>'#ef4444', default=>'#94a3b8' },
+    'extendedProps' => ['status' => $o->status_label, 'progress' => $o->getProgressPercentage()],
+  ];
+})->values();
+@endphp
+const events = @json($calEvents);
 
 function initCalendar() {
   window._calInit = true;
