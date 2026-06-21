@@ -109,6 +109,11 @@
     <div class="card-body p-3" style="overflow-x:auto">
       @php
         $allOrders = $orders->getCollection();
+      @endphp
+      @if($allOrders->isEmpty())
+        <div class="empty-state"><i class="bi bi-bar-chart-steps"></i><p class="fw-semibold mb-1">Tidak ada order untuk ditampilkan</p></div>
+      @else
+      @php
         $minDate = $allOrders->min(fn($o) => $o->created_at)->startOfDay();
         $maxDate = $allOrders->max(fn($o) => $o->target_date)->addDays(3);
         $totalDays = $minDate->diffInDays($maxDate) + 1;
@@ -183,6 +188,7 @@
         @endforeach
         <div class="d-flex align-items-center gap-1"><div style="width:2px;height:14px;background:rgba(0,173,181,.6)"></div><small class="text-muted">Hari ini</small></div>
       </div>
+      @endif
     </div>
   </div>
 </div>
