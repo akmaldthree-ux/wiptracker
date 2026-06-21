@@ -2,7 +2,7 @@
 @section('title','Buat Handover')
 @section('page-title','Buat Handover Baru')
 @section('content')
-<div class="card" style="max-width:800px">
+<div class="card form-card-container mx-auto" style="max-width:800px">
   <div class="card-header"><i class="bi bi-arrow-left-right me-2 text-primary"></i>Form Handover Digital</div>
   <div class="card-body">
     <div class="alert alert-info"><i class="bi bi-info-circle me-2"></i>Sistem akan otomatis menentukan stasiun tujuan berdasarkan urutan alur produksi.</div>

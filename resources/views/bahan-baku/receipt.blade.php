@@ -2,7 +2,7 @@
 @section('title','Input Penerimaan')
 @section('page-title','Input Penerimaan Bahan Baku')
 @section('content')
-<div class="card" style="max-width:600px">
+<div class="card form-card-container mx-auto" style="max-width:600px">
   <div class="card-header"><i class="bi bi-box-arrow-in-down me-2 text-success"></i>Penerimaan: {{ $rawMaterial->name }}</div>
   <div class="card-body">
     <div class="alert alert-info py-2 mb-4"><small>Stok saat ini: <strong>{{ number_format($rawMaterial->current_stock) }} {{ $rawMaterial->unit }}</strong></small></div>

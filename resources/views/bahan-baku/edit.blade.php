@@ -2,7 +2,7 @@
 @section('title','Edit Bahan Baku')
 @section('page-title','Edit Bahan Baku')
 @section('content')
-<div class="card" style="max-width:700px">
+<div class="card form-card-container mx-auto" style="max-width:700px">
   <div class="card-header"><i class="bi bi-pencil me-2 text-primary"></i>Edit Bahan Baku</div>
   <div class="card-body">
     <form method="POST" action="{{ url('bahan-baku/'.$rawMaterial->id) }}">

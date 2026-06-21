@@ -7,7 +7,7 @@
 <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
   <form method="GET" class="d-flex align-items-center gap-2">
     <label class="fw-semibold text-muted mb-0" style="font-size:.85rem">Periode:</label>
-    <select name="month" class="form-select form-select-sm" style="width:160px" onchange="this.form.submit()">
+    <select name="month" class="form-select form-select-sm" style="width:160px;max-width:100%" onchange="this.form.submit()">
       @foreach($months as $m)
       <option value="{{ $m }}" {{ $month === $m ? 'selected' : '' }}>
         {{ \Carbon\Carbon::parse($m.'-01')->translatedFormat('F Y') }}

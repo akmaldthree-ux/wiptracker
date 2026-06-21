@@ -2,7 +2,7 @@
 @section('title','QC Inspeksi')
 @section('page-title','QC Inspeksi')
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
     <div>
         <h4 class="mb-0 fw-bold">QC Inspeksi</h4>
         <p class="text-muted mb-0 small">Checkpoint pemeriksaan kualitas produksi</p>

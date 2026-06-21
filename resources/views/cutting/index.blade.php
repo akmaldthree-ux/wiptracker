@@ -4,7 +4,7 @@
 @section('content')
 
 {{-- Header --}}
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div>
     <h4 class="fw-bold mb-1"><i class="bi bi-scissors me-2 text-primary"></i>Cutting Plan Schedule</h4>
     <p class="text-muted mb-0">Perencanaan dan jadwal pemotongan kain di stasiun Cutting</p>
@@ -15,7 +15,7 @@
 </div>
 
 {{-- View Toggle --}}
-<div class="d-flex align-items-center gap-3 mb-3">
+<div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
   <div class="btn-group">
     <a href="{{ request()->fullUrlWithQuery(['view'=>'list']) }}" class="btn btn-sm {{ $view=='list' ? 'btn-primary' : 'btn-outline-primary' }}">
       <i class="bi bi-list-ul me-1"></i>List

@@ -2,7 +2,7 @@
 @section('title','Edit Budget')
 @section('page-title','Edit Budget Produksi')
 @section('content')
-<div class="card" style="max-width:600px">
+<div class="card form-card-container mx-auto" style="max-width:600px">
   <div class="card-header"><i class="bi bi-wallet2 me-2 text-primary"></i>Budget Plan — {{ $order->order_no }}</div>
   <div class="card-body">
     <form method="POST" action="{{ route('budget.update',$order) }}">

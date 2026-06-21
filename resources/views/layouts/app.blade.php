@@ -368,10 +368,37 @@ hr { border-color: #edf0f7; }
 }
 @media (max-width: 576px) {
   .page-content { padding: .75rem; }
-  .kpi-card .kpi-value { font-size: 1.6rem; }
-  .topbar .page-title { font-size: .88rem; }
+  .kpi-card .kpi-value { font-size: 1.5rem; }
+  .kpi-card .kpi-label { font-size: .66rem; }
+  .topbar .page-title { font-size: .85rem; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .user-info { display: none !important; }
   .table-responsive { border: 0; }
+  /* Page header: title+button rows wrap on mobile */
+  .page-header-row { flex-wrap: wrap !important; gap: .5rem !important; }
+  .page-header-row > div:last-child { width: 100%; }
+  /* Shrink table cells on mobile */
+  .table { font-size: .78rem; }
+  .table thead th { font-size: .65rem; padding: .5rem .6rem; }
+  .table tbody td { padding: .6rem .6rem; }
+  /* Stat cards */
+  .stat-card .stat-value { font-size: 1.4rem; }
+  /* Breadcrumb */
+  .breadcrumb { font-size: .72rem; }
+  /* Flash area padding */
+  #flash-area { padding-left: .75rem !important; padding-right: .75rem !important; }
+  /* Card header font */
+  .card-header { font-size: .82rem; padding: .7rem 1rem; }
+  /* Form containers: override inline max-width on mobile */
+  .form-card-container { max-width: 100% !important; }
+  /* btn-group wrap */
+  .mobile-wrap { flex-wrap: wrap !important; }
+  /* Hide non-critical table columns on mobile */
+  .d-mob-none { display: none !important; }
+}
+@media (max-width: 400px) {
+  .kpi-card { padding: 1rem; }
+  .kpi-card .kpi-value { font-size: 1.3rem; }
+  .pipeline-dot { width: 36px; height: 36px; font-size: .72rem; }
 }
 
 /* ────────────────────────────────

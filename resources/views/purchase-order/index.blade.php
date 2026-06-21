@@ -8,7 +8,7 @@
     <li class="breadcrumb-item active">Purchase Order</li>
   </ol>
 </nav>
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div>
     <h5 class="mb-0 fw-bold">Purchase Order</h5>
     <p class="text-muted small mb-0">Kelola pembelian bahan baku ke supplier</p>
@@ -22,16 +22,16 @@
   <div class="card-body py-2 px-3">
     <form method="GET" class="row g-2 align-items-center">
       <div class="col-auto"><small class="text-muted fw-semibold"><i class="bi bi-funnel me-1"></i>Filter:</small></div>
-      <div class="col">
-        <select name="status" class="form-select form-select-sm" style="max-width:200px">
+      <div class="col-12 col-sm">
+        <select name="status" class="form-select form-select-sm">
           <option value="">Semua Status</option>
           @foreach(['draft'=>'Draft','sent'=>'Terkirim','partial'=>'Diterima Sebagian','received'=>'Diterima Lengkap','cancelled'=>'Dibatalkan'] as $v=>$l)
           <option value="{{ $v }}" {{ request('status')==$v?'selected':'' }}>{{ $l }}</option>
           @endforeach
         </select>
       </div>
-      <div class="col">
-        <select name="supplier_id" class="form-select form-select-sm" style="max-width:220px">
+      <div class="col-12 col-sm">
+        <select name="supplier_id" class="form-select form-select-sm">
           <option value="">Semua Supplier</option>
           @foreach($suppliers as $s)<option value="{{ $s->id }}" {{ request('supplier_id')==$s->id?'selected':'' }}>{{ $s->name }}</option>@endforeach
         </select>

@@ -2,7 +2,7 @@
 @section('title','Buat Order Produksi')
 @section('page-title','Buat Order Produksi')
 @section('content')
-<div class="card" style="max-width:900px">
+<div class="card form-card-container mx-auto" style="max-width:900px">
   <div class="card-header"><i class="bi bi-plus-circle me-2 text-primary"></i>Form Order Produksi Baru</div>
   <div class="card-body">
     <form method="POST" action="{{ route('orders.store') }}" id="orderForm">

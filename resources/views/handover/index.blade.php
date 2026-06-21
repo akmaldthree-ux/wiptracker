@@ -25,16 +25,16 @@
       <div class="col-auto">
         <small class="text-muted fw-semibold"><i class="bi bi-funnel me-1"></i>Filter:</small>
       </div>
-      <div class="col">
-        <select name="status" class="form-select form-select-sm" style="max-width:180px">
+      <div class="col-12 col-sm">
+        <select name="status" class="form-select form-select-sm">
           <option value="">Semua Status</option>
           @foreach(['pending'=>'⏳ Pending','confirmed'=>'✅ Dikonfirmasi','discrepancy'=>'⚠️ Ada Selisih','approved'=>'✔ Disetujui'] as $v=>$l)
           <option value="{{ $v }}" {{ request('status')==$v?'selected':'' }}>{{ $l }}</option>
           @endforeach
         </select>
       </div>
-      <div class="col">
-        <select name="station_id" class="form-select form-select-sm" style="max-width:200px">
+      <div class="col-12 col-sm">
+        <select name="station_id" class="form-select form-select-sm">
           <option value="">Semua Stasiun</option>
           @foreach($stations as $st)<option value="{{ $st->id }}" {{ request('station_id')==$st->id?'selected':'' }}>{{ $st->name }}</option>@endforeach
         </select>
@@ -54,12 +54,12 @@
         <tr>
           <th>No. Handover</th>
           <th>Order</th>
-          <th>Rute</th>
-          <th class="text-center">Kirim</th>
-          <th class="text-center">Terima</th>
+          <th class="d-mob-none">Rute</th>
+          <th class="text-center d-mob-none">Kirim</th>
+          <th class="text-center d-mob-none">Terima</th>
           <th class="text-center">Selisih</th>
           <th>Status</th>
-          <th>Tanggal</th>
+          <th class="d-mob-none">Tanggal</th>
           <th></th>
         </tr>
       </thead>
@@ -73,22 +73,22 @@
             <div class="fw-semibold" style="font-size:.82rem">{{ $h->order->order_no }}</div>
             <div class="text-muted" style="font-size:.75rem">{{ Str::limit($h->order->product->name, 22) }}</div>
           </td>
-          <td>
+          <td class="d-mob-none">
             <div class="d-flex align-items-center gap-1" style="font-size:.8rem">
               <span class="text-muted">{{ $h->fromStation?->name ?? 'Order Produksi' }}</span>
               <i class="bi bi-arrow-right text-muted" style="font-size:.7rem"></i>
               <span class="fw-semibold">{{ $h->toStation?->name ?? '-' }}</span>
             </div>
           </td>
-          <td class="text-center fw-semibold">{{ $h->total_sent }}</td>
-          <td class="text-center {{ $h->total_received !== null ? 'fw-semibold text-success' : 'text-muted' }}">{{ $h->total_received ?? '—' }}</td>
+          <td class="text-center fw-semibold d-mob-none">{{ $h->total_sent }}</td>
+          <td class="text-center d-mob-none {{ $h->total_received !== null ? 'fw-semibold text-success' : 'text-muted' }}">{{ $h->total_received ?? '—' }}</td>
           <td class="text-center">
             @if(($h->total_discrepancy ?? 0) != 0)
             <span class="badge bg-danger">{{ $h->total_discrepancy }}</span>
             @else<span class="text-muted">—</span>@endif
           </td>
           <td><span class="badge bg-{{ $h->status_color }}">{{ $h->status_label }}</span></td>
-          <td><small class="text-muted">{{ $h->initiated_at ? $h->initiated_at->format('d M Y') : $h->created_at->format('d M Y') }}</small></td>
+          <td class="d-mob-none"><small class="text-muted">{{ $h->initiated_at ? $h->initiated_at->format('d M Y') : $h->created_at->format('d M Y') }}</small></td>
           <td><a href="{{ route('handover.show',$h) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a></td>
         </tr>
         @empty

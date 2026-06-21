@@ -9,7 +9,7 @@
   <a href="?low_stock=1" class="btn btn-sm btn-danger ms-auto">Lihat Sekarang</a>
 </div>
 @endif
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div><h5 class="mb-0 fw-bold">Daftar Bahan Baku</h5><p class="text-muted small mb-0">{{ $materials->total() }} bahan baku terdaftar</p></div>
   @if(in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
   <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
@@ -18,8 +18,8 @@
 <div class="card mb-4">
   <div class="card-body py-3">
     <form method="GET" class="row g-2 align-items-end">
-      <div class="col-md-4"><input type="text" name="search" class="form-control form-control-sm" placeholder="Cari kode / nama..." value="{{ request('search') }}"></div>
-      <div class="col-md-2">
+      <div class="col-12 col-md-4"><input type="text" name="search" class="form-control form-control-sm" placeholder="Cari kode / nama..." value="{{ request('search') }}"></div>
+      <div class="col-12 col-md-2">
         <select name="category" class="form-select form-select-sm">
           <option value="">Semua Kategori</option>
           @foreach(['kain'=>'Kain','benang'=>'Benang','aksesoris'=>'Aksesoris','lainnya'=>'Lainnya'] as $v=>$l)
@@ -27,31 +27,31 @@
           @endforeach
         </select>
       </div>
-      <div class="col-md-2">
+      <div class="col-12 col-md-2">
         <div class="form-check form-switch ms-2 mt-1">
           <input class="form-check-input" type="checkbox" name="low_stock" id="lowStock" value="1" {{ request('low_stock')?'checked':'' }}>
           <label class="form-check-label small" for="lowStock">Stok Kritis</label>
         </div>
       </div>
-      <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-search me-1"></i>Cari</button></div>
-      <div class="col-md-2"><a href="{{ route('bahan-baku.index') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a></div>
+      <div class="col-6 col-md-2"><button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-search me-1"></i>Cari</button></div>
+      <div class="col-6 col-md-2"><a href="{{ route('bahan-baku.index') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a></div>
     </form>
   </div>
 </div>
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead><tr><th>Kode</th><th>Nama</th><th>Kategori</th><th>Warna</th><th>Satuan</th><th>Stok Min.</th><th>Stok Saat Ini</th><th>Status Stok</th><th>Harga/Unit</th><th>Aksi</th></tr></thead>
+      <thead><tr><th>Kode</th><th>Nama</th><th class="d-mob-none">Kategori</th><th class="d-mob-none">Warna</th><th class="d-mob-none">Satuan</th><th class="d-mob-none">Stok Min.</th><th>Stok</th><th>Status</th><th class="d-mob-none">Harga/Unit</th><th>Aksi</th></tr></thead>
       <tbody>
         @forelse($materials as $m)
         @php $lowStock = $m->isBelowMinStock(); @endphp
         <tr class="{{ $lowStock ? 'table-danger' : '' }}">
           <td><span class="font-monospace fw-semibold">{{ $m->code }}</span></td>
           <td><a href="{{ url('bahan-baku/'.$m->id) }}" class="text-decoration-none fw-semibold {{ $lowStock?'text-danger':'' }}">{{ $m->name }}</a></td>
-          <td><span class="badge bg-secondary text-white">{{ $m->category_label }}</span></td>
-          <td>{{ $m->color ?? '-' }}</td>
-          <td>{{ $m->unit }}</td>
-          <td>{{ number_format($m->min_stock) }}</td>
+          <td class="d-mob-none"><span class="badge bg-secondary text-white">{{ $m->category_label }}</span></td>
+          <td class="d-mob-none">{{ $m->color ?? '-' }}</td>
+          <td class="d-mob-none">{{ $m->unit }}</td>
+          <td class="d-mob-none">{{ number_format($m->min_stock) }}</td>
           <td class="fw-bold {{ $lowStock ? 'text-danger' : 'text-success' }}">{{ number_format($m->current_stock) }}</td>
           <td>
             @if($lowStock)
@@ -62,7 +62,7 @@
             <span class="badge bg-success"><i class="bi bi-check me-1"></i>Aman</span>
             @endif
           </td>
-          <td>Rp {{ number_format($m->unit_price) }}</td>
+          <td class="d-mob-none">Rp {{ number_format($m->unit_price) }}</td>
           <td>
             <div class="d-flex gap-1">
               <a href="{{ url('bahan-baku/'.$m->id) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>

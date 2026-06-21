@@ -104,7 +104,7 @@
       <div class="card-header"><i class="bi bi-wallet2 me-2 text-primary"></i>Utilisasi Budget</div>
       <div class="card-body">
         <div class="text-center mb-3">
-          <canvas id="budgetChart" width="180" height="180" style="max-width:180px"></canvas>
+          <canvas id="budgetChart" width="160" height="160" style="max-width:160px"></canvas>
         </div>
         @php $utilPct = $totalBudgetPlan > 0 ? min(100,($totalBudgetActual/$totalBudgetPlan)*100) : 0; @endphp
         <div class="d-flex justify-content-between mb-1"><small>Budget Total</small><small class="fw-semibold">Rp {{ number_format($totalBudgetPlan) }}</small></div>
@@ -127,7 +127,7 @@
   <div class="table-responsive">
     <table class="table table-hover mb-0">
       <thead>
-        <tr><th>No. Order</th><th>Produk</th><th>Target Tanggal</th><th>Total Qty</th><th>Progress</th><th>Status</th><th></th></tr>
+        <tr><th>No. Order</th><th>Produk</th><th class="d-mob-none">Target Tanggal</th><th class="d-mob-none">Total Qty</th><th>Progress</th><th>Status</th><th></th></tr>
       </thead>
       <tbody>
         @forelse($activeOrders as $o)
@@ -138,13 +138,13 @@
             <div class="fw-semibold">{{ $o->product->name }}</div>
             <small class="text-muted">{{ optional($o->series)->name }}</small>
           </td>
-          <td>
+          <td class="d-mob-none">
             <span class="{{ $overdue ? 'text-danger fw-semibold' : '' }}">
               {{ $o->target_date->format('d M Y') }}
               @if($overdue)<i class="bi bi-exclamation-triangle-fill text-danger ms-1"></i>@endif
             </span>
           </td>
-          <td>{{ number_format($o->getTotalTargetQty()) }} pcs</td>
+          <td class="d-mob-none">{{ number_format($o->getTotalTargetQty()) }} pcs</td>
           <td style="min-width:140px">
             <div class="d-flex align-items-center gap-2">
               <div class="progress flex-grow-1"><div class="progress-bar {{ $progress >= 100 ? 'bg-success' : ($progress >= 50 ? 'bg-primary' : 'bg-warning') }}" style="width:{{ $progress }}%"></div></div>

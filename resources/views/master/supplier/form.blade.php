@@ -2,7 +2,7 @@
 @section('title', isset($supplier) ? 'Edit Supplier' : 'Tambah Supplier')
 @section('page-title', isset($supplier) ? 'Edit Supplier' : 'Tambah Supplier')
 @section('content')
-<div class="card" style="max-width:700px">
+<div class="card form-card-container mx-auto" style="max-width:700px">
     <div class="card-header">
         <i class="bi bi-building me-2 text-primary"></i>
         {{ isset($supplier) ? 'Edit Supplier: '.$supplier->name : 'Tambah Supplier Baru' }}

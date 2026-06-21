@@ -2,7 +2,7 @@
 @section('title','Input WIP')
 @section('page-title','Input Data WIP')
 @section('content')
-<div class="card" style="max-width:700px">
+<div class="card form-card-container mx-auto" style="max-width:700px">
   <div class="card-header"><i class="bi bi-plus-circle me-2 text-primary"></i>Form Input WIP</div>
   <div class="card-body">
     <form method="POST" action="{{ route('wip.store') }}">

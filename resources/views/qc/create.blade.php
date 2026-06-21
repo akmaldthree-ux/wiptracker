@@ -2,7 +2,7 @@
 @section('title','Inspeksi QC Baru')
 @section('page-title','Inspeksi QC Baru')
 @section('content')
-<div class="card" style="max-width:800px">
+<div class="card form-card-container mx-auto" style="max-width:800px">
     <div class="card-header"><i class="bi bi-shield-check me-2 text-primary"></i>Form Inspeksi QC</div>
     <div class="card-body">
         <form method="POST" action="{{ route('qc.store') }}" enctype="multipart/form-data">

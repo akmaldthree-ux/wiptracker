@@ -8,12 +8,12 @@
     <li class="breadcrumb-item active">Order Produksi</li>
   </ol>
 </nav>
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div>
     <h5 class="mb-0 fw-bold">Daftar Order Produksi</h5>
     <p class="text-muted small mb-0">Kelola dan pantau semua order produksi</p>
   </div>
-  <div class="d-flex gap-2">
+  <div class="d-flex gap-2 flex-wrap">
     <div class="btn-group btn-group-sm">
       <button class="btn btn-outline-secondary view-btn active" data-view="list" title="Tampilan List"><i class="bi bi-list-ul"></i></button>
       <button class="btn btn-outline-secondary view-btn" data-view="calendar" title="Kalender"><i class="bi bi-calendar3"></i></button>
@@ -30,9 +30,9 @@
   <div class="card-body py-2 px-3">
     <form method="GET" class="row g-2 align-items-center">
       <div class="col-auto"><small class="text-muted fw-semibold"><i class="bi bi-funnel me-1"></i>Filter:</small></div>
-      <div class="col"><input type="text" name="search" class="form-control form-control-sm" placeholder="No. order / produk..." value="{{ request('search') }}" style="max-width:220px"></div>
-      <div class="col">
-        <select name="status" class="form-select form-select-sm" style="max-width:170px">
+      <div class="col-12 col-sm"><input type="text" name="search" class="form-control form-control-sm" placeholder="No. order / produk..." value="{{ request('search') }}"></div>
+      <div class="col-12 col-sm">
+        <select name="status" class="form-select form-select-sm">
           <option value="">Semua Status</option>
           @foreach(['draft'=>'Draft','active'=>'Aktif','completed'=>'Selesai','on_hold'=>'Ditahan','cancelled'=>'Dibatalkan'] as $v=>$l)
           <option value="{{ $v }}" {{ request('status')==$v ? 'selected' : '' }}>{{ $l }}</option>
@@ -52,7 +52,7 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead><tr><th>No. Order</th><th>Produk / Series</th><th>Target Tanggal</th><th>Total Qty</th><th>Progress</th><th>Status</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+      <thead><tr><th>No. Order</th><th>Produk / Series</th><th>Target Tanggal</th><th class="d-mob-none">Total Qty</th><th>Progress</th><th>Status</th><th class="d-mob-none">Dibuat</th><th>Aksi</th></tr></thead>
       <tbody>
         @forelse($orders as $o)
         @php
@@ -70,7 +70,7 @@
             @elseif($nearDeadline)<div><span class="badge bg-warning" style="font-size:.65rem">{{ $daysLeft <= 0 ? 'HARI INI' : $daysLeft.' HARI LAGI' }}</span></div>
             @endif
           </td>
-          <td>{{ number_format($o->getTotalTargetQty()) }} pcs</td>
+          <td class="d-mob-none">{{ number_format($o->getTotalTargetQty()) }} pcs</td>
           <td style="min-width:120px">
             <div class="d-flex align-items-center gap-2">
               <div class="progress flex-grow-1">
@@ -80,7 +80,7 @@
             </div>
           </td>
           <td><span class="badge badge-{{ $o->status }} px-2 py-1">{{ $o->status_label }}</span></td>
-          <td><small class="text-muted">{{ $o->created_at->format('d/m/Y') }}<br>{{ $o->creator->name }}</small></td>
+          <td class="d-mob-none"><small class="text-muted">{{ $o->created_at->format('d/m/Y') }}<br>{{ $o->creator->name }}</small></td>
           <td>
             <div class="d-flex gap-1">
               <a href="{{ route('orders.show',$o) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>
@@ -113,13 +113,14 @@
 
 {{-- ── GANTT VIEW ── --}}
 <div id="view-gantt" class="view-panel" style="display:none">
+  <div class="d-sm-none alert alert-info mb-2 py-2 px-3" style="font-size:.82rem"><i class="bi bi-info-circle me-1"></i>Gantt Chart lebih baik dilihat di layar yang lebih lebar. Geser ke kanan untuk melihat seluruh timeline.</div>
   <div class="card">
     <div class="card-header d-flex align-items-center gap-2">
       <i class="bi bi-bar-chart-steps text-primary"></i>
       <span>Gantt Chart — Timeline Order Produksi</span>
       <small class="text-muted ms-auto">Skala: per hari</small>
     </div>
-    <div class="card-body p-3" style="overflow-x:auto">
+    <div class="card-body p-2 p-sm-3" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
       @php
         $allOrders = $orders->getCollection();
       @endphp
