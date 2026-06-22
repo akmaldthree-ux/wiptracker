@@ -131,20 +131,3 @@ Route::middleware('auth')->prefix('api')->group(function() {
     });
 });
 
-
-// TEMP: debug handover email
-Route::get('/debug-handover-email', function () {
-    $stations = \App\Models\Station::orderBy('order_sequence')->get();
-    $users = \App\Models\User::with('station')->whereNotNull('email')->get();
-    $output = "<h3>Stations</h3><table border=1 cellpadding=5>";
-    foreach ($stations as $s) {
-        $output .= "<tr><td>{$s->id}</td><td>{$s->name}</td><td>seq:{$s->order_sequence}</td></tr>";
-    }
-    $output .= "</table><h3>Users dengan Email</h3><table border=1 cellpadding=5>";
-    $output .= "<tr><th>Name</th><th>Email</th><th>Station</th></tr>";
-    foreach ($users as $u) {
-        $output .= "<tr><td>{$u->name}</td><td>{$u->email}</td><td>".($u->station->name ?? 'NULL')."</td></tr>";
-    }
-    $output .= "</table>";
-    return $output;
-});
