@@ -121,7 +121,7 @@ class HandoverController extends Controller
 
     public function show(Handover $handover)
     {
-        $handover->load(['order.product','fromStation','toStation','sewingLocation','initiatedBy','confirmedBy','approvedBy','items.sku.color','items.sku.size']);
+        $handover->load(['order.product','fromStation','toStation','sewingLocation','initiatedBy','confirmedBy','approvedBy','items.sku.color','items.sku.size','qcInspection.inspector']);
         return view('handover.show', compact('handover'));
     }
 
@@ -274,6 +274,13 @@ class HandoverController extends Controller
 
         $msg = 'Handover berhasil dikonfirmasi. WIP diperbarui otomatis.';
         if (!empty($reworkItems)) $msg .= ' Handover rework otomatis dibuat.';
+
+        // Jika handover masuk ke stasiun QC → redirect ke form QC Inspeksi
+        if ($handover->isQcStation()) {
+            return redirect()->route('qc.create', ['handover_id' => $handover->id])
+                ->with('success', $msg . ' Silakan lakukan QC Inspeksi untuk handover ini.');
+        }
+
         return back()->with('success', $msg);
     }
 

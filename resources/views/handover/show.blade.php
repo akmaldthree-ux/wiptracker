@@ -153,6 +153,55 @@
   </div>
 </div>
 
+{{-- QC Inspection Status (untuk handover ke stasiun QC) --}}
+@if($handover->isQcStation())
+<div class="card mb-4 border-{{ $handover->qcInspection ? ($handover->qcInspection->status === 'pass' ? 'success' : ($handover->qcInspection->status === 'fail' ? 'danger' : 'warning')) : 'secondary' }}">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-shield-check me-2"></i>QC Inspeksi</span>
+        @if(!$handover->qcInspection && in_array($handover->status, ['confirmed','approved']))
+        <a href="{{ route('qc.create', ['handover_id' => $handover->id]) }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Lakukan QC Inspeksi
+        </a>
+        @endif
+    </div>
+    <div class="card-body">
+        @if($handover->qcInspection)
+        @php $qc = $handover->qcInspection; @endphp
+        <div class="row g-3 align-items-center">
+            <div class="col-md-3 text-center">
+                @php $color = $qc->status === 'pass' ? 'success' : ($qc->status === 'fail' ? 'danger' : 'warning'); @endphp
+                <div class="p-3 bg-{{ $color }} bg-opacity-10 rounded">
+                    <i class="bi bi-{{ $qc->status === 'pass' ? 'check-circle-fill' : ($qc->status === 'fail' ? 'x-circle-fill' : 'exclamation-circle-fill') }} fs-2 text-{{ $color }}"></i>
+                    <div class="fw-bold text-{{ $color }} mt-1">{{ $qc->status === 'pass' ? 'LOLOS' : ($qc->status === 'fail' ? 'GAGAL' : 'KONDISIONAL') }}</div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr><td class="text-muted" width="40%">Inspektor</td><td class="fw-semibold">{{ $qc->inspector->name }}</td></tr>
+                    <tr><td class="text-muted">Waktu Inspeksi</td><td>{{ $qc->inspected_at->format('d M Y, H:i') }}</td></tr>
+                    <tr><td class="text-muted">Total Diperiksa</td><td>{{ number_format($qc->total_checked) }} pcs</td></tr>
+                    <tr><td class="text-muted">Total Defect</td><td class="{{ $qc->total_defect > 0 ? 'text-danger fw-semibold' : '' }}">{{ number_format($qc->total_defect) }} pcs</td></tr>
+                    <tr><td class="text-muted">Defect Rate</td><td class="fw-bold text-{{ $color }}">{{ $qc->defect_rate }}%</td></tr>
+                    @if($qc->notes)<tr><td class="text-muted">Catatan</td><td>{{ $qc->notes }}</td></tr>@endif
+                </table>
+                <a href="{{ route('qc.show', $qc) }}" class="btn btn-sm btn-outline-primary mt-2"><i class="bi bi-eye me-1"></i>Lihat Detail Inspeksi</a>
+            </div>
+        </div>
+        @else
+        <div class="text-center py-3 text-muted">
+            <i class="bi bi-shield-exclamation fs-2 d-block mb-2 text-warning"></i>
+            @if(in_array($handover->status, ['confirmed','approved']))
+            <div class="fw-semibold">QC Inspeksi belum dilakukan</div>
+            <small>Klik tombol "Lakukan QC Inspeksi" di atas untuk memulai pemeriksaan.</small>
+            @else
+            <small>QC Inspeksi dapat dilakukan setelah handover dikonfirmasi.</small>
+            @endif
+        </div>
+        @endif
+    </div>
+</div>
+@endif
+
 <!-- Items -->
 <div class="card mb-4">
   <div class="card-header"><i class="bi bi-list-ul me-2"></i>Detail Item Handover</div>

@@ -12,6 +12,9 @@ class Handover extends Model {
     public function approvedBy() { return $this->belongsTo(User::class, 'approved_by'); }
     public function items() { return $this->hasMany(HandoverItem::class); }
     public function sewingLocation() { return $this->belongsTo(SewingLocation::class); }
+    public function qcInspection()  { return $this->hasOne(QcInspection::class); }
+    public function isQcStation(): bool { return $this->toStation?->code === 'QC'; }
+    public function hasPassedQc(): bool { return $this->qcInspection?->status !== 'fail'; }
     public function getTotalSentAttribute() { return $this->items->sum('qty_sent'); }
     public function getTotalReceivedAttribute() { return $this->items->whereNotNull('qty_received')->sum('qty_received'); }
     public function getTotalDiscrepancyAttribute() { return $this->items->whereNotNull('discrepancy')->sum('discrepancy'); }
