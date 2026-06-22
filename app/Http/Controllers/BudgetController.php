@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Budget, ProductionOrder, CostEntry, Station};
+use App\Models\{Budget, ProductionOrder, CostEntry, Station, BomItem};
 use Illuminate\Http\Request;
 
 class BudgetController extends Controller
@@ -24,8 +24,13 @@ class BudgetController extends Controller
 
     public function edit(ProductionOrder $order)
     {
+        $order->load(['items','product']);
         $budget = $order->budget ?? new Budget(['production_order_id'=>$order->id]);
-        return view('budget.edit', compact('order','budget'));
+        $totalQty = $order->getTotalTargetQty();
+        $bomItems = BomItem::with('rawMaterial')
+            ->where('product_id', $order->product_id)->get();
+        $bomEstimate = $bomItems->sum(fn($b) => $b->getQtyNeeded($totalQty) * $b->rawMaterial->unit_price);
+        return view('budget.edit', compact('order','budget','bomItems','bomEstimate','totalQty'));
     }
 
     public function update(Request $request, ProductionOrder $order)
