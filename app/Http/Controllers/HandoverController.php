@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle};
 use App\Services\WhatsAppService;
 use App\Mail\HandoverCreatedMail;
+use App\Mail\HandoverConfirmedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -233,6 +234,9 @@ class HandoverController extends Controller
                 'link'    => "/handover/{$handover->id}",
                 'is_read' => false,
             ]);
+            if ($senderUser->email) {
+                try { Mail::to($senderUser->email)->send(new HandoverConfirmedMail($handover, $senderUser)); } catch (\Throwable $e) { \Log::error('HandoverConfirmedMail failed', ['error' => $e->getMessage()]); }
+            }
         }
         // Notifikasi ke PIC stasiun pengirim juga
         if ($handover->from_station_id) {
@@ -268,6 +272,9 @@ class HandoverController extends Controller
             $supervisors = User::where('role','supervisor')->orWhere('role','admin')->get();
             foreach ($supervisors as $s) {
                 Notification::create(['user_id'=>$s->id,'title'=>"Discrepancy: {$handover->handover_no}",'message'=>"Ada selisih pada handover {$handover->handover_no} yang memerlukan persetujuan.",'type'=>'danger','link'=>"/handover/{$handover->id}",'is_read'=>false]);
+                if ($s->email) {
+                    try { Mail::to($s->email)->send(new HandoverConfirmedMail($handover, $s)); } catch (\Throwable $e) { \Log::error('HandoverDiscrepancyMail failed', ['error' => $e->getMessage()]); }
+                }
             }
             return back()->with('warning','Handover dikonfirmasi dengan discrepancy. Menunggu persetujuan supervisor.');
         }

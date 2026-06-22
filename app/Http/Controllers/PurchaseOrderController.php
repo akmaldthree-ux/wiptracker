@@ -9,8 +9,10 @@ use App\Models\MaterialReceipt;
 use App\Models\Notification;
 use App\Models\User;
 use App\Services\WhatsAppService;
+use App\Mail\PurchaseOrderSentMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseOrderController extends Controller
 {
@@ -86,7 +88,13 @@ class PurchaseOrderController extends Controller
     public function send(PurchaseOrder $purchaseOrder)
     {
         abort_if($purchaseOrder->status !== 'draft', 403);
+        $purchaseOrder->load(['supplier','items.rawMaterial']);
         $purchaseOrder->update(['status' => 'sent', 'sent_at' => now()]);
+
+        // Email ke supplier
+        if ($purchaseOrder->supplier->email) {
+            try { Mail::to($purchaseOrder->supplier->email)->send(new PurchaseOrderSentMail($purchaseOrder)); } catch (\Throwable $e) { \Log::error('PurchaseOrderSentMail failed', ['error' => $e->getMessage()]); }
+        }
 
         // WhatsApp notification to supplier contact if available
         app(WhatsAppService::class)->send(

@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Budget, ProductionOrder, CostEntry, Station, BomItem};
+use App\Models\{Budget, ProductionOrder, CostEntry, Station, BomItem, User, Notification};
+use App\Mail\BudgetAlertMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class BudgetController extends Controller
 {
@@ -53,6 +55,28 @@ class BudgetController extends Controller
             $field = $request->type . '_cost_actual';
             $order->budget->increment($field, $request->amount);
             $order->budget->increment('total_actual', $request->amount);
+
+            $budget = $order->budget->fresh();
+            $util   = $budget->total_plan > 0 ? ($budget->total_actual / $budget->total_plan) * 100 : 0;
+            $alertType = $budget->total_actual > $budget->total_plan ? 'over' : ($util >= 80 ? 'near' : null);
+
+            if ($alertType) {
+                $budget->load('order.product');
+                $admins = User::whereIn('role', ['admin','supervisor'])->get();
+                foreach ($admins as $admin) {
+                    Notification::create([
+                        'user_id' => $admin->id,
+                        'title'   => $alertType === 'over' ? "Over Budget: {$order->order_no}" : "Budget Hampir Penuh: {$order->order_no}",
+                        'message' => $alertType === 'over' ? "Realisasi melebihi budget untuk order {$order->order_no}." : "Budget order {$order->order_no} sudah " . round($util) . "%.",
+                        'type'    => $alertType === 'over' ? 'danger' : 'warning',
+                        'link'    => "/budget/{$order->id}",
+                        'is_read' => false,
+                    ]);
+                    if ($admin->email) {
+                        try { Mail::to($admin->email)->send(new BudgetAlertMail($budget, $admin, $alertType)); } catch (\Throwable $e) { \Log::error('BudgetAlertMail failed', ['error' => $e->getMessage()]); }
+                    }
+                }
+            }
         }
         return back()->with('success','Biaya berhasil dicatat.');
     }

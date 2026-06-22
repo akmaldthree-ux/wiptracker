@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\{QcInspection, QcChecklistItem, ProductionOrder, Handover, Notification, User};
+use App\Mail\QcFailMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class QcInspectionController extends Controller
 {
@@ -78,6 +80,7 @@ class QcInspectionController extends Controller
 
         // Jika QC FAIL → notifikasi supervisor & PIC QC
         if ($status === 'fail') {
+            $inspection->load(['order.product','inspector','handover.fromStation']);
             $admins = User::whereIn('role', ['admin','supervisor'])->get();
             foreach ($admins as $admin) {
                 Notification::create([
@@ -88,6 +91,9 @@ class QcInspectionController extends Controller
                     'link'    => "/qc/{$inspection->id}",
                     'is_read' => false,
                 ]);
+                if ($admin->email) {
+                    try { Mail::to($admin->email)->send(new QcFailMail($inspection, $admin)); } catch (\Throwable $e) { \Log::error('QcFailMail failed', ['error' => $e->getMessage()]); }
+                }
             }
         }
 
