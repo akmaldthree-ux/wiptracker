@@ -531,16 +531,6 @@ hr { border-color: #edf0f7; }
       <i class="bi bi-file-bar-graph"></i> Laporan
     </a>
 
-    <div class="nav-section-title">Data WIP</div>
-    <a href="{{ route('wip.index') }}" class="nav-link {{ request()->routeIs('wip.index') || request()->routeIs('wip.show') ? 'active' : '' }}">
-      <i class="bi bi-activity"></i> WIP Tracker
-    </a>
-    @if(auth()->user()->role === 'admin')
-    <a href="{{ route('wip.create') }}" class="nav-link {{ request()->routeIs('wip.create') ? 'active' : '' }}">
-      <i class="bi bi-pencil-square"></i> Input WIP Manual
-    </a>
-    @endif
-
     @if(in_array(auth()->user()->role ?? '', ['admin','supervisor']))
     <div class="nav-section-title">Master Data</div>
     <a class="nav-link {{ request()->routeIs('master.*') ? 'active' : '' }}"
