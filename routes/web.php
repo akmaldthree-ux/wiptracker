@@ -130,3 +130,16 @@ Route::middleware('auth')->prefix('api')->group(function() {
         return response()->json($result);
     });
 });
+
+
+// TEMP: mail test route — remove after confirmed working
+Route::get('/test-mail', function () {
+    try {
+        \Illuminate\Support\Facades\Mail::raw('Test email dari DPIS berhasil!', function ($m) {
+            $m->to('admin@tritory.id')->subject('Test Email DPIS');
+        });
+        return 'Email berhasil dikirim! Cek inbox admin@tritory.id';
+    } catch (\Throwable $e) {
+        return 'GAGAL: ' . $e->getMessage();
+    }
+});
