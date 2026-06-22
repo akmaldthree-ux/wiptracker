@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle};
 use App\Services\WhatsAppService;
+use App\Mail\HandoverCreatedMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HandoverController extends Controller
 {
@@ -90,10 +92,11 @@ class HandoverController extends Controller
         $wa = app(WhatsAppService::class);
         $waMsg = "Handover Masuk: *{$ho->handover_no}*\nDari: {$fromStation->name} → {$toStation->name}\nOrder: {$ho->order->order_no}\nKonfirmasi di: " . url("/handover/{$ho->id}");
 
-        $destPICs = User::where('station_id',$toStation->id)->get();
+        $destPICs = User::where('station_id',$toStation->id)->whereNotNull('email')->get();
         foreach ($destPICs as $pic) {
             Notification::create(['user_id'=>$pic->id,'title'=>"Handover Masuk: {$ho->handover_no}",'message'=>"Handover dari stasiun {$fromStation->name} menunggu konfirmasi Anda.",'type'=>'warning','link'=>"/handover/{$ho->id}","is_read"=>false]);
             $wa->sendToUser($pic, $waMsg);
+            try { Mail::to($pic->email)->send(new HandoverCreatedMail($ho, $pic)); } catch (\Throwable $e) { \Log::error('HandoverCreatedMail failed', ['error' => $e->getMessage()]); }
         }
 
         // Notifikasi ke admin & supervisor
