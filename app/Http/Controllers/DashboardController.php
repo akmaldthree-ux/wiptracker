@@ -32,11 +32,15 @@ class DashboardController extends Controller
             return ['name' => $s->name, 'wip' => max(0, $wip), 'threshold' => $s->bottleneck_threshold, 'is_bottleneck' => $wip > $s->bottleneck_threshold];
         });
 
-        $urgentDeadlines = OrderStationDeadline::with(['order.product','station'])
-            ->whereHas('order', fn($q) => $q->where('status','active'))
-            ->where('target_date', '<=', now()->addDays(7)->toDateString())
-            ->orderBy('target_date')
-            ->get();
+        try {
+            $urgentDeadlines = OrderStationDeadline::with(['order.product','station'])
+                ->whereHas('order', fn($q) => $q->where('status','active'))
+                ->where('target_date', '<=', now()->addDays(7)->toDateString())
+                ->orderBy('target_date')
+                ->get();
+        } catch (\Exception $e) {
+            $urgentDeadlines = collect();
+        }
 
         return view('dashboard.executive', compact(
             'totalActiveOrders','totalWipUnits','todayThroughput','overdueOrders',

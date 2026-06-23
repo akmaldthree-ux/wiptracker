@@ -21,7 +21,11 @@ class ProductionOrder extends Model {
     public function hasMaterialRequirements(): bool { return $this->materialRequirements()->exists(); }
     public function hasMaterialShortage(): bool
     {
-        return $this->materialRequirements->contains(fn($r) => $r->qty_shortage > 0);
+        try {
+            return $this->materialRequirements->contains(fn($r) => $r->qty_shortage > 0);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function getTotalTargetQty() { return $this->items->sum('target_qty'); }
