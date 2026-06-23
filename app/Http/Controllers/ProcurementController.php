@@ -63,19 +63,32 @@ class ProcurementController extends Controller
     public function approve(ProductionOrder $order)
     {
         abort_if(!in_array(auth()->user()->role, ['admin','supervisor']), 403);
+
+        $requirements = $order->materialRequirements()->with('rawMaterial')->get();
+        foreach ($requirements as $req) {
+            $req->rawMaterial->decrement('current_stock', $req->qty_needed);
+        }
+
         $order->update([
             'materials_approved'    => true,
             'materials_approved_by' => auth()->id(),
             'materials_approved_at' => now(),
         ]);
-        return back()->with('success', "Bahan baku untuk order {$order->order_no} disetujui. Order siap dikirim ke Cutting.");
+
+        return back()->with('success', "Bahan baku untuk order {$order->order_no} disetujui dan stok telah dikurangi. Order siap dikirim ke Cutting.");
     }
 
     public function revoke(ProductionOrder $order)
     {
         abort_if(!in_array(auth()->user()->role, ['admin','supervisor']), 403);
+
+        $requirements = $order->materialRequirements()->with('rawMaterial')->get();
+        foreach ($requirements as $req) {
+            $req->rawMaterial->increment('current_stock', $req->qty_needed);
+        }
+
         $order->update(['materials_approved' => false, 'materials_approved_by' => null, 'materials_approved_at' => null]);
-        return back()->with('success', 'Persetujuan bahan dibatalkan.');
+        return back()->with('success', 'Persetujuan bahan dibatalkan dan stok dikembalikan.');
     }
 
     private function generateRequirements(ProductionOrder $order): void

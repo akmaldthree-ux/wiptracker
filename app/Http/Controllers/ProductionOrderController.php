@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{ProductionOrder, ProductionOrderItem, Product, Series, Sku, Station, WipEntry, OrderStationDeadline};
+use App\Models\{ProductionOrder, ProductionOrderItem, Product, Series, Sku, Station, WipEntry, OrderStationDeadline, User};
+use App\Mail\MaterialReviewMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 
 class ProductionOrderController extends Controller
@@ -108,7 +110,17 @@ class ProductionOrderController extends Controller
     public function updateStatus(Request $request, ProductionOrder $order)
     {
         $request->validate(['status'=>'required|in:draft,active,completed,on_hold,cancelled']);
+        $wasActive = $order->status === 'active';
         $order->update(['status'=>$request->status]);
+
+        if ($request->status === 'active' && !$wasActive) {
+            $order->load('product','series');
+            $recipients = User::whereIn('role',['admin','supervisor'])->whereNotNull('email')->get();
+            foreach ($recipients as $user) {
+                try { Mail::to($user->email)->send(new MaterialReviewMail($order, $user)); } catch (\Exception $e) {}
+            }
+        }
+
         return back()->with('success',"Status order diubah ke: {$order->status_label}");
     }
 
