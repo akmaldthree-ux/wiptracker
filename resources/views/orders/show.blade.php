@@ -34,7 +34,8 @@
     @endif
     <a href="{{ route('wip.show',$order) }}" class="btn btn-outline-primary"><i class="bi bi-activity me-1"></i>Lihat WIP</a>
     @if(in_array(auth()->user()->role,['admin','supervisor']) && $order->status === 'active')
-      @if($order->materials_approved)
+      @php try { $matApproved = $order->materials_approved; } catch(\Exception $e) { $matApproved = false; } @endphp
+      @if($matApproved)
       <form method="POST" action="{{ route('orders.send-to-cutting',$order) }}" class="d-inline" onsubmit="return confirm('Kirim semua item order ini ke stasiun Cutting?')">
         @csrf
         <button type="submit" class="btn btn-warning"><i class="bi bi-scissors me-1"></i>Kirim ke Cutting</button>

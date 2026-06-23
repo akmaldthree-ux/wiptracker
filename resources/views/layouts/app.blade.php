@@ -513,7 +513,7 @@ hr { border-color: #edf0f7; }
     <div class="nav-section-title">Bahan & Biaya</div>
     <a href="{{ route('procurement.index') }}" class="nav-link {{ request()->routeIs('procurement.*') ? 'active' : '' }}">
       <i class="bi bi-clipboard2-check"></i> Procurement
-      @php $pendingProc = \App\Models\ProductionOrder::whereIn('status',['draft','active'])->where('materials_approved',false)->count(); @endphp
+      @php try { $pendingProc = \App\Models\ProductionOrder::whereIn('status',['draft','active'])->where('materials_approved',false)->count(); } catch(\Exception $e) { $pendingProc = 0; } @endphp
       @if($pendingProc > 0)<span class="badge bg-warning text-dark ms-auto">{{ $pendingProc }}</span>@endif
     </a>
     <a href="{{ route('bahan-baku.index') }}" class="nav-link {{ request()->routeIs('bahan-baku.*') ? 'active' : '' }}">
