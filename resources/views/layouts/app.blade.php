@@ -511,13 +511,11 @@ hr { border-color: #edf0f7; }
     </a>
 
     <div class="nav-section-title">Bahan & Biaya</div>
-    @if(in_array(auth()->user()->role ?? '', ['admin','procurement','supervisor']))
     <a href="{{ route('procurement.index') }}" class="nav-link {{ request()->routeIs('procurement.*') ? 'active' : '' }}">
       <i class="bi bi-clipboard2-check"></i> Procurement
       @php try { $pendingProc = \App\Models\ProductionOrder::whereIn('status',['draft','active'])->where('materials_approved',false)->count(); } catch(\Exception $e) { $pendingProc = 0; } @endphp
       @if($pendingProc > 0)<span class="badge bg-warning text-dark ms-auto">{{ $pendingProc }}</span>@endif
     </a>
-    @endif
     <a href="{{ route('bahan-baku.index') }}" class="nav-link {{ request()->routeIs('bahan-baku.*') ? 'active' : '' }}">
       <i class="bi bi-boxes"></i> Bahan Baku
       @php $lowStock = \App\Models\RawMaterial::whereRaw('current_stock < min_stock')->count(); @endphp
