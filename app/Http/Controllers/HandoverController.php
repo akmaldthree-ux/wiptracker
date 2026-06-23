@@ -380,6 +380,9 @@ class HandoverController extends Controller
     public function sendFromOrder(Request $request, ProductionOrder $order)
     {
         abort_if(!in_array(auth()->user()->role, ['admin', 'supervisor']), 403);
+        if (!$order->materials_approved) {
+            return back()->with('error', 'Bahan baku belum disetujui oleh Procurement. Silakan setujui kebutuhan bahan terlebih dahulu.');
+        }
         $toStation = Station::where('order_sequence', 1)->where('is_active', true)->first();
         if (!$toStation) return back()->withErrors(['error' => 'Stasiun Cutting tidak ditemukan.']);
 

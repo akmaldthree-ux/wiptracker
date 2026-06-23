@@ -2,8 +2,8 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 class ProductionOrder extends Model {
-    protected $fillable = ['order_no','product_id','series_id','target_date','status','selling_price','notes','created_by'];
-    protected $casts = ['target_date' => 'date'];
+    protected $fillable = ['order_no','product_id','series_id','target_date','status','selling_price','notes','created_by','materials_approved','materials_approved_by','materials_approved_at'];
+    protected $casts = ['target_date' => 'date', 'materials_approved' => 'boolean', 'materials_approved_at' => 'datetime'];
     public function product() { return $this->belongsTo(Product::class); }
     public function series() { return $this->belongsTo(Series::class); }
     public function creator() { return $this->belongsTo(User::class, 'created_by'); }
@@ -15,6 +15,14 @@ class ProductionOrder extends Model {
     public function materialAllocations() { return $this->hasMany(MaterialAllocation::class); }
     public function costEntries() { return $this->hasMany(CostEntry::class); }
     public function stationDeadlines() { return $this->hasMany(OrderStationDeadline::class)->with('station')->orderBy('target_date'); }
+    public function materialRequirements() { return $this->hasMany(MaterialRequirement::class); }
+    public function materialsApprovedBy() { return $this->belongsTo(User::class, 'materials_approved_by'); }
+
+    public function hasMaterialRequirements(): bool { return $this->materialRequirements()->exists(); }
+    public function hasMaterialShortage(): bool
+    {
+        return $this->materialRequirements->contains(fn($r) => $r->qty_shortage > 0);
+    }
 
     public function getTotalTargetQty() { return $this->items->sum('target_qty'); }
     public function getStatusLabelAttribute() {

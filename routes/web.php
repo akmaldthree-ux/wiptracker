@@ -22,6 +22,7 @@ use App\Http\Controllers\RejectController;
 use App\Http\Controllers\QcInspectionController;
 use App\Http\Controllers\BomController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ProcurementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
@@ -49,6 +50,12 @@ Route::middleware('auth')->group(function () {
     Route::post('handover/{handover}/approve', [HandoverController::class, 'approve'])->name('handover.approve');
     Route::post('handover/{handover}/complete-order', [HandoverController::class, 'completeOrder'])->name('handover.complete-order');
     Route::post('orders/{order}/send-to-cutting', [HandoverController::class, 'sendFromOrder'])->name('orders.send-to-cutting');
+
+    Route::get('/procurement', [ProcurementController::class, 'index'])->name('procurement.index');
+    Route::get('/procurement/{order}', [ProcurementController::class, 'show'])->name('procurement.show');
+    Route::post('/procurement/{order}/approve', [ProcurementController::class, 'approve'])->name('procurement.approve');
+    Route::post('/procurement/{order}/revoke', [ProcurementController::class, 'revoke'])->name('procurement.revoke');
+    Route::post('/procurement/{order}/regenerate', [ProcurementController::class, 'regenerate'])->name('procurement.regenerate');
 
     Route::resource('bahan-baku', RawMaterialController::class);
     Route::get('bahan-baku/{rawMaterial}/receipt', [RawMaterialController::class, 'receiptForm'])->name('bahan-baku.receipt');

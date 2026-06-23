@@ -34,10 +34,16 @@
     @endif
     <a href="{{ route('wip.show',$order) }}" class="btn btn-outline-primary"><i class="bi bi-activity me-1"></i>Lihat WIP</a>
     @if(in_array(auth()->user()->role,['admin','supervisor']) && $order->status === 'active')
-    <form method="POST" action="{{ route('orders.send-to-cutting',$order) }}" class="d-inline" onsubmit="return confirm('Kirim semua item order ini ke stasiun Cutting?')">
-      @csrf
-      <button type="submit" class="btn btn-warning"><i class="bi bi-scissors me-1"></i>Kirim ke Cutting</button>
-    </form>
+      @if($order->materials_approved)
+      <form method="POST" action="{{ route('orders.send-to-cutting',$order) }}" class="d-inline" onsubmit="return confirm('Kirim semua item order ini ke stasiun Cutting?')">
+        @csrf
+        <button type="submit" class="btn btn-warning"><i class="bi bi-scissors me-1"></i>Kirim ke Cutting</button>
+      </form>
+      @else
+      <a href="{{ route('procurement.show',$order) }}" class="btn btn-outline-warning">
+        <i class="bi bi-lock me-1"></i>Bahan Belum Disetujui
+      </a>
+      @endif
     @endif
     <a href="{{ route('handover.create') }}?order_id={{ $order->id }}" class="btn btn-primary"><i class="bi bi-arrow-left-right me-1"></i>Buat Handover</a>
   </div>
