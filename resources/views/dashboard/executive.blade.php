@@ -118,6 +118,44 @@
   </div>
 </div>
 
+<!-- Station Deadlines Alert Panel -->
+@if($urgentDeadlines->count() > 0)
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-calendar-x me-2 text-danger"></i>Deadline Stasiun Mendesak <span class="badge bg-danger ms-1">{{ $urgentDeadlines->count() }}</span></span>
+    <a href="{{ route('dashboard.station-deadlines') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.85rem">
+      <thead>
+        <tr><th>Order</th><th>Produk</th><th>Stasiun</th><th>Target</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        @foreach($urgentDeadlines as $dl)
+        <tr>
+          <td><a href="{{ route('orders.show',$dl->order) }}" class="fw-semibold text-primary">{{ $dl->order->order_no }}</a></td>
+          <td>{{ $dl->order->product->name }}</td>
+          <td><span class="badge bg-secondary bg-opacity-15 text-secondary">{{ $dl->station->name }}</span></td>
+          <td class="{{ $dl->is_overdue ? 'text-danger fw-semibold' : '' }}">{{ $dl->target_date->format('d M Y') }}</td>
+          <td><span class="badge bg-{{ $dl->status_color }}">{{ $dl->status_label }}</span></td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+</div>
+@else
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-calendar-check me-2 text-success"></i>Deadline Stasiun</span>
+    <a href="{{ route('dashboard.station-deadlines') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+  </div>
+  <div class="card-body text-center text-muted py-3">
+    <i class="bi bi-check-circle text-success me-1"></i>Tidak ada deadline stasiun mendesak dalam 7 hari ke depan.
+  </div>
+</div>
+@endif
+
 <!-- Active Orders -->
 <div class="card">
   <div class="card-header d-flex align-items-center justify-content-between">

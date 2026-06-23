@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{ProductionOrder, Station, WipEntry, Handover, RawMaterial, Budget, User, Notification};
+use App\Models\{ProductionOrder, Station, WipEntry, Handover, RawMaterial, Budget, User, Notification, OrderStationDeadline};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -32,12 +32,42 @@ class DashboardController extends Controller
             return ['name' => $s->name, 'wip' => max(0, $wip), 'threshold' => $s->bottleneck_threshold, 'is_bottleneck' => $wip > $s->bottleneck_threshold];
         });
 
+        $urgentDeadlines = OrderStationDeadline::with(['order.product','station'])
+            ->whereHas('order', fn($q) => $q->where('status','active'))
+            ->where('target_date', '<=', now()->addDays(7)->toDateString())
+            ->orderBy('target_date')
+            ->get();
+
         return view('dashboard.executive', compact(
             'totalActiveOrders','totalWipUnits','todayThroughput','overdueOrders',
             'pendingHandovers','discrepancyHandovers','lowStockMaterials',
             'stations','activeOrders','totalBudgetPlan','totalBudgetActual',
-            'weeklyThroughput','stationWip'
+            'weeklyThroughput','stationWip','urgentDeadlines'
         ));
+    }
+
+    public function stationDeadlines(Request $request)
+    {
+        $query = OrderStationDeadline::with(['order.product','order.series','station'])
+            ->whereHas('order', fn($q) => $q->where('status','active'))
+            ->orderBy('target_date');
+
+        if ($request->station_id) $query->where('station_id', $request->station_id);
+        if ($request->status) {
+            $today = today()->toDateString();
+            match($request->status) {
+                'overdue'  => $query->where('target_date', '<', $today),
+                'critical' => $query->whereBetween('target_date', [$today, now()->addDays(2)->toDateString()]),
+                'warning'  => $query->whereBetween('target_date', [now()->addDays(3)->toDateString(), now()->addDays(7)->toDateString()]),
+                'ontrack'  => $query->where('target_date', '>', now()->addDays(7)->toDateString()),
+                default    => null,
+            };
+        }
+
+        $deadlines = $query->get();
+        $stations  = Station::where('is_active', true)->orderBy('order_sequence')->get();
+
+        return view('dashboard.station-deadlines', compact('deadlines','stations'));
     }
 
     public function operational()

@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/operasional', [DashboardController::class, 'operational'])->name('dashboard.operational');
     Route::get('/dashboard/wip-monitor', [DashboardController::class, 'wipMonitor'])->name('dashboard.wip-monitor');
     Route::get('/dashboard/reject', [RejectController::class, 'dashboard'])->name('dashboard.reject');
+    Route::get('/dashboard/station-deadlines', [DashboardController::class, 'stationDeadlines'])->name('dashboard.station-deadlines');
 
     Route::resource('orders', ProductionOrderController::class);
     Route::patch('orders/{order}/status', [ProductionOrderController::class, 'updateStatus'])->name('orders.status');
