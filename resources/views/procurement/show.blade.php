@@ -162,7 +162,7 @@
         </tfoot>
       </table>
     </div>
-    <a href="{{ route('purchase-orders.create') }}" class="btn btn-warning"><i class="bi bi-cart-plus me-1"></i>Buat Purchase Order</a>
+    <a href="{{ route('purchase-order.create') }}" class="btn btn-warning"><i class="bi bi-cart-plus me-1"></i>Buat Purchase Order</a>
   </div>
 </div>
 @endif
