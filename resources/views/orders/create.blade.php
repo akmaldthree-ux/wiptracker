@@ -46,6 +46,26 @@
         <div class="text-muted text-center py-4" id="skuPlaceholder"><i class="bi bi-arrow-up-circle me-1"></i>Pilih Produk dan Series terlebih dahulu</div>
       </div>
 
+      <hr class="my-4">
+      <h6 class="mb-3"><i class="bi bi-calendar-range me-2 text-primary"></i>Deadline Per Stasiun <span class="text-muted fw-normal small">(opsional)</span></h6>
+      <div class="alert alert-info py-2 mb-3"><small><i class="bi bi-info-circle me-1"></i>Tentukan target tanggal selesai di setiap stasiun sebagai acuan tim produksi. Deadline akhir order tetap mengacu pada field "Target Tanggal Selesai" di atas.</small></div>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle mb-0" style="font-size:.88rem">
+          <thead class="table-light">
+            <tr><th style="width:30%">Stasiun</th><th style="width:35%">Target Selesai</th><th>Catatan</th></tr>
+          </thead>
+          <tbody>
+            @foreach($stations as $st)
+            <tr>
+              <td><span class="fw-semibold">{{ $st->name }}</span></td>
+              <td><input type="date" name="station_deadlines[{{ $st->id }}][target_date]" class="form-control form-control-sm" id="sd_{{ $st->id }}"></td>
+              <td><input type="text" name="station_deadlines[{{ $st->id }}][notes]" class="form-control form-control-sm" placeholder="Opsional..."></td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+
       <div class="mt-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-2"></i>Simpan Order</button>
         <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary">Batal</a>

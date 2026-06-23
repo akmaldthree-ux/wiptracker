@@ -127,11 +127,15 @@
   <div class="table-responsive">
     <table class="table table-hover mb-0">
       <thead>
-        <tr><th>No. Order</th><th>Produk</th><th class="d-mob-none">Target Tanggal</th><th class="d-mob-none">Total Qty</th><th>Progress</th><th>Status</th><th></th></tr>
+        <tr><th>No. Order</th><th>Produk</th><th class="d-mob-none">Target Tanggal</th><th class="d-mob-none">Sisa Waktu</th><th class="d-mob-none">Total Qty</th><th>Progress</th><th>Status</th><th></th></tr>
       </thead>
       <tbody>
         @forelse($activeOrders as $o)
-        @php $progress = $o->getProgressPercentage(); $overdue = $o->isOverdue(); @endphp
+        @php
+          $progress = $o->getProgressPercentage();
+          $overdue = $o->isOverdue();
+          $daysLeft = (int) now()->startOfDay()->diffInDays($o->target_date, false);
+        @endphp
         <tr class="{{ $overdue ? 'table-danger' : '' }}">
           <td><span class="fw-semibold text-primary">{{ $o->order_no }}</span></td>
           <td>
@@ -143,6 +147,17 @@
               {{ $o->target_date->format('d M Y') }}
               @if($overdue)<i class="bi bi-exclamation-triangle-fill text-danger ms-1"></i>@endif
             </span>
+          </td>
+          <td class="d-mob-none">
+            @if($overdue)
+              <span class="badge bg-danger">{{ abs($daysLeft) }} hari terlambat</span>
+            @elseif($daysLeft <= 3)
+              <span class="badge bg-danger">{{ $daysLeft }} hari lagi</span>
+            @elseif($daysLeft <= 7)
+              <span class="badge bg-warning text-dark">{{ $daysLeft }} hari lagi</span>
+            @else
+              <span class="badge bg-success">{{ $daysLeft }} hari lagi</span>
+            @endif
           </td>
           <td class="d-mob-none">{{ number_format($o->getTotalTargetQty()) }} pcs</td>
           <td style="min-width:140px">

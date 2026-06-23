@@ -14,6 +14,7 @@ class ProductionOrder extends Model {
     public function cuttingPlans() { return $this->hasMany(CuttingPlan::class); }
     public function materialAllocations() { return $this->hasMany(MaterialAllocation::class); }
     public function costEntries() { return $this->hasMany(CostEntry::class); }
+    public function stationDeadlines() { return $this->hasMany(OrderStationDeadline::class)->with('station')->orderBy('target_date'); }
 
     public function getTotalTargetQty() { return $this->items->sum('target_qty'); }
     public function getStatusLabelAttribute() {

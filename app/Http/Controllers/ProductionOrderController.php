@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{ProductionOrder, ProductionOrderItem, Product, Series, Sku, Station, WipEntry};
+use App\Models\{ProductionOrder, ProductionOrderItem, Product, Series, Sku, Station, WipEntry, OrderStationDeadline};
 use Illuminate\Http\Request;
 
 class ProductionOrderController extends Controller
@@ -18,7 +18,8 @@ class ProductionOrderController extends Controller
     public function create()
     {
         $products = Product::where('is_active',true)->get();
-        return view('orders.create', compact('products'));
+        $stations = Station::where('is_active',true)->orderBy('order_sequence')->get();
+        return view('orders.create', compact('products','stations'));
     }
 
     public function store(Request $request)
@@ -41,12 +42,25 @@ class ProductionOrderController extends Controller
             if (!empty($s['sku_id']) && !empty($s['target_qty']))
                 ProductionOrderItem::create(['production_order_id'=>$order->id,'sku_id'=>$s['sku_id'],'target_qty'=>$s['target_qty']]);
         }
+        // Save station deadlines
+        if ($request->station_deadlines) {
+            foreach ($request->station_deadlines as $stationId => $deadline) {
+                if (!empty($deadline['target_date'])) {
+                    OrderStationDeadline::create([
+                        'production_order_id' => $order->id,
+                        'station_id'          => $stationId,
+                        'target_date'         => $deadline['target_date'],
+                        'notes'               => $deadline['notes'] ?? null,
+                    ]);
+                }
+            }
+        }
         return redirect()->route('orders.show', $order)->with('success', "Order {$orderNo} berhasil dibuat.");
     }
 
     public function show(ProductionOrder $order)
     {
-        $order->load(['product','series','creator','items.sku.color','items.sku.size','handovers.fromStation','handovers.toStation','budget','cuttingPlans.bundles']);
+        $order->load(['product','series','creator','items.sku.color','items.sku.size','handovers.fromStation','handovers.toStation','budget','cuttingPlans.bundles','stationDeadlines.station']);
         $stations = Station::orderBy('order_sequence')->get();
         $wipByStation = [];
         foreach ($stations as $st) {
@@ -64,15 +78,30 @@ class ProductionOrderController extends Controller
     {
         abort_if($order->status !== 'draft', 403, 'Hanya order berstatus Draft yang dapat diedit.');
         $products = Product::where('is_active',true)->get();
-        $series = Series::where('product_id',$order->product_id)->get();
-        $skus = Sku::where('series_id',$order->series_id)->with(['color','size'])->get();
-        return view('orders.edit', compact('order','products','series','skus'));
+        $series   = Series::where('product_id',$order->product_id)->get();
+        $skus     = Sku::where('series_id',$order->series_id)->with(['color','size'])->get();
+        $stations = Station::where('is_active',true)->orderBy('order_sequence')->get();
+        $existingDeadlines = $order->stationDeadlines->keyBy('station_id');
+        return view('orders.edit', compact('order','products','series','skus','stations','existingDeadlines'));
     }
 
     public function update(Request $request, ProductionOrder $order)
     {
         $request->validate(['target_date'=>'required|date','notes'=>'nullable|string']);
         $order->update(['target_date'=>$request->target_date,'notes'=>$request->notes,'selling_price'=>$request->selling_price]);
+        // Update station deadlines
+        if ($request->station_deadlines) {
+            foreach ($request->station_deadlines as $stationId => $deadline) {
+                if (!empty($deadline['target_date'])) {
+                    OrderStationDeadline::updateOrCreate(
+                        ['production_order_id' => $order->id, 'station_id' => $stationId],
+                        ['target_date' => $deadline['target_date'], 'notes' => $deadline['notes'] ?? null]
+                    );
+                } else {
+                    OrderStationDeadline::where('production_order_id', $order->id)->where('station_id', $stationId)->delete();
+                }
+            }
+        }
         return redirect()->route('orders.show',$order)->with('success','Order berhasil diperbarui.');
     }
 

@@ -94,6 +94,49 @@
   </div>
 </div>
 
+{{-- Station Deadline Timeline --}}
+@if($order->stationDeadlines->count() > 0)
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-calendar-range me-2 text-primary"></i>Timeline Deadline Stasiun</span>
+    <a href="{{ route('orders.edit', $order) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
+  </div>
+  <div class="card-body p-3">
+    <div class="row g-2">
+      @foreach($order->stationDeadlines as $dl)
+      @php
+        $wip = $wipByStation[$dl->station_id] ?? null;
+        $totalQty = $order->getTotalTargetQty();
+        $pct = $wip && $totalQty > 0 ? min(100, round(($wip['qty_out'] / $totalQty) * 100)) : 0;
+        $isDone = $pct >= 100;
+      @endphp
+      <div class="col-md-4 col-lg-3">
+        <div class="p-3 rounded border border-{{ $isDone ? 'success' : $dl->status_color }} border-opacity-50 bg-{{ $isDone ? 'success' : $dl->status_color }} bg-opacity-5 h-100">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="fw-semibold small">{{ $dl->station->name }}</span>
+            @if($isDone)
+              <span class="badge bg-success">✓ Selesai</span>
+            @else
+              <span class="badge bg-{{ $dl->status_color }}">{{ $dl->status_label }}</span>
+            @endif
+          </div>
+          <div class="text-muted small mb-2"><i class="bi bi-calendar2 me-1"></i>{{ $dl->target_date->format('d M Y') }}</div>
+          <div class="progress mb-1" style="height:6px">
+            <div class="progress-bar bg-{{ $isDone ? 'success' : ($pct > 50 ? 'primary' : 'warning') }}" style="width:{{ $pct }}%"></div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <small class="text-muted">Progress</small>
+            <small class="fw-semibold">{{ $pct }}%</small>
+          </div>
+          @if($dl->notes)<div class="text-muted mt-1" style="font-size:.72rem"><i class="bi bi-chat-left-text me-1"></i>{{ $dl->notes }}</div>@endif
+        </div>
+      </div>
+      @endforeach
+    </div>
+  </div>
+</div>
+@endif
+
 <!-- Cutting Plans -->
 <div class="card mb-4">
   <div class="card-header d-flex align-items-center justify-content-between">

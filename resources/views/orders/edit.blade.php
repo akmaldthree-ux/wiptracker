@@ -115,6 +115,33 @@
             </div>
         </div>
     </div>
+
+    {{-- Station Deadlines --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-calendar-range me-2 text-primary"></i>Deadline Per Stasiun</h6>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-info py-2 mb-3"><small><i class="bi bi-info-circle me-1"></i>Tentukan target tanggal selesai di setiap stasiun sebagai acuan tim produksi.</small></div>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0" style="font-size:.88rem">
+                    <thead class="table-light">
+                        <tr><th style="width:25%">Stasiun</th><th style="width:35%">Target Selesai</th><th>Catatan</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach($stations as $st)
+                        @php $existing = $existingDeadlines[$st->id] ?? null; @endphp
+                        <tr>
+                            <td class="fw-semibold">{{ $st->name }}</td>
+                            <td><input type="date" name="station_deadlines[{{ $st->id }}][target_date]" class="form-control form-control-sm" value="{{ $existing?->target_date?->format('Y-m-d') }}"></td>
+                            <td><input type="text" name="station_deadlines[{{ $st->id }}][notes]" class="form-control form-control-sm" value="{{ $existing?->notes }}" placeholder="Opsional..."></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </form>
 
 @if($order->status === 'draft')
