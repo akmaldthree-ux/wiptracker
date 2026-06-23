@@ -115,7 +115,7 @@ class ProductionOrderController extends Controller
 
         if ($request->status === 'active' && !$wasActive) {
             $order->load('product','series');
-            $recipients = User::whereIn('role',['admin','supervisor'])->whereNotNull('email')->get();
+            $recipients = User::whereIn('role',['procurement','admin'])->whereNotNull('email')->get();
             foreach ($recipients as $user) {
                 try { Mail::to($user->email)->send(new MaterialReviewMail($order, $user)); } catch (\Exception $e) {}
             }

@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         abort_if(auth()->user()->role !== 'admin', 403);
         $stations = Station::where('is_active',true)->get();
-        $roles = ['admin','supervisor','pic_stasiun','manager','staff_gudang'];
+        $roles = ['admin','supervisor','manager','pic_stasiun','procurement','staff_gudang','staff_produksi'];
         return view('users.create', compact('stations','roles'));
     }
 
@@ -39,7 +39,7 @@ class UserController extends Controller
     {
         abort_if(auth()->user()->role !== 'admin' && auth()->id() !== $user->id, 403);
         $stations = Station::where('is_active',true)->get();
-        $roles = ['admin','supervisor','pic_stasiun','manager','staff_gudang'];
+        $roles = ['admin','supervisor','manager','pic_stasiun','procurement','staff_gudang','staff_produksi'];
         return view('users.edit', compact('user','stations','roles'));
     }
 

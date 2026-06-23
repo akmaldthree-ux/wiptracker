@@ -42,9 +42,11 @@
                                 <option value="">-- Pilih Role --</option>
                                 <option value="admin" {{ old('role')=='admin'?'selected':'' }}>Admin</option>
                                 <option value="supervisor" {{ old('role')=='supervisor'?'selected':'' }}>Supervisor Produksi</option>
-                                <option value="pic_stasiun" {{ old('role')=='pic_stasiun'?'selected':'' }}>PIC Stasiun</option>
                                 <option value="manager" {{ old('role')=='manager'?'selected':'' }}>Manager / Owner</option>
+                                <option value="pic_stasiun" {{ old('role')=='pic_stasiun'?'selected':'' }}>PIC Stasiun</option>
+                                <option value="procurement" {{ old('role')=='procurement'?'selected':'' }}>Tim Procurement</option>
                                 <option value="staff_gudang" {{ old('role')=='staff_gudang'?'selected':'' }}>Staff Gudang</option>
+                                <option value="staff_produksi" {{ old('role')=='staff_produksi'?'selected':'' }}>Staff Produksi</option>
                             </select>
                             @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

@@ -42,9 +42,11 @@
                             <select name="role" class="form-select @error('role') is-invalid @enderror" required id="roleSelect" onchange="toggleStation()">
                                 <option value="admin" {{ old('role',$user->role)=='admin'?'selected':'' }}>Admin</option>
                                 <option value="supervisor" {{ old('role',$user->role)=='supervisor'?'selected':'' }}>Supervisor Produksi</option>
-                                <option value="pic_stasiun" {{ old('role',$user->role)=='pic_stasiun'?'selected':'' }}>PIC Stasiun</option>
                                 <option value="manager" {{ old('role',$user->role)=='manager'?'selected':'' }}>Manager / Owner</option>
+                                <option value="pic_stasiun" {{ old('role',$user->role)=='pic_stasiun'?'selected':'' }}>PIC Stasiun</option>
+                                <option value="procurement" {{ old('role',$user->role)=='procurement'?'selected':'' }}>Tim Procurement</option>
                                 <option value="staff_gudang" {{ old('role',$user->role)=='staff_gudang'?'selected':'' }}>Staff Gudang</option>
+                                <option value="staff_produksi" {{ old('role',$user->role)=='staff_produksi'?'selected':'' }}>Staff Produksi</option>
                             </select>
                             @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

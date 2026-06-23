@@ -67,16 +67,18 @@ class User extends Authenticatable
     public function isPIC(): bool { return $this->role === 'pic_stasiun'; }
     public function isManager(): bool { return $this->role === 'manager'; }
     public function isStaffGudang(): bool { return $this->role === 'staff_gudang'; }
+    public function isProcurement(): bool { return in_array($this->role, ['procurement', 'admin']); }
 
     public function getRoleLabelAttribute(): string
     {
         return match($this->role) {
-            'admin' => 'Admin',
-            'supervisor' => 'Supervisor Produksi',
+            'admin'       => 'Admin',
+            'supervisor'  => 'Supervisor Produksi',
             'pic_stasiun' => 'PIC Stasiun',
-            'manager' => 'Manager / Owner',
-            'staff_gudang' => 'Staff Gudang',
-            default => ucfirst($this->role),
+            'manager'     => 'Manager / Owner',
+            'staff_gudang'=> 'Staff Gudang',
+            'procurement' => 'Tim Procurement',
+            default       => ucfirst($this->role),
         };
     }
 }
