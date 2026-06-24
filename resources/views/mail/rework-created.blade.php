@@ -1,18 +1,32 @@
 @component('mail::message')
-# Rework Order Dibuat
+# Barang Rework Masuk — Perlu Ditindaklanjuti
 
-Sebuah rework order telah dibuat untuk ditindaklanjuti.
+Halo,
+
+Ada barang rework yang dikirim ke stasiun Anda dan memerlukan perbaikan sebelum dilanjutkan ke proses berikutnya.
+
+---
 
 @component('mail::panel')
-**Handover:** {{ $rework->handover_no ?? '-' }}
-**Order:** {{ $rework->order->order_no ?? '-' }}
-**Dibuat:** {{ \Carbon\Carbon::parse($rework->created_at)->format('d M Y H:i') }}
+**No. Handover Rework:** {{ $rework->handover_no }}
+
+**Order Produksi:** {{ $rework->order->order_no }} — {{ $rework->order->product->name }}
+
+**Dari Stasiun:** {{ $rework->fromStation?->name ?? '-' }}
+
+**Ke Stasiun (Anda):** {{ $rework->toStation->name }}
+
+**Rujukan Handover Asal:** {{ $rework->parentHandover?->handover_no ?? '-' }}
+
+**Total Qty Rework:** {{ $rework->items->sum('qty_sent') }} pcs
 @endcomponent
 
-@component('mail::button', ['url' => url('/handover'), 'color' => 'primary'])
-Lihat Handover
+Setelah selesai diperbaiki, buat handover baru untuk mengirim kembali ke stasiun selanjutnya.
+
+@component('mail::button', ['url' => url('/handover/'.$rework->id), 'color' => 'primary'])
+Lihat Detail Rework
 @endcomponent
 
-Salam,<br>
-{{ config('app.name') }}
+Terima kasih,<br>
+**DPIS — DTHREE Production Integration System**
 @endcomponent

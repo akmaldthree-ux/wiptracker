@@ -2,8 +2,8 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 class Handover extends Model {
-    protected $fillable = ['handover_no','production_order_id','from_station_id','to_station_id','sewing_location_id','status','initiated_by','confirmed_by','approved_by','notes','condition_notes','photo_sent','photo_received','initiated_at','confirmed_at'];
-    protected $casts = ['initiated_at' => 'datetime', 'confirmed_at' => 'datetime'];
+    protected $fillable = ['handover_no','production_order_id','from_station_id','to_station_id','sewing_location_id','status','initiated_by','confirmed_by','approved_by','notes','condition_notes','photo_sent','photo_received','initiated_at','confirmed_at','is_rework','parent_handover_id','rework_result'];
+    protected $casts = ['initiated_at' => 'datetime', 'confirmed_at' => 'datetime', 'is_rework' => 'boolean'];
     public function order() { return $this->belongsTo(ProductionOrder::class, 'production_order_id'); }
     public function fromStation() { return $this->belongsTo(Station::class, 'from_station_id'); }
     public function toStation() { return $this->belongsTo(Station::class, 'to_station_id'); }
@@ -13,12 +13,24 @@ class Handover extends Model {
     public function items() { return $this->hasMany(HandoverItem::class); }
     public function sewingLocation() { return $this->belongsTo(SewingLocation::class); }
     public function qcInspection()  { return $this->hasOne(QcInspection::class); }
+    public function parentHandover(){ return $this->belongsTo(Handover::class, 'parent_handover_id'); }
+    public function reworkHandovers(){ return $this->hasMany(Handover::class, 'parent_handover_id'); }
     public function isQcStation(): bool { return $this->toStation?->code === 'QC'; }
     public function hasPassedQc(): bool { return $this->qcInspection?->status !== 'fail'; }
     public function getTotalSentAttribute() { return $this->items->sum('qty_sent'); }
     public function getTotalReceivedAttribute() { return $this->items->whereNotNull('qty_received')->sum('qty_received'); }
     public function getTotalDiscrepancyAttribute() { return $this->items->whereNotNull('discrepancy')->sum('discrepancy'); }
     public function hasDiscrepancy(): bool { return $this->items->whereNotNull('discrepancy')->where('discrepancy', '!=', 0)->count() > 0; }
+    public function getReworkResultLabelAttribute(): string {
+        return match($this->rework_result) {
+            'completed' => 'Rework Selesai', 'failed' => 'Gagal/Discrap', default => 'Sedang Dirework',
+        };
+    }
+    public function getReworkResultColorAttribute(): string {
+        return match($this->rework_result) {
+            'completed' => 'success', 'failed' => 'danger', default => 'warning',
+        };
+    }
     public function getStatusColorAttribute() {
         return match($this->status) {
             'pending' => 'warning', 'confirmed' => 'success',

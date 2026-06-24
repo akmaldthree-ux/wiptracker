@@ -48,8 +48,125 @@
     <div class="kpi-card kpi-orange">
       <div class="kpi-icon"><i class="bi bi-trash3"></i></div>
       <div class="kpi-value">{{ number_format($totalScrap) }}</div>
-      <div class="kpi-label">Scrap (Kerugian)</div>
-      <div class="kpi-change"><i class="bi bi-exclamation-triangle"></i>Tidak dapat diselamatkan</div>
+      <div class="kpi-label">Scrap</div>
+      <div class="kpi-change"><i class="bi bi-exclamation-triangle"></i>Est. kerugian: Rp {{ number_format($scrapLoss) }}</div>
+    </div>
+  </div>
+</div>
+
+{{-- Rework & Second Stock Summary --}}
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-tools me-2 text-warning"></i>Status Rework Aktif</span>
+        <div class="d-flex gap-1">
+          <span class="badge bg-warning text-dark">{{ $reworkPending }} sedang dirework</span>
+          <span class="badge bg-success">{{ $reworkCompleted }} selesai</span>
+          <span class="badge bg-danger">{{ $reworkFailed }} gagal</span>
+        </div>
+      </div>
+      @if($activeReworks->isEmpty())
+      <div class="card-body text-center text-muted py-3"><small>Tidak ada rework aktif</small></div>
+      @else
+      <div class="table-responsive">
+        <table class="table table-sm mb-0" style="font-size:.82rem">
+          <thead><tr><th>No. Handover</th><th>Order</th><th>Stasiun</th><th>Qty</th><th>Aksi</th></tr></thead>
+          <tbody>
+            @foreach($activeReworks as $rw)
+            <tr>
+              <td><a href="{{ route('handover.show',$rw) }}" class="fw-semibold text-warning">{{ $rw->handover_no }}</a></td>
+              <td>{{ $rw->order?->order_no }}</td>
+              <td>{{ $rw->toStation?->name }}</td>
+              <td>{{ $rw->items->sum('qty_sent') }} pcs</td>
+              <td>
+                @if(in_array(auth()->user()->role,['admin','supervisor']))
+                <div class="d-flex gap-1">
+                  <form method="POST" action="{{ route('rework.update',$rw) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="rework_result" value="completed">
+                    <button class="btn btn-success btn-sm py-0 px-1" style="font-size:.72rem">✓ Selesai</button>
+                  </form>
+                  <form method="POST" action="{{ route('rework.update',$rw) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="rework_result" value="failed">
+                    <button class="btn btn-danger btn-sm py-0 px-1" style="font-size:.72rem">✗ Gagal</button>
+                  </form>
+                </div>
+                @endif
+              </td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+      @endif
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-tag me-2 text-info"></i>Stok Second Quality</span>
+        <span class="badge bg-info">{{ $secondStockQty }} pcs tersedia</span>
+      </div>
+      @if($secondStocks->isEmpty())
+      <div class="card-body text-center text-muted py-3"><small>Tidak ada stok second quality</small></div>
+      @else
+      <div class="table-responsive">
+        <table class="table table-sm mb-0" style="font-size:.82rem">
+          <thead><tr><th>SKU</th><th>Order</th><th>Qty</th><th>Harga Diskon</th><th>Aksi</th></tr></thead>
+          <tbody>
+            @foreach($secondStocks as $ss)
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ $ss->sku->sku_code ?? '—' }}</div>
+                <small class="text-muted">{{ $ss->sku->color?->name }} / {{ $ss->sku->size?->name }}</small>
+              </td>
+              <td>{{ $ss->order?->order_no }}</td>
+              <td>{{ $ss->qty }} pcs</td>
+              <td>{{ $ss->discount_price ? 'Rp '.number_format($ss->discount_price) : '—' }}</td>
+              <td>
+                @if(in_array(auth()->user()->role,['admin','supervisor']))
+                <button class="btn btn-outline-info btn-sm py-0 px-1" style="font-size:.72rem"
+                  data-bs-toggle="modal" data-bs-target="#ssModal{{ $ss->id }}">Update</button>
+                @endif
+              </td>
+            </tr>
+            {{-- Modal --}}
+            <div class="modal fade" id="ssModal{{ $ss->id }}" tabindex="-1">
+              <div class="modal-dialog modal-sm">
+                <form method="POST" action="{{ route('second-stock.update',$ss) }}" class="modal-content">
+                  @csrf @method('PATCH')
+                  <div class="modal-header py-2"><h6 class="modal-title mb-0">Update Second Stock</h6><button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button></div>
+                  <div class="modal-body">
+                    <div class="mb-2">
+                      <label class="form-label small">Status</label>
+                      <select name="status" class="form-select form-select-sm">
+                        <option value="sold">Terjual</option>
+                        <option value="scrapped">Discrap</option>
+                      </select>
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label small">Harga Jual (Rp)</label>
+                      <input type="number" name="discount_price" class="form-control form-control-sm" value="{{ $ss->discount_price }}" placeholder="0">
+                    </div>
+                    <div>
+                      <label class="form-label small">Catatan</label>
+                      <input type="text" name="notes" class="form-control form-control-sm" value="{{ $ss->notes }}">
+                    </div>
+                  </div>
+                  <div class="modal-footer py-2">
+                    <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+      @endif
     </div>
   </div>
 </div>

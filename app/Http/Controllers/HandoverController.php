@@ -1,9 +1,10 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle};
+use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle, SecondStock};
 use App\Services\WhatsAppService;
 use App\Mail\HandoverCreatedMail;
 use App\Mail\HandoverConfirmedMail;
+use App\Mail\ReworkCreatedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -210,6 +211,9 @@ class HandoverController extends Controller
                 'from_station_id'     => $handover->to_station_id,
                 'to_station_id'       => $handover->from_station_id,
                 'status'              => 'pending',
+                'is_rework'           => true,
+                'parent_handover_id'  => $handover->id,
+                'rework_result'       => 'pending',
                 'initiated_by'        => auth()->id(),
                 'notes'               => "Rework dari {$handover->handover_no}",
                 'initiated_at'        => now(),
@@ -217,10 +221,26 @@ class HandoverController extends Controller
             foreach ($reworkItems as $ri) {
                 HandoverItem::create(['handover_id' => $reworkHo->id, 'sku_id' => $ri['sku_id'], 'qty_sent' => $ri['qty']]);
             }
-            $senderPICs = User::where('station_id', $handover->from_station_id)->get();
+            $senderPICs = User::where('station_id', $handover->from_station_id)->whereNotNull('email')->get();
             foreach ($senderPICs as $pic) {
                 Notification::create(['user_id' => $pic->id, 'title' => "Rework Masuk: {$reworkHo->handover_no}", 'message' => "Ada barang rework dari {$handover->toStation->name} yang perlu diperbaiki.", 'type' => 'warning', 'link' => "/handover/{$reworkHo->id}", 'is_read' => false]);
+                try { Mail::to($pic->email)->send(new ReworkCreatedMail($reworkHo)); } catch (\Exception $e) {}
             }
+        }
+
+        // Auto-create second stock
+        $secondItems = $handover->items->where('reject_type', 'second')->where('qty_reject', '>', 0);
+        foreach ($secondItems as $item) {
+            SecondStock::create([
+                'production_order_id' => $handover->production_order_id,
+                'sku_id'              => $item->sku_id,
+                'from_station_id'     => $handover->to_station_id,
+                'handover_item_id'    => $item->id,
+                'qty'                 => $item->qty_reject,
+                'status'              => 'available',
+                'notes'               => $item->reject_notes,
+                'created_by'          => auth()->id(),
+            ]);
         }
 
         // Notifikasi ke pengirim: handover sudah dikonfirmasi

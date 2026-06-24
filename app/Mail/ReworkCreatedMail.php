@@ -1,15 +1,26 @@
 <?php
 namespace App\Mail;
+
+use App\Models\Handover;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ReworkCreatedMail extends Mailable {
+class ReworkCreatedMail extends Mailable
+{
     use Queueable, SerializesModels;
-    public $rework;
-    public function __construct($rework) { $this->rework = $rework; }
-    public function build() {
-        return $this->markdown('mail.rework-created')
-            ->subject('Info: Rework Order Dibuat');
+
+    public function __construct(public Handover $rework) {}
+
+    public function envelope(): Envelope
+    {
+        return new Envelope(subject: "[DPIS] Rework Masuk — {$this->rework->handover_no}");
+    }
+
+    public function content(): Content
+    {
+        return new Content(view: 'mail.rework-created');
     }
 }
