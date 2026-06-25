@@ -251,6 +251,17 @@
                   <option value="second">🏷️ Second</option>
                   <option value="scrap">🗑️ Scrap</option>
                 </select>
+                {{-- Rework destination station --}}
+                <div class="rework-station-wrap" id="reworkStationWrap_{{ $item->id }}" style="display:none">
+                  <select name="items[{{ $item->id }}][rework_to_station_id]" class="form-select form-select-sm mt-1">
+                    <option value="">-- Kirim rework ke stasiun... --</option>
+                    @foreach(\App\Models\Station::where('is_active',true)->orderBy('order_sequence')->get() as $st)
+                    <option value="{{ $st->id }}" {{ $st->id == $handover->from_station_id ? 'selected':'' }}>
+                      {{ $st->name }}{{ $st->id == $handover->from_station_id ? ' (stasiun asal)':'' }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
                 <div id="rejectTypeHint_{{ $item->id }}" class="form-text" style="font-size:.68rem"></div>
               </div>
               <small class="text-muted no-reject-label2" id="noRejectLabel2_{{ $item->id }}">—</small>
@@ -354,6 +365,91 @@
   </div>
   @endif
 </div>
+
+{{-- Forward Rework Panel --}}
+@if($handover->is_rework && $handover->rework_result === 'pending' && in_array($handover->status, ['confirmed','pending']))
+<div class="card mt-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span><i class="bi bi-arrow-right-circle me-2 text-warning"></i>Teruskan Hasil Rework</span>
+    <span class="badge bg-warning text-dark">Rework Sedang Berjalan</span>
+  </div>
+  <div class="card-body">
+    @if($handover->parentHandover)
+    <div class="alert alert-info py-2 mb-3">
+      <small><i class="bi bi-info-circle me-1"></i>
+        Barang ini berasal dari handover <strong>{{ $handover->parentHandover->handover_no }}</strong>
+        (Order: <strong>{{ $handover->order->order_no }}</strong> — {{ $handover->order->product->name }}).
+        Setelah rework selesai, tentukan ke stasiun mana dan order apa barang ini akan diteruskan.
+      </small>
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('handover.forward-rework', $handover) }}" id="forwardReworkForm">
+      @csrf
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Kirim ke Stasiun <span class="text-danger">*</span></label>
+        <select name="to_station_id" class="form-select" required>
+          <option value="">-- Pilih Stasiun Tujuan --</option>
+          @foreach(\App\Models\Station::where('is_active',true)->orderBy('order_sequence')->get() as $st)
+          <option value="{{ $st->id }}">{{ $st->name }}</option>
+          @endforeach
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Catatan</label>
+        <input type="text" name="notes" class="form-control" placeholder="Opsional...">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Item & Alokasi Order</label>
+        <div class="alert alert-warning py-2 mb-2">
+          <small><i class="bi bi-exclamation-triangle me-1"></i>
+            Jika barang rework tidak bisa kembali ke order asal, pilih order lain (re-purpose).
+            Sistem akan mencatat pengalihan ini.
+          </small>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle mb-0" style="font-size:.88rem">
+            <thead class="table-light">
+              <tr><th>SKU</th><th style="width:120px">Qty</th><th>Teruskan ke Order</th></tr>
+            </thead>
+            <tbody>
+              @foreach($handover->items as $i => $item)
+              <tr>
+                <td>
+                  <div class="fw-semibold">{{ $item->sku->sku_code }}</div>
+                  <small class="text-muted">{{ $item->sku->color?->name }} / {{ $item->sku->size?->name }}</small>
+                  <input type="hidden" name="items[{{ $i }}][sku_id]" value="{{ $item->sku_id }}">
+                </td>
+                <td>
+                  <input type="number" name="items[{{ $i }}][qty]" class="form-control form-control-sm"
+                    value="{{ $item->qty_sent }}" min="1" max="{{ $item->qty_sent }}" required>
+                </td>
+                <td>
+                  <select name="items[{{ $i }}][order_id]" class="form-select form-select-sm" required>
+                    <option value="{{ $handover->production_order_id }}" selected>
+                      {{ $handover->order->order_no }} — {{ $handover->order->product->name }} (order asal)
+                    </option>
+                    @foreach(\App\Models\ProductionOrder::with('product')->whereIn('status',['active','draft'])->where('id','!=',$handover->production_order_id)->latest()->take(20)->get() as $ord)
+                    <option value="{{ $ord->id }}">{{ $ord->order_no }} — {{ $ord->product->name }} (re-purpose)</option>
+                    @endforeach
+                  </select>
+                </td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-warning" onclick="return confirm('Teruskan hasil rework ini?')">
+        <i class="bi bi-arrow-right-circle me-1"></i>Teruskan Hasil Rework
+      </button>
+    </form>
+  </div>
+</div>
+@endif
 @endsection
 
 @push('scripts')

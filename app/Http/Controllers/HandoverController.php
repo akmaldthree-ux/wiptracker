@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle, SecondStock};
+use App\Models\{Handover, HandoverItem, ProductionOrder, ProductionOrderItem, Station, Sku, WipEntry, Notification, User, SewingLocation, CuttingPlan, CuttingBundle, SecondStock, ReworkRepurpose};
 use App\Services\WhatsAppService;
 use App\Mail\HandoverCreatedMail;
 use App\Mail\HandoverConfirmedMail;
@@ -176,18 +176,24 @@ class HandoverController extends Controller
                 $photoRejectPath = $this->compressAndStore($request->file("photo_reject_{$id}"), 'handovers/reject');
             }
 
+            $reworkToStationId = ($rejectType === 'rework' && !empty($data['rework_to_station_id']))
+                ? (int) $data['rework_to_station_id']
+                : ($handover->from_station_id ?? null);
+
             $item->update([
-                'qty_received'      => $qtyReceived,
-                'qty_reject'        => $qtyReject,
-                'reject_type'       => $rejectType,
-                'reject_notes'      => $data['reject_notes'] ?? null,
-                'photo_reject'      => $photoRejectPath,
-                'discrepancy'       => $disc,
-                'discrepancy_notes' => $data['discrepancy_notes'] ?? null,
+                'qty_received'        => $qtyReceived,
+                'qty_reject'          => $qtyReject,
+                'reject_type'         => $rejectType,
+                'reject_notes'        => $data['reject_notes'] ?? null,
+                'photo_reject'        => $photoRejectPath,
+                'discrepancy'         => $disc,
+                'discrepancy_notes'   => $data['discrepancy_notes'] ?? null,
+                'rework_to_station_id'=> $rejectType === 'rework' ? $reworkToStationId : null,
             ]);
 
             if ($rejectType === 'rework' && $qtyReject > 0) {
-                $reworkItems[] = ['sku_id' => $item->sku_id, 'qty' => $qtyReject];
+                $stationKey = $reworkToStationId ?? 'default';
+                $reworkItems[$stationKey][] = ['sku_id' => $item->sku_id, 'qty' => $qtyReject];
             }
         }
 
@@ -203,27 +209,29 @@ class HandoverController extends Controller
             $this->createWipFromHandover($handover, useReceived: true);
         }
 
-        // Auto-create rework handover: kirim balik ke stasiun asal
-        if (!empty($reworkItems) && $handover->from_station_id) {
+        // Auto-create rework handover per destination station
+        foreach ($reworkItems as $toStationId => $items) {
+            $destStation = Station::find($toStationId);
+            if (!$destStation) continue;
             $reworkHo = Handover::create([
                 'handover_no'         => 'HO-RW-' . date('Y') . '-' . str_pad(Handover::count() + 1, 3, '0', STR_PAD_LEFT),
                 'production_order_id' => $handover->production_order_id,
                 'from_station_id'     => $handover->to_station_id,
-                'to_station_id'       => $handover->from_station_id,
+                'to_station_id'       => $destStation->id,
                 'status'              => 'pending',
                 'is_rework'           => true,
                 'parent_handover_id'  => $handover->id,
                 'rework_result'       => 'pending',
                 'initiated_by'        => auth()->id(),
-                'notes'               => "Rework dari {$handover->handover_no}",
+                'notes'               => "Rework dari {$handover->handover_no} → {$destStation->name}",
                 'initiated_at'        => now(),
             ]);
-            foreach ($reworkItems as $ri) {
+            foreach ($items as $ri) {
                 HandoverItem::create(['handover_id' => $reworkHo->id, 'sku_id' => $ri['sku_id'], 'qty_sent' => $ri['qty']]);
             }
-            $senderPICs = User::where('station_id', $handover->from_station_id)->whereNotNull('email')->get();
-            foreach ($senderPICs as $pic) {
-                Notification::create(['user_id' => $pic->id, 'title' => "Rework Masuk: {$reworkHo->handover_no}", 'message' => "Ada barang rework dari {$handover->toStation->name} yang perlu diperbaiki.", 'type' => 'warning', 'link' => "/handover/{$reworkHo->id}", 'is_read' => false]);
+            $destPICs = User::where('station_id', $destStation->id)->whereNotNull('email')->get();
+            foreach ($destPICs as $pic) {
+                Notification::create(['user_id' => $pic->id, 'title' => "Rework Masuk: {$reworkHo->handover_no}", 'message' => "Ada barang rework dari {$handover->toStation->name} yang perlu diperbaiki di {$destStation->name}.", 'type' => 'warning', 'link' => "/handover/{$reworkHo->id}", 'is_read' => false]);
                 try { Mail::to($pic->email)->send(new ReworkCreatedMail($reworkHo)); } catch (\Exception $e) {}
             }
         }
@@ -395,6 +403,87 @@ class HandoverController extends Controller
 
         return redirect()->route('orders.show', $order)
             ->with('success', "Order {$order->order_no} berhasil diselesaikan. Semua WIP di stasiun {$handover->toStation->name} telah ditutup.");
+    }
+
+    public function forwardRework(Request $request, Handover $handover)
+    {
+        abort_if(!$handover->is_rework, 404);
+        abort_if(!in_array(auth()->user()->role, ['admin','supervisor','staff_produksi']), 403);
+
+        $request->validate([
+            'to_station_id'   => 'required|exists:stations,id',
+            'items'           => 'required|array|min:1',
+            'items.*.sku_id'  => 'required|exists:skus,id',
+            'items.*.qty'     => 'required|integer|min:1',
+            'items.*.order_id'=> 'required|exists:production_orders,id',
+            'notes'           => 'nullable|string',
+        ]);
+
+        $toStation = Station::findOrFail($request->to_station_id);
+
+        // Group items by target order (may re-purpose to different orders)
+        $itemsByOrder = collect($request->items)->groupBy('order_id');
+
+        foreach ($itemsByOrder as $orderId => $orderItems) {
+            $targetOrder = ProductionOrder::findOrFail($orderId);
+            $isRepurposed = (int)$orderId !== (int)$handover->production_order_id;
+
+            $newHo = Handover::create([
+                'handover_no'         => 'HO-' . date('Y') . '-' . str_pad(Handover::count() + 1, 3, '0', STR_PAD_LEFT),
+                'production_order_id' => $targetOrder->id,
+                'from_station_id'     => $handover->to_station_id,
+                'to_station_id'       => $toStation->id,
+                'status'              => 'pending',
+                'is_rework'           => false,
+                'initiated_by'        => auth()->id(),
+                'notes'               => $request->notes ?? "Hasil rework dari {$handover->handover_no}" . ($isRepurposed ? " (dialihkan ke order {$targetOrder->order_no})" : ''),
+                'initiated_at'        => now(),
+            ]);
+
+            foreach ($orderItems as $it) {
+                HandoverItem::create([
+                    'handover_id' => $newHo->id,
+                    'sku_id'      => $it['sku_id'],
+                    'qty_sent'    => $it['qty'],
+                ]);
+
+                // If re-purposed to different order, record the repurpose
+                if ($isRepurposed) {
+                    ReworkRepurpose::create([
+                        'rework_handover_id' => $handover->id,
+                        'original_order_id'  => $handover->production_order_id,
+                        'new_order_id'       => $targetOrder->id,
+                        'sku_id'             => $it['sku_id'],
+                        'qty'                => $it['qty'],
+                        'notes'              => $request->notes,
+                        'created_by'         => auth()->id(),
+                    ]);
+                    // Add WIP for new order at from-station
+                    WipEntry::create([
+                        'production_order_id' => $targetOrder->id,
+                        'station_id'          => $handover->to_station_id,
+                        'sku_id'              => $it['sku_id'],
+                        'qty_in'              => $it['qty'],
+                        'qty_out'             => 0,
+                        'qty_reject'          => 0,
+                        'input_date'          => today(),
+                        'created_by'          => auth()->id(),
+                        'notes'               => "Dari rework {$handover->handover_no}",
+                    ]);
+                }
+            }
+
+            // Mark rework as completed
+            $handover->update(['rework_result' => 'completed']);
+
+            // Notify destination PIC
+            $pics = User::where('station_id', $toStation->id)->get();
+            foreach ($pics as $pic) {
+                Notification::create(['user_id' => $pic->id, 'title' => "Handover Masuk: {$newHo->handover_no}", 'message' => "Hasil rework dari {$handover->handover_no} dikirim ke {$toStation->name}.", 'type' => 'info', 'link' => "/handover/{$newHo->id}", 'is_read' => false]);
+            }
+        }
+
+        return redirect()->route('handover.show', $handover)->with('success', 'Hasil rework berhasil diteruskan. Handover baru telah dibuat.');
     }
 
     public function sendFromOrder(Request $request, ProductionOrder $order)

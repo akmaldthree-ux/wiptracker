@@ -15,6 +15,7 @@ class Handover extends Model {
     public function qcInspection()  { return $this->hasOne(QcInspection::class); }
     public function parentHandover(){ return $this->belongsTo(Handover::class, 'parent_handover_id'); }
     public function reworkHandovers(){ return $this->hasMany(Handover::class, 'parent_handover_id'); }
+    public function repurposes()     { return $this->hasMany(ReworkRepurpose::class, 'rework_handover_id'); }
     public function isQcStation(): bool { return $this->toStation?->code === 'QC'; }
     public function hasPassedQc(): bool { return $this->qcInspection?->status !== 'fail'; }
     public function getTotalSentAttribute() { return $this->items->sum('qty_sent'); }
