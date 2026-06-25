@@ -491,11 +491,14 @@ document.querySelectorAll('.qty-reject-input').forEach(input => {
   });
 });
 
-// Hint teks per tipe reject
+// Hint teks per tipe reject + toggle rework station dropdown
 document.querySelectorAll('.reject-type-sel').forEach(sel => {
   sel.addEventListener('change', function() {
-    const hint = document.getElementById('rejectTypeHint_' + this.dataset.itemId);
+    const id   = this.dataset.itemId;
+    const hint = document.getElementById('rejectTypeHint_' + id);
     if (hint) hint.textContent = rejectTypeHints[this.value] || '';
+    const stationWrap = document.getElementById('reworkStationWrap_' + id);
+    if (stationWrap) stationWrap.style.display = (this.value === 'rework') ? 'block' : 'none';
   });
 });
 
