@@ -176,7 +176,7 @@ body {
   animation: slideUp .42s cubic-bezier(.16,1,.3,1) both;
 }
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  from { opacity: 0; transform: translateY(28px) scale(.94); }
   to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
 
@@ -230,18 +230,6 @@ body {
   width: 88px; height: auto; margin-bottom: 1.2rem;
   filter: drop-shadow(0 4px 18px rgba(83,58,253,.35));
 }
-.brand-name {
-  font-size: 1.65rem; font-weight: 300; color: #fff;
-  letter-spacing: -1.2px; line-height: 1.1; margin-bottom: .3rem;
-  font-feature-settings: "ss01";
-}
-.brand-name span {
-  background: linear-gradient(120deg, var(--primary-subdued), var(--primary-soft), var(--primary-subdued));
-  background-size: 200% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 4s linear infinite;
-}
 @keyframes shimmer { from{background-position:0% center} to{background-position:200% center} }
 .brand-tagline { font-size: .73rem; color: rgba(255,255,255,.3); letter-spacing: .3px; margin-bottom: 1.75rem; }
 
@@ -255,12 +243,12 @@ body {
   transition: all .18s;
   animation: fadeSlideIn .5s ease both;
 }
-.feature-item:nth-child(1){animation-delay:.06s}
-.feature-item:nth-child(2){animation-delay:.13s}
-.feature-item:nth-child(3){animation-delay:.2s}
-.feature-item:nth-child(4){animation-delay:.27s}
+.feature-item:nth-child(1){animation-delay:.35s}
+.feature-item:nth-child(2){animation-delay:.48s}
+.feature-item:nth-child(3){animation-delay:.61s}
+.feature-item:nth-child(4){animation-delay:.74s}
 @keyframes fadeSlideIn {
-  from { opacity:0; transform:translateX(-10px); }
+  from { opacity:0; transform:translateX(-16px); }
   to   { opacity:1; transform:translateX(0); }
 }
 .feature-item:hover {
@@ -442,10 +430,139 @@ body {
   vertical-align: middle;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Floating orbs (on top of mesh blobs) ── */
+.orbs { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(70px); opacity: .55;
+  will-change: transform;
+}
+.orb-ruby {
+  width: 340px; height: 340px;
+  background: radial-gradient(circle, rgba(234,34,97,.75) 0%, transparent 70%);
+  top: 60%; left: 5%;
+  animation: orbDrift1 14s ease-in-out infinite alternate;
+}
+.orb-indigo {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(83,58,253,.8) 0%, transparent 70%);
+  top: 5%; right: 15%;
+  animation: orbDrift2 17s ease-in-out infinite alternate;
+}
+.orb-purple {
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(168,85,247,.7) 0%, transparent 70%);
+  top: 30%; left: 55%;
+  animation: orbDrift3 20s ease-in-out infinite alternate;
+}
+@keyframes orbDrift1 {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(60px,-40px) scale(1.1); }
+  100% { transform: translate(-30px,70px) scale(.9); }
+}
+@keyframes orbDrift2 {
+  0%   { transform: translate(0,0) scale(1); }
+  40%  { transform: translate(-50px,30px) scale(1.12); }
+  100% { transform: translate(40px,-50px) scale(.92); }
+}
+@keyframes orbDrift3 {
+  0%   { transform: translate(0,0) scale(1); }
+  60%  { transform: translate(35px,45px) scale(1.08); }
+  100% { transform: translate(-40px,-30px) scale(.95); }
+}
+
+/* ── Moving line grid (separate from static dot-grid) ── */
+.line-grid {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(83,58,253,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83,58,253,.055) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: lineGridMove 20s linear infinite;
+}
+@keyframes lineGridMove {
+  from { background-position: 0 0; }
+  to   { background-position: 48px 48px; }
+}
+
+/* ── Brand icon glow pulse ── */
+.brand-icon-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.2rem;
+  align-self: flex-start;
+}
+.brand-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(234,34,97,.45) 0%, transparent 70%);
+  animation: iconGlow 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes iconGlow {
+  0%,100% { opacity: .5; transform: scale(1); }
+  50%      { opacity: 1;  transform: scale(1.15); }
+}
+.brand-icon-wrap .brand-logo { margin-bottom: 0; }
+
+/* ── Gradient headline ── */
+.brand-name {
+  font-size: 1.65rem; font-weight: 300;
+  letter-spacing: -1.2px; line-height: 1.1; margin-bottom: .3rem;
+  font-feature-settings: "ss01";
+  background: linear-gradient(120deg, #ea2261 10%, #ff8a6e 45%, var(--primary-subdued) 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: headlineShimmer 6s linear infinite;
+}
+@keyframes headlineShimmer {
+  from { background-position: 0% center; }
+  to   { background-position: 200% center; }
+}
+.brand-name span {
+  background: inherit;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: none;
+}
+
+/* ── Shine sweep on left panel ── */
+.shine {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden;
+}
+.shine::after {
+  content: '';
+  position: absolute;
+  top: -100%; left: -80%;
+  width: 55%; height: 300%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,.055) 50%,
+    transparent 70%
+  );
+  animation: shineSweep 6s ease-in-out infinite;
+}
+@keyframes shineSweep {
+  0%,100% { transform: translateX(-100%); opacity: 0; }
+  10%      { opacity: 1; }
+  45%      { transform: translateX(320%); opacity: 0; }
+  46%,99%  { transform: translateX(320%); opacity: 0; }
+}
 </style>
 </head>
 <body>
 
+<div class="orbs">
+  <div class="orb orb-ruby"></div>
+  <div class="orb orb-indigo"></div>
+  <div class="orb orb-purple"></div>
+</div>
+<div class="line-grid"></div>
 <div class="mesh">
   <div class="mesh-blob mesh-blob-1"></div>
   <div class="mesh-blob mesh-blob-2"></div>
@@ -462,6 +579,7 @@ body {
 
   <!-- LEFT: branding -->
   <div class="card-left">
+    <div class="shine"></div>
     <div class="left-inner">
 
       <div class="system-badge">
@@ -469,7 +587,9 @@ body {
         Production System
       </div>
 
-      <img src="{{ asset('images/dthree-logo.png') }}" alt="DTHREE" class="brand-logo">
+      <div class="brand-icon-wrap">
+        <img src="{{ asset('images/dthree-logo.png') }}" alt="DTHREE" class="brand-logo">
+      </div>
       <div class="brand-name">DPIS<br><span>Dthree</span></div>
       <div class="brand-tagline">Production Integration System</div>
 
@@ -620,7 +740,7 @@ document.getElementById('loginForm').addEventListener('submit', function() {
 (function() {
   const cont   = document.getElementById('particles');
   const colors = ['rgba(83,58,253,.7)','rgba(102,94,253,.6)','rgba(234,34,97,.5)','rgba(185,185,249,.5)','rgba(249,107,238,.45)'];
-  for (let i = 0; i < 22; i++) {
+  for (let i = 0; i < 28; i++) {
     const p    = document.createElement('div');
     p.className = 'particle';
     const size = Math.random() * 3 + 1.2;
