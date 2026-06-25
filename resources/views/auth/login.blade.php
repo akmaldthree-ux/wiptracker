@@ -35,75 +35,140 @@ body {
   justify-content: center;
   padding: 1.5rem;
   -webkit-font-smoothing: antialiased;
-  background: #0d1b2e;
+  background: #080e1a;
   overflow: hidden;
   position: relative;
 }
 
 /* ══════════════════════════════
-   GRADIENT MESH BACKDROP
-   (design spec: cream→orange→lavender→indigo→ruby)
+   BACKGROUND CANVAS
 ══════════════════════════════ */
-.mesh {
+#bgCanvas {
   position: fixed; inset: 0; z-index: 0;
-  background: #0d1b2e;
-  overflow: hidden;
+  width: 100%; height: 100%;
+}
+
+/* Animated blobs */
+.mesh {
+  position: fixed; inset: 0; z-index: 1;
+  overflow: hidden; pointer-events: none;
 }
 .mesh-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(110px);
-  pointer-events: none;
-  animation: drift 16s ease-in-out infinite alternate;
+  position: absolute; border-radius: 50%;
+  filter: blur(100px); pointer-events: none;
+  will-change: transform;
 }
 .mesh-blob-1 {
-  width: 640px; height: 480px;
-  background: rgba(83,58,253,.28);
-  top: -160px; left: -120px;
-  animation-delay: 0s;
+  width: 700px; height: 560px;
+  background: radial-gradient(circle, rgba(83,58,253,.55) 0%, transparent 70%);
+  top: -220px; left: -160px;
+  animation: blob1 18s ease-in-out infinite alternate;
 }
 .mesh-blob-2 {
-  width: 440px; height: 440px;
-  background: rgba(234,34,97,.18);
-  bottom: -100px; right: -80px;
-  animation-delay: -6s;
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(234,34,97,.4) 0%, transparent 70%);
+  bottom: -160px; right: -100px;
+  animation: blob2 22s ease-in-out infinite alternate;
 }
 .mesh-blob-3 {
-  width: 320px; height: 320px;
-  background: rgba(102,94,253,.22);
-  top: 40%; right: 10%;
-  animation-delay: -11s;
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(102,94,253,.45) 0%, transparent 70%);
+  top: 35%; right: 8%;
+  animation: blob3 15s ease-in-out infinite alternate;
 }
 .mesh-blob-4 {
-  width: 260px; height: 260px;
-  background: rgba(185,185,249,.12);
-  bottom: 20%; left: 6%;
-  animation-delay: -4s;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(249,107,238,.3) 0%, transparent 70%);
+  bottom: 18%; left: 5%;
+  animation: blob4 20s ease-in-out infinite alternate;
 }
-@keyframes drift {
-  from { transform: translate(0,0) scale(1); }
-  to   { transform: translate(20px,30px) scale(1.06); }
+.mesh-blob-5 {
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(155,104,41,.35) 0%, transparent 70%);
+  top: 55%; left: 30%;
+  animation: blob3 25s ease-in-out infinite alternate-reverse;
+}
+@keyframes blob1 {
+  0%   { transform: translate(0,0)    scale(1);    }
+  33%  { transform: translate(40px,-30px) scale(1.08); }
+  66%  { transform: translate(-20px,50px) scale(.96); }
+  100% { transform: translate(30px,20px) scale(1.04); }
+}
+@keyframes blob2 {
+  0%   { transform: translate(0,0)    scale(1);    }
+  40%  { transform: translate(-50px,20px) scale(1.1);  }
+  80%  { transform: translate(30px,-40px) scale(.95);  }
+  100% { transform: translate(-20px,30px) scale(1.05); }
+}
+@keyframes blob3 {
+  0%   { transform: translate(0,0)    scale(1);   }
+  50%  { transform: translate(25px,40px) scale(1.08); }
+  100% { transform: translate(-15px,-25px) scale(.95); }
+}
+@keyframes blob4 {
+  0%   { transform: translate(0,0)    scale(1);   }
+  35%  { transform: translate(30px,-20px) scale(1.12); }
+  70%  { transform: translate(-25px,35px) scale(.94); }
+  100% { transform: translate(15px,10px) scale(1.06); }
+}
+
+/* Floating particles */
+.particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.particle {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0%   { transform: translateY(110vh) translateX(0);   opacity: 0; }
+  5%   { opacity: 1; }
+  90%  { opacity: .6; }
+  100% { transform: translateY(-60px) translateX(var(--dx)); opacity: 0; }
+}
+
+/* Shooting stars */
+.star {
+  position: fixed; pointer-events: none; z-index: 2;
+  width: 2px; height: 2px; border-radius: 50%;
+  background: #fff;
+  animation: shoot linear infinite;
+  opacity: 0;
+}
+.star::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 120px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6));
+  transform: translateX(100%);
+}
+@keyframes shoot {
+  0%   { opacity: 0; transform: translate(0,0); }
+  2%   { opacity: 1; }
+  30%  { opacity: 0; transform: translate(300px, 180px); }
+  100% { opacity: 0; transform: translate(300px, 180px); }
 }
 
 /* Dot grid overlay */
-.mesh::after {
-  content: '';
-  position: absolute; inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,.035) 1px, transparent 1px);
-  background-size: 28px 28px;
-  animation: gridShift 28s linear infinite;
-  pointer-events: none;
+.dot-grid {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 26px 26px;
+  animation: gridShift 30s linear infinite;
 }
 @keyframes gridShift {
   from { background-position: 0 0; }
-  to   { background-position: 28px 28px; }
+  to   { background-position: 26px 26px; }
+}
+/* Vignette — focus center */
+.vignette {
+  position: fixed; inset: 0; z-index: 3; pointer-events: none;
+  background: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 40%, rgba(8,14,26,.72) 100%);
 }
 
 /* ══════════════════════════════
    MAIN CARD — two-column
 ══════════════════════════════ */
 .card {
-  position: relative; z-index: 1;
+  position: relative; z-index: 10;
   width: 100%; max-width: 840px;
   border-radius: 20px;
   overflow: hidden;
@@ -386,12 +451,17 @@ body {
 </head>
 <body>
 
+<canvas id="bgCanvas"></canvas>
 <div class="mesh">
   <div class="mesh-blob mesh-blob-1"></div>
   <div class="mesh-blob mesh-blob-2"></div>
   <div class="mesh-blob mesh-blob-3"></div>
   <div class="mesh-blob mesh-blob-4"></div>
+  <div class="mesh-blob mesh-blob-5"></div>
 </div>
+<div class="particles" id="particles"></div>
+<div class="dot-grid"></div>
+<div class="vignette"></div>
 
 <!-- Main Card -->
 <div class="card">
@@ -528,31 +598,130 @@ body {
 </div>
 
 <script>
+/* ── UI helpers ── */
 function fillDemo(email) {
   const emailEl = document.querySelector('input[name="email"]');
   const pwEl    = document.getElementById('pwInput');
-  emailEl.value = email;
-  pwEl.value    = 'password';
+  emailEl.value = email; pwEl.value = 'password';
   [emailEl, pwEl].forEach(el => {
     el.style.transition = 'background .3s, border-color .3s';
-    el.style.background = 'rgba(83,58,253,.06)';
-    el.style.borderColor = 'rgba(83,58,253,.4)';
-    setTimeout(() => { el.style.background = ''; el.style.borderColor = ''; }, 600);
+    el.style.background  = 'rgba(83,58,253,.07)';
+    el.style.borderColor = 'rgba(83,58,253,.45)';
+    setTimeout(() => { el.style.background = ''; el.style.borderColor = ''; }, 700);
   });
 }
-
 function togglePw() {
   const inp  = document.getElementById('pwInput');
   const icon = document.getElementById('pwIcon');
   inp.type = inp.type === 'password' ? 'text' : 'password';
   icon.className = inp.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
 }
-
 document.getElementById('loginForm').addEventListener('submit', function() {
   const btn = document.getElementById('loginBtn');
   btn.innerHTML = '<span class="spin-ring"></span> Memverifikasi...';
   btn.disabled = true;
 });
+
+/* ── Canvas: aurora wave ── */
+(function() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, t = 0;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const waves = [
+    { color: [83,58,253],  amp: .22, freq: .0018, speed: .0008, yBase: .38, alpha: .18 },
+    { color: [234,34,97],  amp: .18, freq: .0022, speed: .0006, yBase: .55, alpha: .14 },
+    { color: [102,94,253], amp: .15, freq: .0015, speed: .0011, yBase: .68, alpha: .12 },
+    { color: [249,107,238],amp: .12, freq: .0025, speed: .0005, yBase: .82, alpha: .10 },
+    { color: [83,58,253],  amp: .10, freq: .0012, speed: .0014, yBase: .22, alpha: .08 },
+  ];
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    waves.forEach((w, i) => {
+      ctx.beginPath();
+      const y0 = H * w.yBase;
+      ctx.moveTo(0, y0);
+      for (let x = 0; x <= W; x += 3) {
+        const y = y0 + Math.sin(x * w.freq + t * w.speed * 1000 + i) * H * w.amp
+                     + Math.sin(x * w.freq * 2.3 - t * w.speed * 700) * H * w.amp * .35;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+      const [r,g,b] = w.color;
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0,   `rgba(${r},${g},${b},${w.alpha * 1.4})`);
+      grad.addColorStop(.5,  `rgba(${r},${g},${b},${w.alpha})`);
+      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Floating particles ── */
+(function() {
+  const cont   = document.getElementById('particles');
+  const colors = ['rgba(83,58,253,.7)','rgba(102,94,253,.6)','rgba(234,34,97,.5)','rgba(185,185,249,.5)','rgba(249,107,238,.45)'];
+  for (let i = 0; i < 22; i++) {
+    const p    = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 3 + 1.2;
+    const dx   = (Math.random() - .5) * 60;
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      width: ${size}px; height: ${size}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration: ${Math.random() * 18 + 12}s;
+      animation-delay: -${Math.random() * 25}s;
+      --dx: ${dx}px;
+      filter: blur(${Math.random() > .6 ? 1 : 0}px);
+    `;
+    cont.appendChild(p);
+  }
+})();
+
+/* ── Shooting stars ── */
+(function() {
+  function spawnStar() {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      top:  ${Math.random() * 60}%;
+      left: ${Math.random() * 60}%;
+      animation-duration: ${Math.random() * 4 + 3}s;
+      animation-delay: ${Math.random() * 8}s;
+      opacity: 0;
+    `;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 14000);
+  }
+  setInterval(spawnStar, 2200);
+  spawnStar();
+})();
+
+/* ── Mouse parallax on blobs ── */
+(function() {
+  const blobs = document.querySelectorAll('.mesh-blob');
+  document.addEventListener('mousemove', (e) => {
+    const cx = e.clientX / window.innerWidth  - .5;
+    const cy = e.clientY / window.innerHeight - .5;
+    blobs.forEach((b, i) => {
+      const depth = (i + 1) * 12;
+      b.style.transform = `translate(${cx * depth}px, ${cy * depth}px)`;
+    });
+  });
+})();
 </script>
 
 </body>
