@@ -43,11 +43,6 @@ body {
 /* ══════════════════════════════
    BACKGROUND CANVAS
 ══════════════════════════════ */
-#bgCanvas {
-  position: fixed; inset: 0; z-index: 0;
-  width: 100%; height: 100%;
-}
-
 /* Animated blobs */
 .mesh {
   position: fixed; inset: 0; z-index: 1;
@@ -451,7 +446,6 @@ body {
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
 <div class="mesh">
   <div class="mesh-blob mesh-blob-1"></div>
   <div class="mesh-blob mesh-blob-2"></div>
@@ -621,53 +615,6 @@ document.getElementById('loginForm').addEventListener('submit', function() {
   btn.innerHTML = '<span class="spin-ring"></span> Memverifikasi...';
   btn.disabled = true;
 });
-
-/* ── Canvas: aurora wave ── */
-(function() {
-  const canvas = document.getElementById('bgCanvas');
-  const ctx    = canvas.getContext('2d');
-  let W, H, t = 0;
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  const waves = [
-    { color: [83,58,253],  amp: .22, freq: .0018, speed: .0008, yBase: .38, alpha: .18 },
-    { color: [234,34,97],  amp: .18, freq: .0022, speed: .0006, yBase: .55, alpha: .14 },
-    { color: [102,94,253], amp: .15, freq: .0015, speed: .0011, yBase: .68, alpha: .12 },
-    { color: [249,107,238],amp: .12, freq: .0025, speed: .0005, yBase: .82, alpha: .10 },
-    { color: [83,58,253],  amp: .10, freq: .0012, speed: .0014, yBase: .22, alpha: .08 },
-  ];
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    waves.forEach((w, i) => {
-      ctx.beginPath();
-      const y0 = H * w.yBase;
-      ctx.moveTo(0, y0);
-      for (let x = 0; x <= W; x += 3) {
-        const y = y0 + Math.sin(x * w.freq + t * w.speed * 1000 + i) * H * w.amp
-                     + Math.sin(x * w.freq * 2.3 - t * w.speed * 700) * H * w.amp * .35;
-        ctx.lineTo(x, y);
-      }
-      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
-      const [r,g,b] = w.color;
-      const grad = ctx.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0,   `rgba(${r},${g},${b},${w.alpha * 1.4})`);
-      grad.addColorStop(.5,  `rgba(${r},${g},${b},${w.alpha})`);
-      grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
-      ctx.fillStyle = grad;
-      ctx.fill();
-    });
-    t++;
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
 
 /* ── Floating particles ── */
 (function() {
