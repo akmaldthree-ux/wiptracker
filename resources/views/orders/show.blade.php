@@ -181,7 +181,12 @@
   <!-- Items -->
   <div class="col-md-6">
     <div class="card">
-      <div class="card-header"><i class="bi bi-list-ul me-2 text-primary"></i>Item SKU & Target</div>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-ul me-2 text-primary"></i>Item SKU & Target</span>
+        @if(in_array(auth()->user()->role,['admin','supervisor']) && in_array($order->status,['draft','active']))
+        <x-import-button import-route="{{ route('import.order-item', $order) }}" template-route="{{ route('import.template.order-item', $order) }}" label="Item Order" />
+        @endif
+      </div>
       <div class="table-responsive">
         <table class="table mb-0">
           <thead><tr><th>SKU</th><th>Warna</th><th>Ukuran</th><th>Target</th></tr></thead>

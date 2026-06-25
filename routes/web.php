@@ -23,6 +23,7 @@ use App\Http\Controllers\QcInspectionController;
 use App\Http\Controllers\BomController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
@@ -116,6 +117,28 @@ Route::middleware('auth')->group(function () {
         Route::resource('stasiun', StationController::class);
         Route::resource('sewing-location', SewingLocationController::class);
         Route::resource('supplier', SupplierController::class);
+    });
+
+    // Import routes
+    Route::prefix('import')->name('import.')->group(function () {
+        // Templates
+        Route::get('template/produk',       [ImportController::class, 'templateProduct'])->name('template.produk');
+        Route::get('template/warna',        [ImportController::class, 'templateColor'])->name('template.warna');
+        Route::get('template/ukuran',       [ImportController::class, 'templateSize'])->name('template.ukuran');
+        Route::get('template/supplier',     [ImportController::class, 'templateSupplier'])->name('template.supplier');
+        Route::get('template/bahan-baku',   [ImportController::class, 'templateRawMaterial'])->name('template.bahan-baku');
+        Route::get('template/bom',          [ImportController::class, 'templateBom'])->name('template.bom');
+        Route::get('template/wip',          [ImportController::class, 'templateWip'])->name('template.wip');
+        Route::get('template/order/{order}/item', [ImportController::class, 'templateOrderItem'])->name('template.order-item');
+        // Imports
+        Route::post('produk',       [ImportController::class, 'importProduct'])->name('produk');
+        Route::post('warna',        [ImportController::class, 'importColor'])->name('warna');
+        Route::post('ukuran',       [ImportController::class, 'importSize'])->name('ukuran');
+        Route::post('supplier',     [ImportController::class, 'importSupplier'])->name('supplier');
+        Route::post('bahan-baku',   [ImportController::class, 'importRawMaterial'])->name('bahan-baku');
+        Route::post('bom',          [ImportController::class, 'importBom'])->name('bom');
+        Route::post('wip',          [ImportController::class, 'importWip'])->name('wip');
+        Route::post('order/{order}/item', [ImportController::class, 'importOrderItem'])->name('order-item');
     });
 
     Route::resource('users', UserController::class);

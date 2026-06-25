@@ -3,12 +3,16 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Produk</h4>
-    @if(auth()->user()->isAdmin())
-    <a href="{{ route('master.produk.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Produk</a>
-    @endif
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+        @if(auth()->user()->isAdmin())
+        <x-import-button import-route="{{ route('import.produk') }}" template-route="{{ route('import.template.produk') }}" label="Produk" />
+        <a href="{{ route('master.produk.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Produk</a>
+        @endif
+    </div>
 </div>
 
-@if(session('success'))
+<x-import-result />
+@if(session('success') && !session('import_errors'))
 <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
 

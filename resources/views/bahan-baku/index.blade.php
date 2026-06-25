@@ -12,9 +12,13 @@
 <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div><h5 class="mb-0 fw-bold">Daftar Bahan Baku</h5><p class="text-muted small mb-0">{{ $materials->total() }} bahan baku terdaftar</p></div>
   @if(in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
-  <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
+  <div class="d-flex gap-2 flex-wrap align-items-center">
+      <x-import-button import-route="{{ route('import.bahan-baku') }}" template-route="{{ route('import.template.bahan-baku') }}" label="Bahan Baku" />
+      <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
+  </div>
   @endif
 </div>
+<x-import-result />
 <div class="card mb-4">
   <div class="card-body py-3">
     <form method="GET" class="row g-2 align-items-end">

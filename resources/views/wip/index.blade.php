@@ -21,9 +21,13 @@
 <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
   <h5 class="mb-0 fw-bold">Input WIP</h5>
   @if(!auth()->user()->isManager())
-  <a href="{{ route('wip.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Input WIP Baru</a>
+  <div class="d-flex gap-2 flex-wrap align-items-center">
+      <x-import-button import-route="{{ route('import.wip') }}" template-route="{{ route('import.template.wip') }}" label="WIP" />
+      <a href="{{ route('wip.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Input WIP Baru</a>
+  </div>
   @endif
 </div>
+<x-import-result />
 
 <!-- Filter -->
 <div class="card mb-4">

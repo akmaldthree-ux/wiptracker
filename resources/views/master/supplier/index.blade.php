@@ -7,11 +7,15 @@
         <h4 class="mb-0 fw-bold">Daftar Supplier</h4>
         <p class="text-muted mb-0 small">Kelola data supplier bahan baku</p>
     </div>
-    <a href="{{ route('master.supplier.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-1"></i> Tambah Supplier
-    </a>
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+        <x-import-button import-route="{{ route('import.supplier') }}" template-route="{{ route('import.template.supplier') }}" label="Supplier" />
+        <a href="{{ route('master.supplier.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Tambah Supplier
+        </a>
+    </div>
 </div>
 
+<x-import-result />
 <div class="card">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">

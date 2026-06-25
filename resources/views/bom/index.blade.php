@@ -13,7 +13,11 @@
     <h5 class="mb-0 fw-bold">Bill of Materials (BOM)</h5>
     <p class="text-muted small mb-0">Kebutuhan bahan baku per 1 pcs setiap produk</p>
   </div>
+  @if(in_array(auth()->user()->role,['admin','supervisor']))
+  <x-import-button import-route="{{ route('import.bom') }}" template-route="{{ route('import.template.bom') }}" label="BOM" />
+  @endif
 </div>
+<x-import-result />
 
 {{-- Kalkulator BOM --}}
 <div class="card mb-4">
