@@ -707,5 +707,6 @@ document.querySelectorAll('form:not([method="GET"]):not([method="get"])').forEac
 });
 </script>
 @stack('scripts')
+@stack('modals')
 </body>
 </html>
