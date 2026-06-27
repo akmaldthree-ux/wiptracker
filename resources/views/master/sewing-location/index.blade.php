@@ -7,11 +7,16 @@
         <p class="text-muted mb-0">Kelola data lokasi / tempat sewing yang tersedia</p>
     </div>
     @if(in_array(auth()->user()->role, ['admin', 'supervisor']))
-    <a href="{{ route('master.sewing-location.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-1"></i>Tambah Tempat Sewing
-    </a>
+    <div class="d-flex gap-2 align-items-center">
+        <x-import-button import-route="{{ route('import.tempat-sewing') }}" template-route="{{ route('import.template.tempat-sewing') }}" label="Tempat Sewing" />
+        <a href="{{ route('master.sewing-location.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Tambah Tempat Sewing
+        </a>
+    </div>
     @endif
 </div>
+
+<x-import-result />
 
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>

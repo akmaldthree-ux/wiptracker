@@ -11,6 +11,8 @@ use App\Imports\RawMaterialImport;
 use App\Imports\BomImport;
 use App\Imports\OrderItemImport;
 use App\Imports\WipImport;
+use App\Imports\SewingLocationImport;
+use App\Imports\SeriesImport;
 use App\Exports\Templates\ProductTemplateExport;
 use App\Exports\Templates\ColorTemplateExport;
 use App\Exports\Templates\SizeTemplateExport;
@@ -19,6 +21,8 @@ use App\Exports\Templates\RawMaterialTemplateExport;
 use App\Exports\Templates\BomTemplateExport;
 use App\Exports\Templates\OrderItemTemplateExport;
 use App\Exports\Templates\WipTemplateExport;
+use App\Exports\Templates\SewingLocationTemplateExport;
+use App\Exports\Templates\SeriesTemplateExport;
 use App\Models\ProductionOrder;
 
 class ImportController extends Controller
@@ -140,5 +144,33 @@ class ImportController extends Controller
         $errors = collect($import->failures())->map(fn($f) => "Baris {$f->row()}: " . implode(', ', $f->errors()));
         $warnings = array_merge($errors->toArray(), $import->notFound);
         return back()->with('success', "Import WIP selesai. {$import->imported} baris berhasil.")->with('import_errors', $warnings);
+    }
+
+    public function templateSewingLocation()
+    {
+        return Excel::download(new SewingLocationTemplateExport(), 'template-tempat-sewing.xlsx');
+    }
+
+    public function importSewingLocation(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120']);
+        $import = new SewingLocationImport();
+        Excel::import($import, $request->file('file'));
+        $errors = collect($import->failures())->map(fn($f) => "Baris {$f->row()}: " . implode(', ', $f->errors()));
+        return back()->with('success', 'Import tempat sewing selesai.')->with('import_errors', $errors->toArray());
+    }
+
+    public function templateSeries()
+    {
+        return Excel::download(new SeriesTemplateExport(), 'template-series.xlsx');
+    }
+
+    public function importSeries(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120']);
+        $import = new SeriesImport();
+        Excel::import($import, $request->file('file'));
+        $errors = collect($import->failures())->map(fn($f) => "Baris {$f->row()}: " . implode(', ', $f->errors()));
+        return back()->with('success', 'Import series selesai.')->with('import_errors', $errors->toArray());
     }
 }

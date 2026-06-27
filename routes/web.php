@@ -130,6 +130,8 @@ Route::middleware('auth')->group(function () {
         Route::get('template/bom',          [ImportController::class, 'templateBom'])->name('template.bom');
         Route::get('template/wip',          [ImportController::class, 'templateWip'])->name('template.wip');
         Route::get('template/order/{order}/item', [ImportController::class, 'templateOrderItem'])->name('template.order-item');
+        Route::get('template/tempat-sewing',     [ImportController::class, 'templateSewingLocation'])->name('template.tempat-sewing');
+        Route::get('template/series',            [ImportController::class, 'templateSeries'])->name('template.series');
         // Imports
         Route::post('produk',       [ImportController::class, 'importProduct'])->name('produk');
         Route::post('warna',        [ImportController::class, 'importColor'])->name('warna');
@@ -139,6 +141,8 @@ Route::middleware('auth')->group(function () {
         Route::post('bom',          [ImportController::class, 'importBom'])->name('bom');
         Route::post('wip',          [ImportController::class, 'importWip'])->name('wip');
         Route::post('order/{order}/item', [ImportController::class, 'importOrderItem'])->name('order-item');
+        Route::post('tempat-sewing',      [ImportController::class, 'importSewingLocation'])->name('tempat-sewing');
+        Route::post('series',             [ImportController::class, 'importSeries'])->name('series');
     });
 
     Route::resource('users', UserController::class);

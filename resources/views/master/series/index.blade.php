@@ -4,9 +4,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Series</h4>
     @if(auth()->user()->isAdmin())
-    <a href="{{ route('master.series.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Series</a>
+    <div class="d-flex gap-2 align-items-center">
+        <x-import-button import-route="{{ route('import.series') }}" template-route="{{ route('import.template.series') }}" label="Series" />
+        <a href="{{ route('master.series.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Series</a>
+    </div>
     @endif
 </div>
+
+<x-import-result />
 
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
