@@ -15,6 +15,12 @@
   <div class="d-flex gap-2 flex-wrap align-items-center">
       <x-import-button import-route="{{ route('import.bahan-baku') }}" template-route="{{ route('import.template.bahan-baku') }}" label="Bahan Baku" />
       <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
+      @if(auth()->user()->isAdmin())
+      <form method="POST" action="{{ route('master.bahan-baku.clear-all') }}" onsubmit="return confirm('Hapus SEMUA bahan baku dan BOM? Tindakan ini tidak bisa dibatalkan.')">
+          @csrf @method('DELETE')
+          <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+      </form>
+      @endif
   </div>
   @endif
 </div>

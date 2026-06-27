@@ -12,6 +12,12 @@
         <a href="{{ route('master.supplier.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-circle me-1"></i> Tambah Supplier
         </a>
+        @if(auth()->user()->isAdmin())
+        <form method="POST" action="{{ route('master.supplier.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data supplier? Tindakan ini tidak bisa dibatalkan.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+        </form>
+        @endif
     </div>
 </div>
 

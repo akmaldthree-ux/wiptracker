@@ -7,6 +7,10 @@
         @if(auth()->user()->isAdmin())
         <x-import-button import-route="{{ route('import.warna') }}" template-route="{{ route('import.template.warna') }}" label="Warna" />
         <a href="{{ route('master.warna.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Warna</a>
+        <form method="POST" action="{{ route('master.warna.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data warna? Tindakan ini tidak bisa dibatalkan.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+        </form>
         @endif
     </div>
 </div>

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductImport;
 use App\Imports\ColorImport;
@@ -172,5 +173,54 @@ class ImportController extends Controller
         Excel::import($import, $request->file('file'));
         $errors = collect($import->failures())->map(fn($f) => "Baris {$f->row()}: " . implode(', ', $f->errors()));
         return back()->with('success', 'Import series selesai.')->with('import_errors', $errors->toArray());
+    }
+
+    // ── Clear all per module ────────────────────────────────────
+
+    public function clearProducts()
+    {
+        DB::table('skus')->delete();
+        DB::table('series')->delete();
+        DB::table('bom_items')->delete();
+        DB::table('products')->delete();
+        return back()->with('success', 'Semua data produk, series, SKU, dan BOM berhasil dihapus.');
+    }
+
+    public function clearSeries()
+    {
+        DB::table('skus')->delete();
+        DB::table('series')->delete();
+        return back()->with('success', 'Semua data series dan SKU berhasil dihapus.');
+    }
+
+    public function clearColors()
+    {
+        DB::table('colors')->delete();
+        return back()->with('success', 'Semua data warna berhasil dihapus.');
+    }
+
+    public function clearSizes()
+    {
+        DB::table('sizes')->delete();
+        return back()->with('success', 'Semua data ukuran berhasil dihapus.');
+    }
+
+    public function clearSewingLocations()
+    {
+        DB::table('sewing_locations')->delete();
+        return back()->with('success', 'Semua data tempat sewing berhasil dihapus.');
+    }
+
+    public function clearSuppliers()
+    {
+        DB::table('suppliers')->delete();
+        return back()->with('success', 'Semua data supplier berhasil dihapus.');
+    }
+
+    public function clearRawMaterials()
+    {
+        DB::table('bom_items')->delete();
+        DB::table('raw_materials')->delete();
+        return back()->with('success', 'Semua data bahan baku dan BOM berhasil dihapus.');
     }
 }

@@ -117,6 +117,14 @@ Route::middleware('auth')->group(function () {
         Route::resource('stasiun', StationController::class);
         Route::resource('sewing-location', SewingLocationController::class);
         Route::resource('supplier', SupplierController::class);
+        // Clear all per-module
+        Route::delete('produk/clear-all',          [ImportController::class, 'clearProducts'])->name('produk.clear-all');
+        Route::delete('series/clear-all',           [ImportController::class, 'clearSeries'])->name('series.clear-all');
+        Route::delete('warna/clear-all',            [ImportController::class, 'clearColors'])->name('warna.clear-all');
+        Route::delete('ukuran/clear-all',           [ImportController::class, 'clearSizes'])->name('ukuran.clear-all');
+        Route::delete('sewing-location/clear-all',  [ImportController::class, 'clearSewingLocations'])->name('sewing-location.clear-all');
+        Route::delete('supplier/clear-all',         [ImportController::class, 'clearSuppliers'])->name('supplier.clear-all');
+        Route::delete('bahan-baku/clear-all',       [ImportController::class, 'clearRawMaterials'])->name('bahan-baku.clear-all');
     });
 
     // Import routes

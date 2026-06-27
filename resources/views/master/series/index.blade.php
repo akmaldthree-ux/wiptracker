@@ -7,6 +7,10 @@
     <div class="d-flex gap-2 align-items-center">
         <x-import-button import-route="{{ route('import.series') }}" template-route="{{ route('import.template.series') }}" label="Series" />
         <a href="{{ route('master.series.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Series</a>
+        <form method="POST" action="{{ route('master.series.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data series dan SKU? Tindakan ini tidak bisa dibatalkan.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+        </form>
     </div>
     @endif
 </div>

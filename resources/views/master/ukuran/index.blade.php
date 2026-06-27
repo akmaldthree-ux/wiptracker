@@ -7,6 +7,10 @@
         @if(auth()->user()->isAdmin())
         <x-import-button import-route="{{ route('import.ukuran') }}" template-route="{{ route('import.template.ukuran') }}" label="Ukuran" />
         <a href="{{ route('master.ukuran.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Ukuran</a>
+        <form method="POST" action="{{ route('master.ukuran.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data ukuran? Tindakan ini tidak bisa dibatalkan.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+        </form>
         @endif
     </div>
 </div>

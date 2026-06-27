@@ -12,6 +12,12 @@
         <a href="{{ route('master.sewing-location.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1"></i>Tambah Tempat Sewing
         </a>
+        @if(auth()->user()->isAdmin())
+        <form method="POST" action="{{ route('master.sewing-location.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data tempat sewing? Tindakan ini tidak bisa dibatalkan.')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+        </form>
+        @endif
     </div>
     @endif
 </div>
