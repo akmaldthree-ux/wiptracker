@@ -5,13 +5,14 @@ use App\Models\Product;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+
 use Maatwebsite\Excel\Concerns\WithSkipDuplicates;
 
-class ProductImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError
+class ProductImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
-    use SkipsErrors;
+    use SkipsFailures;
 
     public array $errors = [];
     private int $row = 1;

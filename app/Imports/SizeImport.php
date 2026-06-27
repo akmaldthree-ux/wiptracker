@@ -5,12 +5,13 @@ use App\Models\Size;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
 
-class SizeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError
+
+class SizeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
-    use SkipsErrors;
+    use SkipsFailures;
 
     public function model(array $row): ?Size
     {

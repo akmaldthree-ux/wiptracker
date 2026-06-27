@@ -8,13 +8,14 @@ use App\Models\Station;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+
 use Illuminate\Support\Facades\Auth;
 
-class WipImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError
+class WipImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
-    use SkipsErrors;
+    use SkipsFailures;
 
     public int $imported = 0;
     public array $notFound = [];

@@ -6,12 +6,13 @@ use App\Models\Sku;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
 
-class OrderItemImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError
+
+class OrderItemImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
-    use SkipsErrors;
+    use SkipsFailures;
 
     public int $imported = 0;
     public array $notFound = [];
