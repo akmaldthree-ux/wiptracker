@@ -19,5 +19,5 @@ class SizeController extends Controller
         $ukuran->update($request->all());
         return redirect()->route('master.ukuran.index')->with('success','Ukuran berhasil diperbarui.');
     }
-    public function destroy(Size $ukuran) { $ukuran->update(['is_active'=>false]); return back()->with('success','Ukuran dinonaktifkan.'); }
+    public function destroy(Size $ukuran) { $ukuran->delete(); return back()->with('success','Ukuran berhasil dihapus.'); }
 }

@@ -7,10 +7,6 @@
         @if(auth()->user()->isAdmin())
         <x-import-button import-route="{{ route('import.warna') }}" template-route="{{ route('import.template.warna') }}" label="Warna" />
         <a href="{{ route('master.warna.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Warna</a>
-        <form method="POST" action="{{ route('master.warna.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data warna? Tindakan ini tidak bisa dibatalkan.')">
-            @csrf @method('DELETE')
-            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
-        </form>
         @endif
     </div>
 </div>
@@ -52,7 +48,7 @@
                         <a href="{{ route('master.warna.edit', $color) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.warna.destroy', $color) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Nonaktifkan warna ini?')"><i class="bi bi-toggle-off"></i></button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus warna {{ $color->name }}?')"><i class="bi bi-trash"></i></button>
                         </form>
                     </td>
                     @endif

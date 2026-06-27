@@ -54,7 +54,7 @@ class RawMaterialController extends Controller
 
     public function destroy(RawMaterial $rawMaterial)
     {
-        $rawMaterial->update(['is_active'=>false]);
-        return redirect()->route('bahan-baku.index')->with('success','Bahan baku dinonaktifkan.');
+        $rawMaterial->delete();
+        return redirect()->route('bahan-baku.index')->with('success','Bahan baku berhasil dihapus.');
     }
 }

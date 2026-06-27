@@ -15,12 +15,6 @@
   <div class="d-flex gap-2 flex-wrap align-items-center">
       <x-import-button import-route="{{ route('import.bahan-baku') }}" template-route="{{ route('import.template.bahan-baku') }}" label="Bahan Baku" />
       <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
-      @if(auth()->user()->isAdmin())
-      <form method="POST" action="{{ route('master.bahan-baku.clear-all') }}" onsubmit="return confirm('Hapus SEMUA bahan baku dan BOM? Tindakan ini tidak bisa dibatalkan.')">
-          @csrf @method('DELETE')
-          <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
-      </form>
-      @endif
   </div>
   @endif
 </div>
@@ -77,6 +71,12 @@
             <div class="d-flex gap-1">
               <a href="{{ url('bahan-baku/'.$m->id) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>
               <a href="{{ url('bahan-baku/'.$m->id.'/receipt') }}" class="btn btn-sm btn-outline-success py-1"><i class="bi bi-box-arrow-in-down"></i></a>
+              @if(in_array(auth()->user()->role,['admin','supervisor']))
+              <form method="POST" action="{{ route('bahan-baku.destroy', $m) }}" class="d-inline">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn btn-sm btn-outline-danger py-1" onclick="return confirm('Hapus bahan baku {{ $m->name }}?')"><i class="bi bi-trash"></i></button>
+              </form>
+              @endif
             </div>
           </td>
         </tr>

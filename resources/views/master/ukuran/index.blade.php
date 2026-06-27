@@ -7,10 +7,6 @@
         @if(auth()->user()->isAdmin())
         <x-import-button import-route="{{ route('import.ukuran') }}" template-route="{{ route('import.template.ukuran') }}" label="Ukuran" />
         <a href="{{ route('master.ukuran.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Ukuran</a>
-        <form method="POST" action="{{ route('master.ukuran.clear-all') }}" onsubmit="return confirm('Hapus SEMUA data ukuran? Tindakan ini tidak bisa dibatalkan.')">
-            @csrf @method('DELETE')
-            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
-        </form>
         @endif
     </div>
 </div>
@@ -44,7 +40,7 @@
                         <a href="{{ route('master.ukuran.edit', $size) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.ukuran.destroy', $size) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Nonaktifkan ukuran ini?')"><i class="bi bi-toggle-off"></i></button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus ukuran {{ $size->name }}?')"><i class="bi bi-trash"></i></button>
                         </form>
                     </td>
                     @endif

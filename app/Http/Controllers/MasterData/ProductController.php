@@ -19,5 +19,5 @@ class ProductController extends Controller
         $produk->update($request->all());
         return redirect()->route('master.produk.index')->with('success','Produk berhasil diperbarui.');
     }
-    public function destroy(Product $produk) { $produk->update(['is_active'=>false]); return back()->with('success','Produk dinonaktifkan.'); }
+    public function destroy(Product $produk) { $produk->delete(); return back()->with('success','Produk berhasil dihapus.'); }
 }

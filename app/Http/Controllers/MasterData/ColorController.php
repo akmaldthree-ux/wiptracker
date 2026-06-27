@@ -19,5 +19,5 @@ class ColorController extends Controller
         $warna->update($request->all());
         return redirect()->route('master.warna.index')->with('success','Warna berhasil diperbarui.');
     }
-    public function destroy(Color $warna) { $warna->update(['is_active'=>false]); return back()->with('success','Warna dinonaktifkan.'); }
+    public function destroy(Color $warna) { $warna->delete(); return back()->with('success','Warna berhasil dihapus.'); }
 }

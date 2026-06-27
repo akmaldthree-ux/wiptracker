@@ -7,10 +7,6 @@
         @if(auth()->user()->isAdmin())
         <x-import-button import-route="{{ route('import.produk') }}" template-route="{{ route('import.template.produk') }}" label="Produk" />
         <a href="{{ route('master.produk.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Produk</a>
-        <form method="POST" action="{{ route('master.produk.clear-all') }}" onsubmit="return confirm('Hapus SEMUA produk, series, SKU, dan BOM? Tindakan ini tidak bisa dibatalkan.')">
-            @csrf @method('DELETE')
-            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
-        </form>
         @endif
     </div>
 </div>
@@ -52,7 +48,7 @@
                         <a href="{{ route('master.produk.edit', $product) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.produk.destroy', $product) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Nonaktifkan produk ini?')"><i class="bi bi-toggle-off"></i></button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus produk {{ $product->name }}?')"><i class="bi bi-trash"></i></button>
                         </form>
                     </td>
                     @endif

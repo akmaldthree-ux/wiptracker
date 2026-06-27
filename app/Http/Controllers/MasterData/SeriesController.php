@@ -19,5 +19,5 @@ class SeriesController extends Controller
         $series->update($request->all());
         return redirect()->route('master.series.index')->with('success','Series berhasil diperbarui.');
     }
-    public function destroy(Series $series) { $series->update(['is_active'=>false]); return back()->with('success','Series dinonaktifkan.'); }
+    public function destroy(Series $series) { $series->delete(); return back()->with('success','Series berhasil dihapus.'); }
 }
