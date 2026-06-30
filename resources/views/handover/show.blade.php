@@ -14,7 +14,7 @@
     <p class="text-muted mb-0">{{ $handover->fromStation?->name ?? 'Order Produksi' }} → {{ $handover->toStation->name }} | Order: {{ $handover->order->order_no }}</p>
   </div>
   <div class="d-flex gap-2">
-    @if(in_array(auth()->user()->role,['admin','supervisor']) && $handover->status === 'discrepancy')
+    @if(auth()->user()->isSupervisor() && $handover->status === 'discrepancy')
     <form method="POST" action="{{ route('handover.approve',$handover) }}">
       @csrf
       <button type="submit" class="btn btn-success" onclick="return confirm('Setujui discrepancy ini?')"><i class="bi bi-check-circle me-2"></i>Setujui Discrepancy</button>
@@ -23,7 +23,7 @@
     @if($handover->toStation?->is_final
         && in_array($handover->status, ['confirmed','approved'])
         && $handover->order->status !== 'completed'
-        && (in_array(auth()->user()->role,['admin','supervisor']) || auth()->user()->station_id == $handover->to_station_id))
+        && (auth()->user()->isSupervisor() || auth()->user()->station_id == $handover->to_station_id))
     <form method="POST" action="{{ route('handover.complete-order',$handover) }}"
           onsubmit="return confirm('Selesaikan order {{ $handover->order->order_no }}? Semua WIP di stasiun ini akan ditutup dan order tidak bisa diaktifkan kembali.')">
       @csrf

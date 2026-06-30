@@ -17,6 +17,22 @@
 <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
 
+<form method="GET" class="d-flex gap-2 align-items-center mb-3 flex-wrap">
+    <div class="input-group input-group-sm" style="max-width:280px">
+        <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+        <input type="text" name="search" class="form-control" placeholder="Cari kode atau nama series..." value="{{ request('search') }}">
+    </div>
+    <select name="product_id" class="form-select form-select-sm" style="max-width:200px">
+        <option value="">Semua Produk</option>
+        @foreach($products as $p)
+        <option value="{{ $p->id }}" {{ request('product_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+        @endforeach
+    </select>
+    <button type="submit" class="btn btn-sm btn-outline-secondary">Cari</button>
+    @if(request()->anyFilled(['search','product_id']))
+    <a href="{{ route('master.series.index') }}" class="btn btn-sm btn-outline-danger">Reset</a>
+    @endif
+</form>
 <div class="card border-0 shadow-sm">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">

@@ -22,7 +22,7 @@
     <small class="text-muted">Target: {{ $order->target_date->format('d M Y') }} &bull; Total Qty: {{ number_format($order->getTotalTargetQty()) }} pcs</small>
   </div>
   <div class="d-flex gap-2 flex-wrap">
-    @if(in_array(auth()->user()->role,['admin','procurement']))
+    @if(auth()->user()->isProcurement())
     <form method="POST" action="{{ route('procurement.regenerate',$order) }}">
       @csrf
       <button type="submit" class="btn btn-outline-secondary btn-sm" onclick="return confirm('Hitung ulang kebutuhan bahan?')">

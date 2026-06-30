@@ -15,13 +15,13 @@
     <p class="text-muted mb-0">{{ $purchaseOrder->supplier->name }} | Dibuat oleh {{ $purchaseOrder->creator->name }}</p>
   </div>
   <div class="d-flex gap-2 flex-wrap">
-    @if($purchaseOrder->status === 'draft' && in_array(auth()->user()->role,['admin','supervisor']))
+    @if($purchaseOrder->status === 'draft' && auth()->user()->isSupervisor())
     <form method="POST" action="{{ route('purchase-order.send',$purchaseOrder) }}">
       @csrf
       <button type="submit" class="btn btn-primary" onclick="return confirm('Kirim PO ini ke supplier?')"><i class="bi bi-send me-2"></i>Kirim ke Supplier</button>
     </form>
     @endif
-    @if(in_array($purchaseOrder->status,['draft','sent']) && in_array(auth()->user()->role,['admin','supervisor']))
+    @if(in_array($purchaseOrder->status,['draft','sent']) && auth()->user()->isSupervisor())
     <form method="POST" action="{{ route('purchase-order.cancel',$purchaseOrder) }}">
       @csrf
       <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Batalkan PO ini?')"><i class="bi bi-x-circle me-1"></i>Batalkan</button>
@@ -89,7 +89,7 @@
     <span class="badge bg-success"><i class="bi bi-check-all me-1"></i>Semua item diterima lengkap</span>
     @endif
   </div>
-  @if(in_array($purchaseOrder->status,['sent','partial']) && in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
+  @if(in_array($purchaseOrder->status,['sent','partial']) && auth()->user()->isStaffOrAbove())
   <form method="POST" action="{{ route('purchase-order.receive',$purchaseOrder) }}">
     @csrf
   @endif
@@ -100,7 +100,7 @@
           <th>Material</th><th>Satuan</th>
           <th class="text-end">Dipesan</th><th class="text-end">Diterima</th><th class="text-end">Sisa</th>
           <th class="text-end">Harga Satuan</th><th class="text-end">Total</th>
-          @if(in_array($purchaseOrder->status,['sent','partial']) && in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
+          @if(in_array($purchaseOrder->status,['sent','partial']) && auth()->user()->isStaffOrAbove())
           <th style="width:130px">Terima Sekarang</th>
           @endif
         </tr>
@@ -116,7 +116,7 @@
           <td class="text-end {{ $remaining > 0 ? 'text-warning fw-semibold' : 'text-muted' }}">{{ $remaining > 0 ? number_format($remaining, 2) : '✓' }}</td>
           <td class="text-end">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
           <td class="text-end fw-semibold">Rp {{ number_format($item->total_price, 0, ',', '.') }}</td>
-          @if(in_array($purchaseOrder->status,['sent','partial']) && in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
+          @if(in_array($purchaseOrder->status,['sent','partial']) && auth()->user()->isStaffOrAbove())
           <td>
             @if($remaining > 0)
             <input type="number" name="items[{{ $item->id }}][qty_receive]" class="form-control form-control-sm" step="0.01" min="0" max="{{ $remaining }}" placeholder="0" value="0">
@@ -137,7 +137,7 @@
       </tfoot>
     </table>
   </div>
-  @if(in_array($purchaseOrder->status,['sent','partial']) && in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
+  @if(in_array($purchaseOrder->status,['sent','partial']) && auth()->user()->isStaffOrAbove())
   <div class="card-footer d-flex justify-content-end">
     <button type="submit" class="btn btn-success" id="receiveBtn" onclick="this.disabled=true;this.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></span>Memproses...';this.form.submit()"><i class="bi bi-box-arrow-in-down me-2"></i>Catat Penerimaan & Update Stok</button>
   </div>

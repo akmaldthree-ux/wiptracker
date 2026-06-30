@@ -80,7 +80,7 @@
               <td>{{ $rw->toStation?->name }}</td>
               <td>{{ $rw->items->sum('qty_sent') }} pcs</td>
               <td>
-                @if(in_array(auth()->user()->role,['admin','supervisor']))
+                @if(auth()->user()->isSupervisor())
                 <div class="d-flex gap-1">
                   <form method="POST" action="{{ route('rework.update',$rw) }}">
                     @csrf @method('PATCH')
@@ -127,7 +127,7 @@
               <td>{{ $ss->qty }} pcs</td>
               <td>{{ $ss->discount_price ? 'Rp '.number_format($ss->discount_price) : '—' }}</td>
               <td>
-                @if(in_array(auth()->user()->role,['admin','supervisor']))
+                @if(auth()->user()->isSupervisor())
                 <button class="btn btn-outline-info btn-sm py-0 px-1" style="font-size:.72rem"
                   data-bs-toggle="modal" data-bs-target="#ssModal{{ $ss->id }}">Update</button>
                 @endif

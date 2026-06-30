@@ -6,7 +6,15 @@ use Illuminate\Http\Request;
 
 class SeriesController extends Controller
 {
-    public function index() { return view('master.series.index', ['series' => Series::with('product','skus')->latest()->paginate(20)]); }
+    public function index(Request $request) {
+        $q = Series::with('product','skus');
+        if ($request->search) $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%");
+        if ($request->product_id) $q->where('product_id', $request->product_id);
+        return view('master.series.index', [
+            'series'   => $q->latest()->paginate(20)->withQueryString(),
+            'products' => Product::where('is_active',true)->orderBy('name')->get(),
+        ]);
+    }
     public function create() { return view('master.series.form', ['series'=>new Series(), 'products'=>Product::where('is_active',true)->get()]); }
     public function store(Request $request) {
         $request->validate(['code'=>'required|unique:series,code','name'=>'required','product_id'=>'required|exists:products,id']);

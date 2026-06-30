@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 
 class SewingLocationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $locations = SewingLocation::latest()->paginate(20);
+        $q = SewingLocation::query();
+        if ($request->search) $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%");
+        $locations = $q->latest()->paginate(20)->withQueryString();
         return view('master.sewing-location.index', compact('locations'));
     }
 

@@ -13,7 +13,7 @@
     <h5 class="mb-0 fw-bold">Bill of Materials (BOM)</h5>
     <p class="text-muted small mb-0">Kebutuhan bahan baku per 1 pcs setiap produk</p>
   </div>
-  @if(in_array(auth()->user()->role,['admin','supervisor']))
+  @if(auth()->user()->isSupervisor())
   <x-import-button import-route="{{ route('import.bom') }}" template-route="{{ route('import.template.bom') }}" label="BOM" />
   @endif
 </div>
@@ -65,7 +65,7 @@
       <span>{{ $product->name }}</span>
       <span class="badge bg-secondary">{{ $product->category }}</span>
     </div>
-    @if(in_array(auth()->user()->role,['admin','supervisor']))
+    @if(auth()->user()->isSupervisor())
     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addForm{{ $product->id }}">
       <i class="bi bi-plus me-1"></i>Tambah Material
     </button>
@@ -92,7 +92,17 @@
             </span>
           </td>
           <td>
-            @if(in_array(auth()->user()->role,['admin','supervisor']))
+            @if(auth()->user()->isSupervisor())
+            <button class="btn btn-sm btn-outline-secondary me-1"
+              data-bs-toggle="modal" data-bs-target="#editBomModal"
+              data-bom-id="{{ $bom->id }}"
+              data-qty="{{ $bom->qty_per_unit }}"
+              data-waste="{{ $bom->waste_percentage }}"
+              data-notes="{{ $bom->notes ?? '' }}"
+              data-material="{{ $bom->rawMaterial->name }}"
+              data-update-url="{{ route('bom.update', $bom) }}">
+              <i class="bi bi-pencil"></i>
+            </button>
             <form method="POST" action="{{ route('bom.destroy', $bom) }}" class="d-inline">
               @csrf @method('DELETE')
               <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus BOM item ini?')"><i class="bi bi-trash"></i></button>
@@ -109,7 +119,7 @@
   @endif
 
   {{-- Form tambah item --}}
-  @if(in_array(auth()->user()->role,['admin','supervisor']))
+  @if(auth()->user()->isSupervisor())
   <div class="collapse" id="addForm{{ $product->id }}">
     <div class="card-footer">
       <form method="POST" action="{{ route('bom.store') }}" class="row g-2 align-items-end">
@@ -145,6 +155,43 @@
   @endif
 </div>
 @endforeach
+
+{{-- Edit BOM Modal --}}
+@if(auth()->user()->isSupervisor())
+<div class="modal fade" id="editBomModal" tabindex="-1" aria-labelledby="editBomModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editBomModalLabel">Edit BOM Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" id="editBomForm">
+        @csrf
+        @method('PATCH')
+        <div class="modal-body">
+          <p class="text-muted small mb-3">Material: <strong id="editBomMaterialName"></strong></p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Qty per pcs</label>
+            <input type="number" name="qty_per_unit" id="editBomQty" class="form-control" step="0.0001" min="0.0001" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Waste %</label>
+            <input type="number" name="waste_percentage" id="editBomWaste" class="form-control" step="0.1" min="0" max="100" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Catatan</label>
+            <input type="text" name="notes" id="editBomNotes" class="form-control" placeholder="Opsional...">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endif
 @endsection
 
 @push('scripts')
@@ -171,6 +218,19 @@ function calculateBom() {
       }
       document.getElementById('calcResult').style.display = 'block';
     });
+}
+
+// Populate edit modal with BOM item data
+const editBomModal = document.getElementById('editBomModal');
+if (editBomModal) {
+  editBomModal.addEventListener('show.bs.modal', function(event) {
+    const btn = event.relatedTarget;
+    document.getElementById('editBomForm').action = btn.dataset.updateUrl;
+    document.getElementById('editBomMaterialName').textContent = btn.dataset.material;
+    document.getElementById('editBomQty').value = btn.dataset.qty;
+    document.getElementById('editBomWaste').value = btn.dataset.waste;
+    document.getElementById('editBomNotes').value = btn.dataset.notes;
+  });
 }
 </script>
 @endpush

@@ -11,7 +11,7 @@
 @endif
 <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
   <div><h5 class="mb-0 fw-bold">Daftar Bahan Baku</h5><p class="text-muted small mb-0">{{ $materials->total() }} bahan baku terdaftar</p></div>
-  @if(in_array(auth()->user()->role,['admin','supervisor','staff_gudang']))
+  @if(auth()->user()->isStaffOrAbove())
   <div class="d-flex gap-2 flex-wrap align-items-center">
       <x-import-button import-route="{{ route('import.bahan-baku') }}" template-route="{{ route('import.template.bahan-baku') }}" label="Bahan Baku" />
       <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
@@ -71,7 +71,7 @@
             <div class="d-flex gap-1">
               <a href="{{ url('bahan-baku/'.$m->id) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>
               <a href="{{ url('bahan-baku/'.$m->id.'/receipt') }}" class="btn btn-sm btn-outline-success py-1"><i class="bi bi-box-arrow-in-down"></i></a>
-              @if(in_array(auth()->user()->role,['admin','supervisor']))
+              @if(auth()->user()->isSupervisor())
               <form method="POST" action="{{ route('bahan-baku.destroy', $m) }}" class="d-inline">
                 @csrf @method('DELETE')
                 <button type="submit" class="btn btn-sm btn-outline-danger py-1" onclick="return confirm('Hapus bahan baku {{ $m->name }}?')"><i class="bi bi-trash"></i></button>

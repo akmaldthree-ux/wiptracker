@@ -32,6 +32,13 @@ class BomController extends Controller
         return back()->with('success', 'BOM item berhasil disimpan.');
     }
 
+    public function update(Request $request, BomItem $bom)
+    {
+        $request->validate(['qty_per_unit' => 'required|numeric|min:0.0001', 'waste_percentage' => 'required|numeric|min:0|max:100']);
+        $bom->update($request->only(['qty_per_unit', 'waste_percentage', 'notes']));
+        return back()->with('success', 'BOM item berhasil diperbarui.');
+    }
+
     public function destroy(BomItem $bom)
     {
         $bom->delete();

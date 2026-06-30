@@ -13,7 +13,7 @@
     <h5 class="mb-0 fw-bold">Purchase Order</h5>
     <p class="text-muted small mb-0">Kelola pembelian bahan baku ke supplier</p>
   </div>
-  @if(in_array(auth()->user()->role,['admin','supervisor']))
+  @if(auth()->user()->isSupervisor())
   <a href="{{ route('purchase-order.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Buat PO Baru</a>
   @endif
 </div>

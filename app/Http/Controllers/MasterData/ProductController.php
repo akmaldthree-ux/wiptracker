@@ -6,7 +6,12 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index() { return view('master.produk.index', ['products' => Product::withCount('skus')->latest()->paginate(20)]); }
+    public function index(Request $request) {
+        $q = Product::withCount('skus');
+        if ($request->search) $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%");
+        if ($request->category) $q->where('category', $request->category);
+        return view('master.produk.index', ['products' => $q->latest()->paginate(20)->withQueryString()]);
+    }
     public function create() { return view('master.produk.form', ['product' => new Product()]); }
     public function store(Request $request) {
         $request->validate(['code'=>'required|unique:products,code','name'=>'required']);

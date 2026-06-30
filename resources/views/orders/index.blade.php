@@ -19,7 +19,7 @@
       <button class="btn btn-outline-secondary view-btn" data-view="calendar" title="Kalender"><i class="bi bi-calendar3"></i></button>
       <button class="btn btn-outline-secondary view-btn" data-view="gantt" title="Gantt Chart"><i class="bi bi-bar-chart-steps"></i></button>
     </div>
-    @if(in_array(auth()->user()->role,['admin','supervisor']))
+    @if(auth()->user()->isSupervisor())
     <a href="{{ route('orders.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-2"></i>Buat Order Baru</a>
     @endif
   </div>
@@ -84,7 +84,7 @@
           <td>
             <div class="d-flex gap-1">
               <a href="{{ route('orders.show',$o) }}" class="btn btn-sm btn-outline-primary py-1">Detail</a>
-              @if(in_array(auth()->user()->role,['admin','supervisor']) && $o->status === 'draft')
+              @if(auth()->user()->isSupervisor() && $o->status === 'draft')
               <a href="{{ route('orders.edit',$o) }}" class="btn btn-sm btn-outline-secondary py-1">Edit</a>
               @endif
             </div>

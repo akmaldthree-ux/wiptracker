@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Mail;
 
 class BudgetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = ProductionOrder::with(['product','budget'])->whereIn('status',['active','completed'])->get();
+        $q = ProductionOrder::with(['product','budget'])->whereIn('status',['active','completed']);
+        if ($request->search) $q->where('order_no','like',"%{$request->search}%");
+        $orders = $q->latest()->paginate(20)->withQueryString();
         $totalPlan = Budget::sum('total_plan');
         $totalActual = Budget::sum('total_actual');
         return view('budget.index', compact('orders','totalPlan','totalActual'));

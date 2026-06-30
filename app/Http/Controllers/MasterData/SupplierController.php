@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-    public function index() {
-        $suppliers = Supplier::orderBy('name')->paginate(15);
+    public function index(Request $request) {
+        $q = Supplier::query();
+        if ($request->search) $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%");
+        $suppliers = $q->orderBy('name')->paginate(15)->withQueryString();
         return view('master.supplier.index', compact('suppliers'));
     }
 

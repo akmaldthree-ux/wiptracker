@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 
 class ColorController extends Controller
 {
-    public function index() { return view('master.warna.index', ['colors' => Color::latest()->paginate(20)]); }
+    public function index(Request $request) {
+        $q = Color::query();
+        if ($request->search) $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%");
+        return view('master.warna.index', ['colors' => $q->latest()->paginate(20)->withQueryString()]);
+    }
     public function create() { return view('master.warna.form', ['color' => new Color()]); }
     public function store(Request $request) {
         $request->validate(['code'=>'required|unique:colors,code','name'=>'required']);

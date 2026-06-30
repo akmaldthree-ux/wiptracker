@@ -642,7 +642,7 @@ h5 { font-weight: 300; letter-spacing: -.3px; }
       <i class="bi bi-file-bar-graph"></i> Laporan
     </a>
 
-    @if(in_array(auth()->user()->role ?? '', ['admin','supervisor']))
+    @if(auth()->user()->isSupervisor())
     <div class="nav-section-title">Master Data</div>
     <a class="nav-link {{ request()->routeIs('master.*') ? 'active' : '' }}"
        data-bs-toggle="collapse" href="#masterMenu" role="button"
@@ -663,7 +663,7 @@ h5 { font-weight: 300; letter-spacing: -.3px; }
     </div>
     @endif
 
-    @if(auth()->user() && auth()->user()->role === 'admin')
+    @if(auth()->user() && auth()->user()->isAdmin())
     <div class="nav-section-title">Administrasi</div>
     <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
       <i class="bi bi-people"></i> Manajemen User
@@ -814,5 +814,34 @@ document.querySelectorAll('form:not([method="GET"]):not([method="get"])').forEac
 </script>
 @stack('scripts')
 @stack('modals')
+
+{{-- Session timeout toast --}}
+<div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="sessionTimeoutToast" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+    <div class="d-flex">
+      <div class="toast-body d-flex align-items-center gap-2">
+        <i class="bi bi-clock-history flex-shrink-0" style="font-size:1.1rem"></i>
+        <span>Sesi Anda akan berakhir dalam 2 menit. Simpan pekerjaan Anda.</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  // Laravel default session lifetime is 120 minutes; show toast 2 minutes before expiry (at 114 minutes)
+  var SESSION_LIFETIME_MS = 7200000; // 120 min
+  var WARN_BEFORE_MS     = 120000;  // 2 min
+  var showAt = SESSION_LIFETIME_MS - WARN_BEFORE_MS; // 6840000 ms = 114 min
+
+  setTimeout(function() {
+    var toastEl = document.getElementById('sessionTimeoutToast');
+    if (toastEl) {
+      var toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+      toast.show();
+    }
+  }, showAt);
+})();
+</script>
 </body>
 </html>

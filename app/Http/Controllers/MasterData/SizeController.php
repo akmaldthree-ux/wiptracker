@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 
 class SizeController extends Controller
 {
-    public function index() { return view('master.ukuran.index', ['sizes' => Size::orderBy('type')->orderBy('sort_order')->paginate(20)]); }
+    public function index(Request $request) {
+        $q = Size::query();
+        if ($request->search) $q->where('name','like',"%{$request->search}%")->orWhere('code','like',"%{$request->search}%");
+        return view('master.ukuran.index', ['sizes' => $q->orderBy('type')->orderBy('sort_order')->paginate(20)->withQueryString()]);
+    }
     public function create() { return view('master.ukuran.form', ['size' => new Size()]); }
     public function store(Request $request) {
         $request->validate(['name'=>'required','type'=>'required|in:letter,number']);

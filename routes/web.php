@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bom', [BomController::class, 'index'])->name('bom.index');
     Route::post('/bom', [BomController::class, 'store'])->name('bom.store');
     Route::delete('/bom/{bom}', [BomController::class, 'destroy'])->name('bom.destroy');
+    Route::patch('/bom/{bom}', [BomController::class, 'update'])->name('bom.update');
 
     Route::resource('purchase-order', PurchaseOrderController::class);
     Route::post('purchase-order/{purchaseOrder}/send', [PurchaseOrderController::class, 'send'])->name('purchase-order.send');

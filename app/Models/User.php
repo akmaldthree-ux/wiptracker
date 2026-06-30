@@ -68,6 +68,7 @@ class User extends Authenticatable
     public function isManager(): bool { return $this->role === 'manager'; }
     public function isStaffGudang(): bool { return $this->role === 'staff_gudang'; }
     public function isProcurement(): bool { return in_array($this->role, ['procurement', 'admin']); }
+    public function isStaffOrAbove(): bool { return in_array($this->role, ['admin', 'supervisor', 'staff_gudang']); }
 
     public function getRoleLabelAttribute(): string
     {
