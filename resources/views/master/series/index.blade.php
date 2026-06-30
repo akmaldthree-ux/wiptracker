@@ -56,5 +56,8 @@
             </tbody>
         </table>
     </div>
+    @if($series->hasPages())
+    <div class="card-footer">{{ $series->links() }}</div>
+    @endif
 </div>
 @endsection

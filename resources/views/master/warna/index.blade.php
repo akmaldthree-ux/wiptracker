@@ -59,5 +59,8 @@
             </tbody>
         </table>
     </div>
+    @if($colors->hasPages())
+    <div class="card-footer">{{ $colors->links() }}</div>
+    @endif
 </div>
 @endsection

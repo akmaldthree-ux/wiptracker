@@ -51,5 +51,8 @@
             </tbody>
         </table>
     </div>
+    @if($sizes->hasPages())
+    <div class="card-footer">{{ $sizes->links() }}</div>
+    @endif
 </div>
 @endsection
