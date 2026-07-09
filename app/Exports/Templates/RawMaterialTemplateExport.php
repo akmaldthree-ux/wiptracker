@@ -1,6 +1,7 @@
 <?php
 namespace App\Exports\Templates;
 
+use App\Models\RawMaterial;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -23,11 +24,27 @@ class RawMaterialDataSheet implements FromArray, WithHeadings, WithStyles, WithT
 {
     public function array(): array
     {
-        return [
-            ['KAI001', 'Kain Katun 30s', 'meter', 'kain', 'Putih', 100, 20, 25000, 'SUP001'],
-            ['BNG001', 'Benang Jahit Putih', 'rol', 'benang', '', 50, 10, 5000, 'SUP002'],
-            ['AKS001', 'Kancing Baju 4L', 'lusin', 'aksesoris', '', 200, 50, 3000, ''],
-        ];
+        $existing = RawMaterial::with('supplier')->orderBy('code')->get()->map(fn($m) => [
+            $m->code,
+            $m->name,
+            $m->unit,
+            $m->category,
+            $m->color ?? '',
+            $m->current_stock,
+            $m->min_stock,
+            $m->unit_price,
+            $m->supplier?->code ?? '',
+        ])->toArray();
+
+        // Fallback sample rows if DB is empty
+        if (empty($existing)) {
+            return [
+                ['KAI001', 'Kain Katun 30s', 'meter', 'kain', 'Putih', 100, 20, 25000, 'SUP001'],
+                ['BNG001', 'Benang Jahit Putih', 'rol', 'benang', '', 50, 10, 5000, 'SUP002'],
+            ];
+        }
+
+        return $existing;
     }
 
     public function headings(): array
