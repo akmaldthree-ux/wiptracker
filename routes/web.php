@@ -113,6 +113,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('produk', ProductController::class);
         Route::resource('series', SeriesController::class);
+        Route::post('series/{series}/generate-sku', [SeriesController::class, 'generateSku'])->name('series.generate-sku');
         Route::resource('warna', ColorController::class);
         Route::resource('ukuran', SizeController::class);
         Route::resource('stasiun', StationController::class);
