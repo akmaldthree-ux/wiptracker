@@ -8,8 +8,11 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Series</h4>
     @if(auth()->user()->isAdmin())
-    <div class="d-flex gap-2 align-items-center">
+    <div class="d-flex gap-2 align-items-center flex-wrap">
         <x-import-button import-route="{{ route('import.series') }}" template-route="{{ route('import.template.series') }}" label="Series" />
+        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalGenerateSkuBulk">
+            <i class="bi bi-magic me-1"></i>Generate SKU Massal
+        </button>
         <a href="{{ route('master.series.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Series</a>
     </div>
     @endif
@@ -86,6 +89,94 @@
     <div class="card-footer">{{ $series->links() }}</div>
     @endif
 </div>
+
+{{-- Modal Generate SKU Massal --}}
+@if(auth()->user()->isAdmin())
+<div class="modal fade" id="modalGenerateSkuBulk" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('master.series.generate-sku-bulk') }}">
+                @csrf
+                <div class="modal-header bg-success bg-opacity-10">
+                    <h5 class="modal-title"><i class="bi bi-magic me-2 text-success"></i>Generate SKU Massal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        {{-- Kolom Series --}}
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Series</label>
+                            <div class="border rounded p-2" style="max-height:300px;overflow-y:auto">
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="checkbox" id="bulkAllSeries"
+                                        onchange="this.closest('.border').querySelectorAll('[name]').forEach(c=>c.checked=this.checked)">
+                                    <label class="form-check-label fw-semibold text-success" for="bulkAllSeries">Pilih Semua Series</label>
+                                </div>
+                                <hr class="my-1">
+                                @foreach($allSeries as $s)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="series_ids[]" value="{{ $s->id }}" id="bseries-{{ $s->id }}">
+                                    <label class="form-check-label" for="bseries-{{ $s->id }}">
+                                        <span class="fw-semibold text-primary">{{ $s->code }}</span> — {{ $s->name }}
+                                        <small class="text-muted d-block">{{ $s->product->name ?? '' }}</small>
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        {{-- Kolom Warna --}}
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Warna</label>
+                            <div class="border rounded p-2" style="max-height:300px;overflow-y:auto">
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="checkbox" id="bulkAllColors"
+                                        onchange="this.closest('.border').querySelectorAll('[name]').forEach(c=>c.checked=this.checked)">
+                                    <label class="form-check-label fw-semibold text-success" for="bulkAllColors">Pilih Semua Warna</label>
+                                </div>
+                                <hr class="my-1">
+                                @foreach($allColors as $c)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="color_ids[]" value="{{ $c->id }}" id="bcolor-{{ $c->id }}">
+                                    <label class="form-check-label" for="bcolor-{{ $c->id }}">
+                                        @if($c->hex_code)<span class="d-inline-block rounded-circle border me-1" style="width:12px;height:12px;background:#{{ $c->hex_code }}"></span>@endif
+                                        {{ $c->name }} <small class="text-muted">({{ $c->code }})</small>
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        {{-- Kolom Ukuran --}}
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Ukuran</label>
+                            <div class="border rounded p-2" style="max-height:300px;overflow-y:auto">
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="checkbox" id="bulkAllSizes"
+                                        onchange="this.closest('.border').querySelectorAll('[name]').forEach(c=>c.checked=this.checked)">
+                                    <label class="form-check-label fw-semibold text-success" for="bulkAllSizes">Pilih Semua Ukuran</label>
+                                </div>
+                                <hr class="my-1">
+                                @foreach($allSizes as $sz)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="size_ids[]" value="{{ $sz->id }}" id="bsize-{{ $sz->id }}">
+                                    <label class="form-check-label" for="bsize-{{ $sz->id }}">{{ $sz->name }}</label>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0 small">
+                        <i class="bi bi-info-circle me-1"></i>SKU yang sudah ada tidak akan diduplikasi. Proses ini menggunakan bulk insert sehingga sangat cepat.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success px-4"><i class="bi bi-magic me-1"></i>Generate Semua</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 
 {{-- Modals Generate SKU (di luar table agar DOM valid) --}}
 @if(auth()->user()->isAdmin())
