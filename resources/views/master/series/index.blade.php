@@ -92,7 +92,7 @@
 <div class="modal fade" id="modalGenerateSku" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="formGenerateSku" method="POST">
+            <form id="formGenerateSku" method="POST" action="#">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="bi bi-magic me-2 text-success"></i>Generate SKU — <span id="modalSeriesName"></span></h5>
@@ -155,10 +155,12 @@
 
 @push('scripts')
 <script>
+var generateSkuUrlTemplate = "{{ route('series.generate-sku', ['series' => '__ID__']) }}";
+
 document.getElementById('modalGenerateSku').addEventListener('show.bs.modal', function(e) {
     var btn = e.relatedTarget;
     document.getElementById('modalSeriesName').textContent = btn.dataset.seriesName;
-    document.getElementById('formGenerateSku').action = '/master/series/' + btn.dataset.seriesId + '/generate-sku';
+    document.getElementById('formGenerateSku').action = generateSkuUrlTemplate.replace('__ID__', btn.dataset.seriesId);
     // Reset checkboxes
     this.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
 });
