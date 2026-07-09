@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/procurement/{order}/revoke', [ProcurementController::class, 'revoke'])->name('procurement.revoke');
     Route::post('/procurement/{order}/regenerate', [ProcurementController::class, 'regenerate'])->name('procurement.regenerate');
 
-    Route::resource('bahan-baku', RawMaterialController::class);
+    Route::resource('bahan-baku', RawMaterialController::class)->parameters(['bahan-baku' => 'rawMaterial']);
     Route::get('bahan-baku/{rawMaterial}/receipt', [RawMaterialController::class, 'receiptForm'])->name('bahan-baku.receipt');
     Route::post('bahan-baku/{rawMaterial}/receipt', [RawMaterialController::class, 'storeReceipt'])->name('bahan-baku.receipt.store');
 
