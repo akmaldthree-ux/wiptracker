@@ -18,7 +18,7 @@
     @endif
 </div>
 
-<x-import-result />
+<x-import-result :skip-success="true" />
 
 
 <form method="GET" class="d-flex gap-2 align-items-center mb-3 flex-wrap">
