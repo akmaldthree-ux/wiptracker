@@ -37,6 +37,7 @@
     <a href="{{ route('master.series.index') }}" class="btn btn-sm btn-outline-danger">Reset</a>
     @endif
 </form>
+
 <div class="card border-0 shadow-sm">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -63,9 +64,7 @@
                     @if(auth()->user()->isAdmin())
                     <td class="text-end">
                         <button type="button" class="btn btn-sm btn-outline-success me-1"
-                            data-bs-toggle="modal" data-bs-target="#modalGenerateSku"
-                            data-series-id="{{ $s->id }}" data-series-name="{{ $s->name }}"
-                            title="Generate SKU">
+                            data-bs-toggle="modal" data-bs-target="#modal-sku-{{ $s->id }}">
                             <i class="bi bi-magic"></i> Generate SKU
                         </button>
                         <a href="{{ route('master.series.edit', $s) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
@@ -76,6 +75,75 @@
                     </td>
                     @endif
                 </tr>
+
+                {{-- Modal Generate SKU per series --}}
+                @if(auth()->user()->isAdmin())
+                <div class="modal fade" id="modal-sku-{{ $s->id }}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ route('master.series.generate-sku', $s) }}">
+                                @csrf
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><i class="bi bi-magic me-2 text-success"></i>Generate SKU — {{ $s->name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-muted small mb-3">Pilih warna dan ukuran. Sistem akan membuat semua kombinasi SKU yang belum ada.</p>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Warna</label>
+                                            <div class="border rounded p-2" style="max-height:220px;overflow-y:auto">
+                                                <div class="form-check mb-1">
+                                                    <input class="form-check-input check-all" type="checkbox"
+                                                        onchange="this.closest('.border').querySelectorAll('[name]').forEach(c=>c.checked=this.checked)">
+                                                    <label class="form-check-label fw-semibold text-primary">Pilih Semua</label>
+                                                </div>
+                                                <hr class="my-1">
+                                                @foreach($allColors as $c)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="color_ids[]" value="{{ $c->id }}" id="col-{{ $s->id }}-{{ $c->id }}">
+                                                    <label class="form-check-label" for="col-{{ $s->id }}-{{ $c->id }}">
+                                                        @if($c->hex_code)
+                                                        <span class="d-inline-block rounded-circle border me-1" style="width:12px;height:12px;background:#{{ $c->hex_code }}"></span>
+                                                        @endif
+                                                        {{ $c->name }} <small class="text-muted">({{ $c->code }})</small>
+                                                    </label>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold">Ukuran</label>
+                                            <div class="border rounded p-2" style="max-height:220px;overflow-y:auto">
+                                                <div class="form-check mb-1">
+                                                    <input class="form-check-input check-all" type="checkbox"
+                                                        onchange="this.closest('.border').querySelectorAll('[name]').forEach(c=>c.checked=this.checked)">
+                                                    <label class="form-check-label fw-semibold text-primary">Pilih Semua</label>
+                                                </div>
+                                                <hr class="my-1">
+                                                @foreach($allSizes as $sz)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="size_ids[]" value="{{ $sz->id }}" id="sz-{{ $s->id }}-{{ $sz->id }}">
+                                                    <label class="form-check-label" for="sz-{{ $s->id }}-{{ $sz->id }}">{{ $sz->name }}</label>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mt-3 mb-0 small">
+                                        <i class="bi bi-info-circle me-1"></i>SKU yang sudah ada tidak akan diduplikasi.
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-success"><i class="bi bi-magic me-1"></i>Generate SKU</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 @empty
                 <tr><td colspan="6"><div class="empty-state"><i class="bi bi-collection"></i><p class="fw-semibold mb-1">Belum ada series</p><p>Tambahkan series pertama</p></div></td></tr>
                 @endforelse
@@ -87,86 +155,3 @@
     @endif
 </div>
 @endsection
-
-@push('modals')
-<div class="modal fade" id="modalGenerateSku" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="formGenerateSku" method="POST" action="#">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-magic me-2 text-success"></i>Generate SKU — <span id="modalSeriesName"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-muted small mb-3">Pilih warna dan ukuran. Sistem akan membuat semua kombinasi SKU yang belum ada.</p>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Warna</label>
-                            <div class="border rounded p-2" style="max-height:220px;overflow-y:auto">
-                                <div class="form-check mb-1">
-                                    <input class="form-check-input" type="checkbox" id="checkAllColors" onchange="toggleAll('color_ids[]',this.checked)">
-                                    <label class="form-check-label fw-semibold text-primary" for="checkAllColors">Pilih Semua</label>
-                                </div>
-                                <hr class="my-1">
-                                @foreach($allColors as $c)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="color_ids[]" value="{{ $c->id }}" id="col{{ $c->id }}">
-                                    <label class="form-check-label" for="col{{ $c->id }}">
-                                        @if($c->hex_code)
-                                        <span class="d-inline-block rounded-circle border me-1" style="width:12px;height:12px;background:#{{ $c->hex_code }}"></span>
-                                        @endif
-                                        {{ $c->name }} <small class="text-muted">({{ $c->code }})</small>
-                                    </label>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Ukuran</label>
-                            <div class="border rounded p-2" style="max-height:220px;overflow-y:auto">
-                                <div class="form-check mb-1">
-                                    <input class="form-check-input" type="checkbox" id="checkAllSizes" onchange="toggleAll('size_ids[]',this.checked)">
-                                    <label class="form-check-label fw-semibold text-primary" for="checkAllSizes">Pilih Semua</label>
-                                </div>
-                                <hr class="my-1">
-                                @foreach($allSizes as $sz)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="size_ids[]" value="{{ $sz->id }}" id="sz{{ $sz->id }}">
-                                    <label class="form-check-label" for="sz{{ $sz->id }}">{{ $sz->name }}</label>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                    <div class="alert alert-info mt-3 mb-0 small">
-                        <i class="bi bi-info-circle me-1"></i>SKU yang sudah ada tidak akan diduplikasi.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success"><i class="bi bi-magic me-1"></i>Generate SKU</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@endpush
-
-@push('scripts')
-<script>
-var generateSkuUrlTemplate = "{{ url('master/series') }}/__ID__/generate-sku";
-
-document.getElementById('modalGenerateSku').addEventListener('show.bs.modal', function(e) {
-    var btn = e.relatedTarget;
-    document.getElementById('modalSeriesName').textContent = btn.dataset.seriesName;
-    document.getElementById('formGenerateSku').action = generateSkuUrlTemplate.replace('__ID__', btn.dataset.seriesId);
-    // Reset checkboxes
-    this.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
-});
-
-function toggleAll(name, checked) {
-    document.querySelectorAll('input[name="' + name + '"]').forEach(cb => cb.checked = checked);
-}
-</script>
-@endpush
