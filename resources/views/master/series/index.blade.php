@@ -20,9 +20,6 @@
 
 <x-import-result />
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-@endif
 
 <form method="GET" class="d-flex gap-2 align-items-center mb-3 flex-wrap">
     <div class="input-group input-group-sm" style="max-width:280px">
