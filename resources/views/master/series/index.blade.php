@@ -155,7 +155,7 @@
 
 @push('scripts')
 <script>
-var generateSkuUrlTemplate = "{{ route('series.generate-sku', ['series' => '__ID__']) }}";
+var generateSkuUrlTemplate = "{{ route('master.series.generate-sku', ['series' => '__ID__']) }}";
 
 document.getElementById('modalGenerateSku').addEventListener('show.bs.modal', function(e) {
     var btn = e.relatedTarget;
