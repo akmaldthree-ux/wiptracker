@@ -14,7 +14,7 @@
     <p class="text-muted mb-0">{{ $order->product->name }} — {{ optional($order->series)->name }}</p>
   </div>
   <div class="d-flex gap-2 flex-wrap mt-2 mt-md-0">
-    @if(auth()->user()->isSupervisor())
+    @if(auth()->user()->isSupervisor() || auth()->user()->isPPIC())
     <div class="dropdown">
       <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Ubah Status</button>
       <ul class="dropdown-menu">
@@ -33,7 +33,7 @@
     </div>
     @endif
     <a href="{{ route('wip.show',$order) }}" class="btn btn-outline-primary"><i class="bi bi-activity me-1"></i>Lihat WIP</a>
-    @if(auth()->user()->isSupervisor() && $order->status === 'active')
+    @if((auth()->user()->isSupervisor() || auth()->user()->isPPIC()) && $order->status === 'active')
       @php try { $matApproved = $order->materials_approved; } catch(\Exception $e) { $matApproved = false; } @endphp
       @if($matApproved)
       <form method="POST" action="{{ route('orders.send-to-cutting',$order) }}" class="d-inline" onsubmit="return confirm('Kirim semua item order ini ke stasiun Cutting?')">
@@ -183,7 +183,7 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span><i class="bi bi-list-ul me-2 text-primary"></i>Item SKU & Target</span>
-        @if(auth()->user()->isSupervisor() && in_array($order->status,['draft','active']))
+        @if((auth()->user()->isSupervisor() || auth()->user()->isPPIC()) && in_array($order->status,['draft','active']))
         <x-import-button import-route="{{ route('import.order-item', $order) }}" template-route="{{ route('import.template.order-item', $order) }}" label="Item Order" />
         @endif
       </div>
