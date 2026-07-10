@@ -41,7 +41,7 @@
                             @php $selectedRoles = old('roles', []); @endphp
                             @error('roles')<div class="text-danger small mb-1">{{ $message }}</div>@enderror
                             <div class="row g-2">
-                                @foreach(['admin'=>'Admin','supervisor'=>'Supervisor Produksi','manager'=>'Manager / Owner','pic_stasiun'=>'PIC Stasiun','procurement'=>'Tim Procurement','staff_gudang'=>'Staff Gudang','staff_produksi'=>'Staff Produksi'] as $val=>$label)
+                                @foreach(['admin'=>'Admin','supervisor'=>'Supervisor Produksi','manager'=>'Manager / Owner','pic_stasiun'=>'PIC Stasiun','procurement'=>'Tim Procurement','staff_gudang'=>'Staff Gudang','staff_produksi'=>'Staff Produksi','ie'=>'Industrial Engineering','ppic'=>'PPIC'] as $val=>$label)
                                 <div class="col-md-4">
                                     <div class="form-check border rounded px-3 py-2">
                                         <input class="form-check-input" type="checkbox" name="roles[]" value="{{ $val }}"

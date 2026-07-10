@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Warna</h4>
     <div class="d-flex gap-2 flex-wrap align-items-center">
-        @if(auth()->user()->isAdmin())
+        @if(auth()->user()->canManageMaster())
         <x-import-button import-route="{{ route('import.warna') }}" template-route="{{ route('import.template.warna') }}" label="Warna" />
         <a href="{{ route('master.warna.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Warna</a>
         @endif
@@ -27,7 +27,7 @@
                     <th>Swatch</th>
                     <th>Hex Code</th>
                     <th>Status</th>
-                    @if(auth()->user()->isAdmin())<th class="text-end">Aksi</th>@endif
+                    @if(auth()->user()->canManageMaster())<th class="text-end">Aksi</th>@endif
                 </tr>
             </thead>
             <tbody>
@@ -44,7 +44,7 @@
                     </td>
                     <td><code>{{ $color->hex_code ?? '-' }}</code></td>
                     <td><span class="badge bg-{{ $color->is_active ? 'success' : 'secondary' }}">{{ $color->is_active ? 'Aktif' : 'Nonaktif' }}</span></td>
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->canManageMaster())
                     <td class="text-end">
                         <a href="{{ route('master.warna.edit', $color) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.warna.destroy', $color) }}" method="POST" class="d-inline">

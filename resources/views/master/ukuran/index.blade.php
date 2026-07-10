@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Ukuran</h4>
     <div class="d-flex gap-2 flex-wrap align-items-center">
-        @if(auth()->user()->isAdmin())
+        @if(auth()->user()->canManageMaster())
         <x-import-button import-route="{{ route('import.ukuran') }}" template-route="{{ route('import.template.ukuran') }}" label="Ukuran" />
         <a href="{{ route('master.ukuran.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Ukuran</a>
         @endif
@@ -26,7 +26,7 @@
                     <th>Nama Ukuran</th>
                     <th>Urutan</th>
                     <th>Status</th>
-                    @if(auth()->user()->isAdmin())<th class="text-end">Aksi</th>@endif
+                    @if(auth()->user()->canManageMaster())<th class="text-end">Aksi</th>@endif
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +36,7 @@
                     <td class="fw-semibold">{{ $size->name }}</td>
                     <td>{{ $size->sort_order ?? '-' }}</td>
                     <td><span class="badge bg-{{ $size->is_active ? 'success' : 'secondary' }}">{{ $size->is_active ? 'Aktif' : 'Nonaktif' }}</span></td>
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->canManageMaster())
                     <td class="text-end">
                         <a href="{{ route('master.ukuran.edit', $size) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.ukuran.destroy', $size) }}" method="POST" class="d-inline">

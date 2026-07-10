@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Produk</h4>
     <div class="d-flex gap-2 flex-wrap align-items-center">
-        @if(auth()->user()->isAdmin())
+        @if(auth()->user()->canManageMaster())
         <x-import-button import-route="{{ route('import.produk') }}" template-route="{{ route('import.template.produk') }}" label="Produk" />
         <a href="{{ route('master.produk.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Produk</a>
         @endif
@@ -27,7 +27,7 @@
                     <th>Deskripsi</th>
                     <th>Jumlah Series</th>
                     <th>Status</th>
-                    @if(auth()->user()->isAdmin())<th class="text-end">Aksi</th>@endif
+                    @if(auth()->user()->canManageMaster())<th class="text-end">Aksi</th>@endif
                 </tr>
             </thead>
             <tbody>
@@ -44,7 +44,7 @@
                         <span class="badge bg-secondary">Nonaktif</span>
                         @endif
                     </td>
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->canManageMaster())
                     <td class="text-end">
                         <a href="{{ route('master.produk.edit', $product) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.produk.destroy', $product) }}" method="POST" class="d-inline">

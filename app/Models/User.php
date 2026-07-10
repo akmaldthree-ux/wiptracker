@@ -83,6 +83,16 @@ class User extends Authenticatable
     public function isStaffGudang(): bool  { return $this->hasAnyRole(['staff_gudang']); }
     public function isProcurement(): bool  { return $this->hasAnyRole(['procurement', 'admin']); }
     public function isStaffOrAbove(): bool { return $this->hasAnyRole(['admin', 'supervisor', 'staff_gudang']); }
+    public function isIE(): bool           { return $this->hasAnyRole(['ie', 'admin']); }
+    public function isPPIC(): bool         { return $this->hasAnyRole(['ppic', 'admin']); }
+    /** Can edit/create/delete master data */
+    public function canManageMaster(): bool { return $this->hasAnyRole(['admin', 'supervisor', 'ppic']); }
+    /** Can access budget */
+    public function canAccessBudget(): bool { return $this->hasAnyRole(['admin', 'supervisor', 'manager', 'ppic']); }
+    /** Can access procurement & purchase order */
+    public function canAccessProcurement(): bool { return $this->hasAnyRole(['admin', 'supervisor', 'procurement', 'ppic']); }
+    /** Can access BOM */
+    public function canAccessBom(): bool { return $this->hasAnyRole(['admin', 'supervisor', 'ie', 'ppic']); }
 
     public function getRoleLabelAttribute(): string
     {
@@ -94,6 +104,8 @@ class User extends Authenticatable
             'staff_gudang'  => 'Staff Gudang',
             'procurement'   => 'Tim Procurement',
             'staff_produksi'=> 'Staff Produksi',
+            'ie'            => 'Industrial Engineering',
+            'ppic'          => 'PPIC',
         ];
         return implode(' + ', array_map(fn($r) => $labels[$r] ?? ucfirst($r), $this->roles_list));
     }

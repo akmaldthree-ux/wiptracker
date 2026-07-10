@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0 fw-bold">Master Stasiun Produksi</h4>
-    @if(auth()->user()->isAdmin())
+    @if(auth()->user()->canManageMaster())
     <a href="{{ route('master.stasiun.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah Stasiun</a>
     @endif
 </div>
@@ -23,7 +23,7 @@
                     <th>Deskripsi</th>
                     <th>WIP Aktif</th>
                     <th>Status</th>
-                    @if(auth()->user()->isAdmin())<th class="text-end">Aksi</th>@endif
+                    @if(auth()->user()->canManageMaster())<th class="text-end">Aksi</th>@endif
                 </tr>
             </thead>
             <tbody>
@@ -43,7 +43,7 @@
                         <span class="badge bg-{{ $station->is_active ? 'success' : 'secondary' }}">{{ $station->is_active ? 'Aktif' : 'Nonaktif' }}</span>
                         @if($station->is_final)<span class="badge bg-primary ms-1"><i class="bi bi-flag-fill me-1"></i>Akhir</span>@endif
                     </td>
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->canManageMaster())
                     <td class="text-end">
                         <a href="{{ route('master.stasiun.edit', $station) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
                         <form action="{{ route('master.stasiun.destroy', $station) }}" method="POST" class="d-inline">

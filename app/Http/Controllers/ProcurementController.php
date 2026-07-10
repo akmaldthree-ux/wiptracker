@@ -53,7 +53,7 @@ class ProcurementController extends Controller
 
     public function regenerate(ProductionOrder $order)
     {
-        abort_if(!in_array(auth()->user()->role, ['admin','procurement']), 403);
+        abort_if(!auth()->user()->canAccessProcurement(), 403);
         $order->materialRequirements()->delete();
         $order->update(['materials_approved' => false, 'materials_approved_by' => null, 'materials_approved_at' => null]);
         $this->generateRequirements($order);
@@ -62,7 +62,7 @@ class ProcurementController extends Controller
 
     public function approve(ProductionOrder $order)
     {
-        abort_if(!in_array(auth()->user()->role, ['admin','procurement']), 403);
+        abort_if(!auth()->user()->canAccessProcurement(), 403);
 
         $requirements = $order->materialRequirements()->with('rawMaterial')->get();
         foreach ($requirements as $req) {
@@ -80,7 +80,7 @@ class ProcurementController extends Controller
 
     public function revoke(ProductionOrder $order)
     {
-        abort_if(!in_array(auth()->user()->role, ['admin','procurement']), 403);
+        abort_if(!auth()->user()->canAccessProcurement(), 403);
 
         $requirements = $order->materialRequirements()->with('rawMaterial')->get();
         foreach ($requirements as $req) {

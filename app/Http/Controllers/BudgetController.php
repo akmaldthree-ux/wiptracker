@@ -64,7 +64,7 @@ class BudgetController extends Controller
 
             if ($alertType) {
                 $budget->load('order.product');
-                $admins = User::whereIn('role', ['admin','supervisor'])->get();
+                $admins = User::where(function($q){ $q->whereIn('role', ['admin','supervisor','ppic'])->orWhereJsonContains('roles', 'ppic')->orWhereJsonContains('roles', 'admin')->orWhereJsonContains('roles', 'supervisor'); })->get();
                 foreach ($admins as $admin) {
                     Notification::create([
                         'user_id' => $admin->id,

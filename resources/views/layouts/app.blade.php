@@ -616,33 +616,46 @@ h5 { font-weight: 300; letter-spacing: -.3px; }
         <i class="bi bi-shield-check"></i> QC Inspeksi
     </a>
 
+    @php $u = auth()->user(); @endphp
+    @if($u->canAccessProcurement() || $u->isStaffGudang() || $u->isIE() || $u->canAccessBudget())
     <div class="nav-section-title">Bahan & Biaya</div>
+    @if($u->canAccessProcurement())
     <a href="{{ route('procurement.index') }}" class="nav-link {{ request()->routeIs('procurement.*') ? 'active' : '' }}">
       <i class="bi bi-clipboard2-check"></i> Procurement
       @php try { $pendingProc = \App\Models\ProductionOrder::whereIn('status',['draft','active'])->where('materials_approved',false)->count(); } catch(\Exception $e) { $pendingProc = 0; } @endphp
       @if($pendingProc > 0)<span class="badge bg-warning text-dark ms-auto">{{ $pendingProc }}</span>@endif
     </a>
+    @endif
+    @if($u->canAccessProcurement() || $u->isStaffGudang() || $u->isPPIC())
     <a href="{{ route('bahan-baku.index') }}" class="nav-link {{ request()->routeIs('bahan-baku.*') ? 'active' : '' }}">
       <i class="bi bi-boxes"></i> Bahan Baku
       @php $lowStock = \App\Models\RawMaterial::whereRaw('current_stock < min_stock')->count(); @endphp
       @if($lowStock > 0)<span class="badge bg-danger ms-auto">{{ $lowStock }}</span>@endif
     </a>
+    @endif
+    @if($u->canAccessBom())
     <a href="{{ route('bom.index') }}" class="nav-link {{ request()->routeIs('bom.*') ? 'active' : '' }}">
       <i class="bi bi-diagram-3"></i> Bill of Materials
     </a>
+    @endif
+    @if($u->canAccessProcurement() || $u->isPPIC())
     <a href="{{ route('purchase-order.index') }}" class="nav-link {{ request()->routeIs('purchase-order.*') ? 'active' : '' }}">
       <i class="bi bi-cart-check"></i> Purchase Order
     </a>
+    @endif
+    @if($u->canAccessBudget())
     <a href="{{ route('budget.index') }}" class="nav-link {{ request()->routeIs('budget.*') ? 'active' : '' }}">
       <i class="bi bi-wallet2"></i> Budget & Biaya
     </a>
+    @endif
+    @endif
 
     <div class="nav-section-title">Laporan</div>
     <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
       <i class="bi bi-file-bar-graph"></i> Laporan
     </a>
 
-    @if(auth()->user()->isSupervisor())
+    @if(auth()->user()->isSupervisor() || auth()->user()->isPPIC() || auth()->user()->isIE())
     <div class="nav-section-title">Master Data</div>
     <a class="nav-link {{ request()->routeIs('master.*') ? 'active' : '' }}"
        data-bs-toggle="collapse" href="#masterMenu" role="button"
