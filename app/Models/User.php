@@ -16,7 +16,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'station_id', 'phone', 'is_active',
+        'name', 'email', 'password', 'role', 'roles', 'station_id', 'phone', 'is_active',
     ];
 
     protected $hidden = [
@@ -29,7 +29,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'roles'     => 'array',
         ];
+    }
+
+    /** Returns the effective roles array (multi-role support) */
+    public function getRolesListAttribute(): array
+    {
+        // Use `roles` JSON column if set, fall back to legacy `role` string
+        if (!empty($this->roles)) return $this->roles;
+        return $this->role ? [$this->role] : [];
+    }
+
+    public function hasAnyRole(array $check): bool
+    {
+        return !empty(array_intersect($this->roles_list, $check));
     }
 
     public function station(): BelongsTo
@@ -62,24 +76,25 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Notification::class)->where('is_read', false);
     }
 
-    public function isAdmin(): bool { return $this->role === 'admin'; }
-    public function isSupervisor(): bool { return in_array($this->role, ['admin', 'supervisor']); }
-    public function isPIC(): bool { return $this->role === 'pic_stasiun'; }
-    public function isManager(): bool { return $this->role === 'manager'; }
-    public function isStaffGudang(): bool { return $this->role === 'staff_gudang'; }
-    public function isProcurement(): bool { return in_array($this->role, ['procurement', 'admin']); }
-    public function isStaffOrAbove(): bool { return in_array($this->role, ['admin', 'supervisor', 'staff_gudang']); }
+    public function isAdmin(): bool        { return $this->hasAnyRole(['admin']); }
+    public function isSupervisor(): bool   { return $this->hasAnyRole(['admin', 'supervisor']); }
+    public function isPIC(): bool          { return $this->hasAnyRole(['pic_stasiun']); }
+    public function isManager(): bool      { return $this->hasAnyRole(['manager']); }
+    public function isStaffGudang(): bool  { return $this->hasAnyRole(['staff_gudang']); }
+    public function isProcurement(): bool  { return $this->hasAnyRole(['procurement', 'admin']); }
+    public function isStaffOrAbove(): bool { return $this->hasAnyRole(['admin', 'supervisor', 'staff_gudang']); }
 
     public function getRoleLabelAttribute(): string
     {
-        return match($this->role) {
-            'admin'       => 'Admin',
-            'supervisor'  => 'Supervisor Produksi',
-            'pic_stasiun' => 'PIC Stasiun',
-            'manager'     => 'Manager / Owner',
-            'staff_gudang'=> 'Staff Gudang',
-            'procurement' => 'Tim Procurement',
-            default       => ucfirst($this->role),
-        };
+        $labels = [
+            'admin'         => 'Admin',
+            'supervisor'    => 'Supervisor Produksi',
+            'pic_stasiun'   => 'PIC Stasiun',
+            'manager'       => 'Manager / Owner',
+            'staff_gudang'  => 'Staff Gudang',
+            'procurement'   => 'Tim Procurement',
+            'staff_produksi'=> 'Staff Produksi',
+        ];
+        return implode(' + ', array_map(fn($r) => $labels[$r] ?? ucfirst($r), $this->roles_list));
     }
 }

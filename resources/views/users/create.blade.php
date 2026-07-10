@@ -36,19 +36,22 @@
                             <label class="form-label fw-semibold">Konfirmasi Password <span class="text-danger">*</span></label>
                             <input type="password" name="password_confirmation" class="form-control" required minlength="8">
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
-                            <select name="role" class="form-select @error('role') is-invalid @enderror" required id="roleSelect" onchange="toggleStation()">
-                                <option value="">-- Pilih Role --</option>
-                                <option value="admin" {{ old('role')=='admin'?'selected':'' }}>Admin</option>
-                                <option value="supervisor" {{ old('role')=='supervisor'?'selected':'' }}>Supervisor Produksi</option>
-                                <option value="manager" {{ old('role')=='manager'?'selected':'' }}>Manager / Owner</option>
-                                <option value="pic_stasiun" {{ old('role')=='pic_stasiun'?'selected':'' }}>PIC Stasiun</option>
-                                <option value="procurement" {{ old('role')=='procurement'?'selected':'' }}>Tim Procurement</option>
-                                <option value="staff_gudang" {{ old('role')=='staff_gudang'?'selected':'' }}>Staff Gudang</option>
-                                <option value="staff_produksi" {{ old('role')=='staff_produksi'?'selected':'' }}>Staff Produksi</option>
-                            </select>
-                            @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Role <span class="text-danger">*</span> <small class="text-muted fw-normal">(boleh lebih dari satu)</small></label>
+                            @php $selectedRoles = old('roles', []); @endphp
+                            @error('roles')<div class="text-danger small mb-1">{{ $message }}</div>@enderror
+                            <div class="row g-2">
+                                @foreach(['admin'=>'Admin','supervisor'=>'Supervisor Produksi','manager'=>'Manager / Owner','pic_stasiun'=>'PIC Stasiun','procurement'=>'Tim Procurement','staff_gudang'=>'Staff Gudang','staff_produksi'=>'Staff Produksi'] as $val=>$label)
+                                <div class="col-md-4">
+                                    <div class="form-check border rounded px-3 py-2">
+                                        <input class="form-check-input" type="checkbox" name="roles[]" value="{{ $val }}"
+                                            id="role_{{ $val }}" onchange="toggleStation()"
+                                            {{ in_array($val, $selectedRoles) ? 'checked' : '' }}>
+                                        <label class="form-check-label w-100" for="role_{{ $val }}">{{ $label }}</label>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
                         </div>
                         <div class="col-md-6" id="stationField">
                             <label class="form-label fw-semibold">Stasiun</label>
@@ -78,8 +81,8 @@
 
 <script>
 function toggleStation() {
-    const role = document.getElementById('roleSelect').value;
-    document.getElementById('stationField').style.display = role === 'pic_stasiun' ? '' : 'none';
+    const picChecked = document.getElementById('role_pic_stasiun')?.checked;
+    document.getElementById('stationField').style.display = picChecked ? '' : 'none';
 }
 toggleStation();
 </script>

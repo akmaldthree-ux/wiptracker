@@ -24,8 +24,14 @@ class UserController extends Controller
     public function store(Request $request)
     {
         abort_if(auth()->user()->role !== 'admin', 403);
-        $request->validate(['name'=>'required','email'=>'required|email|unique:users','password'=>'required|min:8|confirmed','role'=>'required']);
-        User::create(array_merge($request->only(['name','email','role','station_id','phone']),['password'=>Hash::make($request->password),'is_active'=>true]));
+        $request->validate(['name'=>'required','email'=>'required|email|unique:users','password'=>'required|min:8|confirmed','roles'=>'required|array|min:1']);
+        $rolesArr = $request->roles;
+        User::create(array_merge($request->only(['name','email','station_id','phone']),[
+            'password'  => Hash::make($request->password),
+            'is_active' => true,
+            'roles'     => $rolesArr,
+            'role'      => $rolesArr[0], // legacy compat
+        ]));
         return redirect()->route('users.index')->with('success','User berhasil ditambahkan.');
     }
 
@@ -48,7 +54,12 @@ class UserController extends Controller
         abort_if(auth()->user()->role !== 'admin' && auth()->id() !== $user->id, 403);
         $request->validate(['name'=>'required','email'=>"required|email|unique:users,email,{$user->id}"]);
         $data = $request->only(['name','email','phone','station_id']);
-        if (auth()->user()->role === 'admin') { $data['role'] = $request->role; $data['is_active'] = $request->boolean('is_active'); }
+        if (auth()->user()->isAdmin()) {
+            $rolesArr = $request->roles ?? [];
+            $data['roles']     = $rolesArr;
+            $data['role']      = $rolesArr[0] ?? null; // legacy compat
+            $data['is_active'] = $request->boolean('is_active');
+        }
         if ($request->filled('password')) { $request->validate(['password'=>'min:8|confirmed']); $data['password'] = Hash::make($request->password); }
         $user->update($data);
         return redirect()->route('users.show',$user)->with('success','User berhasil diperbarui.');
