@@ -89,8 +89,35 @@ class ProductionOrderController extends Controller
 
     public function update(Request $request, ProductionOrder $order)
     {
-        $request->validate(['target_date'=>'required|date','notes'=>'nullable|string']);
-        $order->update(['target_date'=>$request->target_date,'notes'=>$request->notes,'selling_price'=>$request->selling_price]);
+        $request->validate([
+            'target_date'       => 'required|date',
+            'notes'             => 'nullable|string',
+            'skus'              => 'nullable|array',
+            'skus.*.sku_id'     => 'required|exists:skus,id',
+            'skus.*.target_qty' => 'required|integer|min:1',
+        ]);
+
+        $order->update([
+            'target_date'   => $request->target_date,
+            'notes'         => $request->notes,
+            'selling_price' => $request->selling_price,
+        ]);
+
+        // Update SKU items
+        if ($request->skus) {
+            $incoming = collect($request->skus)->keyBy('sku_id');
+
+            // Delete items no longer in the list
+            $order->items()->whereNotIn('sku_id', $incoming->keys())->delete();
+
+            foreach ($incoming as $skuId => $row) {
+                $order->items()->updateOrCreate(
+                    ['sku_id' => $skuId],
+                    ['target_qty' => $row['target_qty']]
+                );
+            }
+        }
+
         // Update station deadlines
         if ($request->station_deadlines) {
             foreach ($request->station_deadlines as $stationId => $deadline) {
@@ -104,7 +131,8 @@ class ProductionOrderController extends Controller
                 }
             }
         }
-        return redirect()->route('orders.show',$order)->with('success','Order berhasil diperbarui.');
+
+        return redirect()->route('orders.show', $order)->with('success', 'Order berhasil diperbarui.');
     }
 
     public function updateStatus(Request $request, ProductionOrder $order)
