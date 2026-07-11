@@ -24,7 +24,7 @@ class HandoverController extends Controller
     {
         $user = auth()->user();
         $station = $user->station;
-        $orders = ProductionOrder::where('status','active')->with('product')->get();
+        $orders = ProductionOrder::whereIn('status',['active','draft'])->with('product')->get();
         $stations = Station::where('is_active',true)->orderBy('order_sequence')->get();
         $sewingLocations = SewingLocation::where('is_active',true)->orderBy('name')->get();
         return view('handover.create', compact('station','orders','stations','sewingLocations'));
