@@ -322,7 +322,7 @@ class HandoverController extends Controller
     public function approve(Request $request, Handover $handover)
     {
         abort_if($handover->status !== 'discrepancy', 403);
-        abort_if(!in_array(auth()->user()->role,['admin','supervisor']), 403);
+        abort_if(!auth()->user()->hasAnyRole(['admin', 'supervisor', 'ppic']), 403);
         $handover->update(['status'=>'approved','approved_by'=>auth()->id()]);
 
         // Auto-create WIP entries when discrepancy is approved (use qty_received as actuals)
@@ -359,7 +359,7 @@ class HandoverController extends Controller
         abort_if($order->status === 'completed', 409, 'Order sudah diselesaikan.');
         abort_if(!in_array($handover->status, ['confirmed', 'approved']), 403, 'Handover harus sudah dikonfirmasi.');
 
-        $canComplete = in_array(auth()->user()->role, ['admin', 'supervisor'])
+        $canComplete = auth()->user()->hasAnyRole(['admin', 'supervisor', 'ppic'])
             || auth()->user()->station_id == $handover->to_station_id;
         abort_if(!$canComplete, 403);
 
@@ -408,7 +408,7 @@ class HandoverController extends Controller
     public function forwardRework(Request $request, Handover $handover)
     {
         abort_if(!$handover->is_rework, 404);
-        abort_if(!in_array(auth()->user()->role, ['admin','supervisor','staff_produksi']), 403);
+        abort_if(!auth()->user()->hasAnyRole(['admin', 'supervisor', 'ppic', 'staff_produksi']), 403);
 
         $request->validate([
             'to_station_id'   => 'required|exists:stations,id',
@@ -488,7 +488,7 @@ class HandoverController extends Controller
 
     public function sendFromOrder(Request $request, ProductionOrder $order)
     {
-        abort_if(!in_array(auth()->user()->role, ['admin', 'supervisor']), 403);
+        abort_if(!auth()->user()->hasAnyRole(['admin', 'supervisor', 'ppic']), 403);
         if (!$order->materials_approved) {
             return back()->with('error', 'Bahan baku belum disetujui oleh Procurement. Silakan setujui kebutuhan bahan terlebih dahulu.');
         }
