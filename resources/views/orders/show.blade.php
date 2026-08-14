@@ -16,8 +16,8 @@
   <div class="d-flex gap-2 flex-wrap mt-2 mt-md-0">
     @if(auth()->user()->isSupervisor() || auth()->user()->isPPIC())
     <div class="dropdown">
-      <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Ubah Status</button>
-      <ul class="dropdown-menu">
+      <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Ubah Status</button>
+      <ul class="dropdown-menu dropdown-menu-end" style="z-index:1055">
         @foreach(['draft'=>'Draft','active'=>'Aktif','completed'=>'Selesai','on_hold'=>'Ditahan','cancelled'=>'Dibatalkan'] as $v=>$l)
         @if($v !== $order->status)
         <li>
