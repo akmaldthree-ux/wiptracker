@@ -381,36 +381,6 @@ body {
 }
 .btn-login:active { background: var(--primary-press); transform: scale(.99); }
 
-/* Divider */
-.divider {
-  display: flex; align-items: center; gap: .5rem;
-  margin: 1.3rem 0 .8rem;
-  font-size: .64rem; font-weight: 500;
-  letter-spacing: .5px; text-transform: uppercase; color: var(--hairline-input);
-}
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--hairline); }
-
-/* Demo accounts */
-.demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem; }
-.demo-btn {
-  padding: .45rem .65rem; border-radius: 9999px; border: 1px solid;
-  background: transparent; cursor: pointer; text-align: left;
-  font-family: inherit; transition: all .13s; font-weight: 300;
-}
-.demo-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.07); }
-.demo-btn.indigo { border-color: var(--primary-subdued); color: var(--primary-deep); background: var(--primary-bg); }
-.demo-btn.indigo:hover { background: #e6e0ff; }
-.demo-btn.navy   { border-color: #a8c3de; color: #1c3d5a; background: #f0f6fb; }
-.demo-btn.slate  { border-color: #cbd5e1; color: #475569; background: #f8fafc; }
-.demo-btn.rose   { border-color: #fca5a5; color: #991b1b; background: #fef2f2; }
-.demo-email { display: block; font-size: .68rem; font-weight: 500; }
-.demo-role  { display: block; font-size: .61rem; opacity: .6; margin-top: 1px; }
-.demo-hint  { text-align: center; margin-top: .6rem; font-size: .7rem; color: var(--ink-mute); }
-.demo-hint code {
-  background: var(--canvas-soft); padding: .1em .4em; border-radius: 4px;
-  color: var(--ink-mute); font-family: ui-monospace, monospace; font-size: .68rem;
-}
-
 /* ── Responsive ── */
 @media (max-width: 680px) {
   body { padding: 1rem; align-items: flex-start; overflow: auto; }
@@ -653,7 +623,7 @@ body {
       <div class="field">
         <label>Email</label>
         <div class="input-wrap">
-          <input type="email" name="email" value="{{ old('email','admin@dthree.id') }}"
+          <input type="email" name="email" value="{{ old('email') }}"
                  placeholder="email@dthree.id" required autocomplete="email"
                  onfocus="this.nextElementSibling.classList.add('focused')"
                  onblur="this.nextElementSibling.classList.remove('focused')">
@@ -686,44 +656,11 @@ body {
       </button>
     </form>
 
-    <div class="divider">Akun Demo</div>
-
-    <div class="demo-grid">
-      <button class="demo-btn indigo" onclick="fillDemo('admin@dthree.id')">
-        <span class="demo-email">admin@dthree.id</span>
-        <span class="demo-role">Admin</span>
-      </button>
-      <button class="demo-btn navy"   onclick="fillDemo('supervisor@dthree.id')">
-        <span class="demo-email">supervisor@dthree.id</span>
-        <span class="demo-role">Supervisor</span>
-      </button>
-      <button class="demo-btn slate"  onclick="fillDemo('manager@dthree.id')">
-        <span class="demo-email">manager@dthree.id</span>
-        <span class="demo-role">Manager</span>
-      </button>
-      <button class="demo-btn rose"   onclick="fillDemo('cutting@dthree.id')">
-        <span class="demo-email">cutting@dthree.id</span>
-        <span class="demo-role">Staff Cutting</span>
-      </button>
-    </div>
-    <div class="demo-hint">Password: <code>password</code></div>
-
   </div>
 </div>
 
 <script>
 /* ── UI helpers ── */
-function fillDemo(email) {
-  const emailEl = document.querySelector('input[name="email"]');
-  const pwEl    = document.getElementById('pwInput');
-  emailEl.value = email; pwEl.value = 'password';
-  [emailEl, pwEl].forEach(el => {
-    el.style.transition = 'background .3s, border-color .3s';
-    el.style.background  = 'rgba(83,58,253,.07)';
-    el.style.borderColor = 'rgba(83,58,253,.45)';
-    setTimeout(() => { el.style.background = ''; el.style.borderColor = ''; }, 700);
-  });
-}
 function togglePw() {
   const inp  = document.getElementById('pwInput');
   const icon = document.getElementById('pwIcon');
