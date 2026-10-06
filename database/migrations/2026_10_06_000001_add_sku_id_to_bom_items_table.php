@@ -9,6 +9,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // MySQL dapat memakai unique index lama sebagai index pendukung FK
+        // product_id. Sediakan index pengganti sebelum unique index dilepas.
+        Schema::table('bom_items', function (Blueprint $table) {
+            $table->index('product_id', 'bom_items_product_id_lookup_index');
+        });
+
         Schema::table('bom_items', function (Blueprint $table) {
             $table->dropUnique(['product_id', 'raw_material_id']);
             $table->foreignId('sku_id')->nullable()->after('product_id')->constrained()->cascadeOnDelete();
@@ -62,10 +68,20 @@ return new class extends Migration
             ]);
         }
 
+        // Pastikan FK sku_id tidak bergantung pada composite unique index yang
+        // akan dilepas saat rollback di MySQL.
+        Schema::table('bom_items', function (Blueprint $table) {
+            $table->index('sku_id', 'bom_items_sku_id_lookup_index');
+        });
+
         Schema::table('bom_items', function (Blueprint $table) {
             $table->dropUnique(['sku_id', 'raw_material_id']);
             $table->dropConstrainedForeignId('sku_id');
             $table->unique(['product_id', 'raw_material_id']);
+        });
+
+        Schema::table('bom_items', function (Blueprint $table) {
+            $table->dropIndex('bom_items_product_id_lookup_index');
         });
     }
 };
