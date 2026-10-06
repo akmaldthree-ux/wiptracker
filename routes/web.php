@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/bom', [BomController::class, 'index'])->name('bom.index');
     Route::post('/bom', [BomController::class, 'store'])->name('bom.store');
+    Route::post('/bom/copy', [BomController::class, 'copy'])->name('bom.copy');
     Route::delete('/bom/{bom}', [BomController::class, 'destroy'])->name('bom.destroy');
     Route::patch('/bom/{bom}', [BomController::class, 'update'])->name('bom.update');
 

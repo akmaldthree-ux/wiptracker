@@ -119,6 +119,8 @@ class ImportController extends Controller
 
     public function importBom(Request $request)
     {
+        abort_unless($request->user()->isSupervisor(), 403);
+
         $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120']);
         $import = new BomImport();
         Excel::import($import, $request->file('file'));

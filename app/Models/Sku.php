@@ -8,6 +8,7 @@ class Sku extends Model {
     public function series() { return $this->belongsTo(Series::class); }
     public function color() { return $this->belongsTo(Color::class); }
     public function size() { return $this->belongsTo(Size::class); }
+    public function bomItems() { return $this->hasMany(BomItem::class); }
     public function wipEntries() { return $this->hasMany(WipEntry::class); }
     public function getFullNameAttribute() {
         return ($this->product?->name ?? '?') . ' - ' . ($this->series?->name ?? '?') . ' / ' . ($this->color?->name ?? '?') . ' / ' . ($this->size?->name ?? '?');

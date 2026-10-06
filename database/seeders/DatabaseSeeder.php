@@ -231,6 +231,21 @@ class DatabaseSeeder extends Seeder
         BomItem::create(['product_id'=>$pKoko->id,'raw_material_id'=>$rmLabel->id,'qty_per_unit'=>1,'waste_percentage'=>0]);
         BomItem::create(['product_id'=>$pKoko->id,'raw_material_id'=>$rmPlastik->id,'qty_per_unit'=>1,'waste_percentage'=>0]);
 
+        // Salin BOM contoh produk ke setiap SKU agar preview memakai struktur BOM per SKU.
+        BomItem::whereNull('sku_id')->get()->each(function (BomItem $item): void {
+            Sku::where('product_id', $item->product_id)->pluck('id')->each(function (int $skuId) use ($item): void {
+                BomItem::create([
+                    'product_id' => $item->product_id,
+                    'sku_id' => $skuId,
+                    'raw_material_id' => $item->raw_material_id,
+                    'qty_per_unit' => $item->qty_per_unit,
+                    'waste_percentage' => $item->waste_percentage,
+                    'notes' => $item->notes,
+                ]);
+            });
+            $item->delete();
+        });
+
         // ─────────────────────────────────────────────
         // PURCHASE ORDERS
         // ─────────────────────────────────────────────

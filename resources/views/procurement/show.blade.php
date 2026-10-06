@@ -39,8 +39,8 @@
     @else
     <form method="POST" action="{{ route('procurement.approve',$order) }}">
       @csrf
-      <button type="submit" class="btn btn-success {{ !$allSufficient ? 'opacity-50':'' }}"
-        @if(!$allSufficient) onclick="return confirm('Ada bahan yang stoknya kurang. Yakin tetap setujui?')" @endif>
+      <button type="submit" class="btn btn-success {{ !$allSufficient ? 'opacity-50':'' }}" @disabled($missingBomSkus->isNotEmpty() || $requirements->isEmpty())
+        @if(!$allSufficient && $missingBomSkus->isEmpty()) onclick="return confirm('Ada bahan yang stoknya kurang. Yakin tetap setujui?')" @endif>
         <i class="bi bi-check-circle me-1"></i>Setujui Bahan
       </button>
     </form>
@@ -51,7 +51,21 @@
 </div>
 
 {{-- Approval Status Banner --}}
-@if($order->materials_approved)
+@if($missingBomSkus->isNotEmpty())
+<div class="alert alert-danger d-flex align-items-start gap-2 mb-4">
+  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+  <div>
+    <strong>BOM SKU Belum Lengkap</strong> — Persetujuan bahan dikunci sampai BOM berikut dilengkapi:
+    <div class="mt-1">{{ $missingBomSkus->pluck('sku_code')->join(', ') }}</div>
+    <a href="{{ route('bom.index') }}" class="alert-link">Lengkapi BOM per SKU</a>
+  </div>
+</div>
+@elseif($requirements->isEmpty())
+<div class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+  <div><strong>Kebutuhan Bahan Kosong</strong> — Pastikan order mempunyai item SKU dan setiap jumlah target lebih dari nol.</div>
+</div>
+@elseif($order->materials_approved)
 <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
   <i class="bi bi-check-circle-fill fs-5"></i>
   <div>
@@ -82,12 +96,12 @@
 <div class="card mb-4">
   <div class="card-header d-flex align-items-center justify-content-between">
     <span><i class="bi bi-boxes me-2 text-primary"></i>Kebutuhan Bahan Baku</span>
-    <small class="text-muted">Berdasarkan BOM × {{ number_format($order->getTotalTargetQty()) }} pcs</small>
+    <small class="text-muted">Berdasarkan komposisi {{ number_format($order->getTotalTargetQty()) }} pcs dan BOM setiap SKU</small>
   </div>
   @if($requirements->isEmpty())
   <div class="card-body text-center text-muted py-4">
-    Belum ada BOM yang terdaftar untuk produk ini.
-    <a href="{{ route('bom.index') }}" class="d-block mt-2">Atur BOM di sini</a>
+    Belum ada kebutuhan yang dapat dihitung. Pastikan setiap SKU order memiliki BOM.
+    <a href="{{ route('bom.index') }}" class="d-block mt-2">Atur BOM per SKU di sini</a>
   </div>
   @else
   <div class="table-responsive">

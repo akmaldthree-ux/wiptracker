@@ -1,12 +1,15 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{Budget, ProductionOrder, CostEntry, Station, BomItem, User, Notification};
+use App\Models\{Budget, ProductionOrder, CostEntry, Station, User, Notification};
 use App\Mail\BudgetAlertMail;
+use App\Services\BomCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class BudgetController extends Controller
 {
+    public function __construct(private readonly BomCalculator $bomCalculator) {}
+
     public function index(Request $request)
     {
         $q = ProductionOrder::with(['product','budget'])->whereIn('status',['active','completed']);
@@ -28,13 +31,16 @@ class BudgetController extends Controller
 
     public function edit(ProductionOrder $order)
     {
-        $order->load(['items','product']);
+        $order->load(['items.sku.bomItems.rawMaterial','product']);
         $budget = $order->budget ?? new Budget(['production_order_id'=>$order->id]);
         $totalQty = $order->getTotalTargetQty();
-        $bomItems = BomItem::with('rawMaterial')
-            ->where('product_id', $order->product_id)->get();
-        $bomEstimate = $bomItems->sum(fn($b) => $b->getQtyNeeded($totalQty) * $b->rawMaterial->unit_price);
-        return view('budget.edit', compact('order','budget','bomItems','bomEstimate','totalQty'));
+        $calculation = $this->bomCalculator->forOrder($order);
+        $materialEstimates = $calculation['requirements'];
+        $missingBomSkus = $calculation['missing_skus'];
+        $bomEstimate = $materialEstimates->sum(
+            fn (array $item): float => $item['qty_needed'] * $item['raw_material']->unit_price,
+        );
+        return view('budget.edit', compact('order','budget','materialEstimates','missingBomSkus','bomEstimate','totalQty'));
     }
 
     public function update(Request $request, ProductionOrder $order)

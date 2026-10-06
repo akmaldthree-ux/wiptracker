@@ -7,7 +7,7 @@
   <div class="card-body">
 
     {{-- BOM Estimate Panel --}}
-    @if($bomItems->count() > 0)
+    @if($materialEstimates->count() > 0)
     <div class="alert alert-primary border-primary mb-4 p-0 overflow-hidden">
       <div class="px-3 py-2 bg-primary bg-opacity-10 d-flex align-items-center justify-content-between">
         <span class="fw-semibold"><i class="bi bi-calculator me-2"></i>Estimasi dari Bill of Materials</span>
@@ -17,12 +17,12 @@
         <table class="table table-sm mb-2" style="font-size:.82rem">
           <thead><tr><th>Bahan Baku</th><th class="text-center">Qty Dibutuhkan</th><th class="text-end">Harga/Unit</th><th class="text-end">Estimasi Biaya</th></tr></thead>
           <tbody>
-            @foreach($bomItems as $b)
-            @php $qtyNeeded = round($b->getQtyNeeded($totalQty), 2); $cost = $qtyNeeded * $b->rawMaterial->unit_price; @endphp
+            @foreach($materialEstimates as $item)
+            @php $material = $item['raw_material']; $qtyNeeded = round($item['qty_needed'], 2); $cost = $qtyNeeded * $material->unit_price; @endphp
             <tr>
-              <td>{{ $b->rawMaterial->name }} <small class="text-muted">({{ $b->rawMaterial->unit }})</small></td>
+              <td>{{ $material->name }} <small class="text-muted">({{ $material->unit }})</small></td>
               <td class="text-center">{{ number_format($qtyNeeded, 2) }}</td>
-              <td class="text-end">Rp {{ number_format($b->rawMaterial->unit_price) }}</td>
+              <td class="text-end">Rp {{ number_format($material->unit_price) }}</td>
               <td class="text-end fw-semibold">Rp {{ number_format($cost) }}</td>
             </tr>
             @endforeach
@@ -41,7 +41,13 @@
     </div>
     @else
     <div class="alert alert-warning py-2 mb-4"><i class="bi bi-exclamation-triangle me-1"></i>
-      <small>BOM untuk produk <strong>{{ $order->product->name }}</strong> belum didefinisikan. <a href="{{ route('bom.index') }}">Tambah BOM</a> untuk mendapatkan estimasi otomatis.</small>
+      <small>BOM SKU pada order ini belum lengkap. <a href="{{ route('bom.index') }}">Lengkapi BOM per SKU</a> untuk mendapatkan estimasi otomatis.</small>
+    </div>
+    @endif
+
+    @if($missingBomSkus->isNotEmpty())
+    <div class="alert alert-danger py-2 mb-4">
+      <small><i class="bi bi-exclamation-triangle me-1"></i>BOM belum tersedia untuk SKU: <strong>{{ $missingBomSkus->pluck('sku_code')->join(', ') }}</strong>. Estimasi di atas belum lengkap.</small>
     </div>
     @endif
 
