@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{RawMaterial, MaterialReceipt, Notification, User};
+use App\Models\{ActivityLog, RawMaterial, MaterialReceipt, Notification, User};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RawMaterialController extends Controller
 {
@@ -56,5 +57,36 @@ class RawMaterialController extends Controller
     {
         $rawMaterial->delete();
         return redirect()->route('bahan-baku.index')->with('success','Bahan baku berhasil dihapus.');
+    }
+
+    public function clearAll(Request $request)
+    {
+        abort_unless($request->user()->isAdmin(), 403);
+
+        $request->validate(
+            ['confirmation' => ['required', 'in:HAPUS SEMUA']],
+            [
+                'confirmation.required' => 'Ketik HAPUS SEMUA untuk melanjutkan.',
+                'confirmation.in' => 'Teks konfirmasi tidak sesuai. Ketik HAPUS SEMUA.',
+            ],
+        );
+
+        $deletedCount = DB::transaction(function (): int {
+            $count = RawMaterial::query()->count();
+
+            RawMaterial::query()->delete();
+
+            ActivityLog::log(
+                'raw_materials.clear_all',
+                "Menghapus seluruh {$count} bahan baku beserta data terkait.",
+                RawMaterial::class,
+            );
+
+            return $count;
+        });
+
+        return redirect()
+            ->route('bahan-baku.index')
+            ->with('success', "{$deletedCount} bahan baku beserta data terkait berhasil dihapus.");
     }
 }

@@ -13,6 +13,11 @@
   <div><h5 class="mb-0 fw-bold">Daftar Bahan Baku</h5><p class="text-muted small mb-0">{{ $materials->total() }} bahan baku terdaftar</p></div>
   @if(auth()->user()->isStaffOrAbove())
   <div class="d-flex gap-2 flex-wrap align-items-center">
+      @if(auth()->user()->isAdmin() && $materials->total() > 0)
+      <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#clearAllRawMaterialsModal">
+        <i class="bi bi-trash3 me-1"></i>Hapus Semua
+      </button>
+      @endif
       <x-import-button import-route="{{ route('import.bahan-baku') }}" template-route="{{ route('import.template.bahan-baku') }}" label="Bahan Baku" />
       <a href="{{ route('bahan-baku.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Tambah Bahan Baku</a>
   </div>
@@ -91,3 +96,50 @@
   @endif
 </div>
 @endsection
+
+@if(auth()->user()->isAdmin() && $materials->total() > 0)
+@push('modals')
+<div class="modal fade" id="clearAllRawMaterialsModal" tabindex="-1" aria-labelledby="clearAllRawMaterialsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="POST" action="{{ route('bahan-baku.clear-all') }}" class="modal-content">
+      @csrf
+      @method('DELETE')
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title text-danger fw-bold" id="clearAllRawMaterialsModalLabel">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>Hapus Semua Bahan Baku
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger small">
+          Tindakan ini akan menghapus <strong>{{ $materials->total() }} bahan baku</strong> beserta BOM dan seluruh data terkait. Data yang sudah dihapus tidak dapat dipulihkan tanpa backup database.
+        </div>
+        <label for="clearAllConfirmation" class="form-label">
+          Ketik <strong>HAPUS SEMUA</strong> untuk melanjutkan:
+        </label>
+        <input type="text" name="confirmation" id="clearAllConfirmation" class="form-control @error('confirmation') is-invalid @enderror" value="{{ old('confirmation') }}" autocomplete="off" required>
+        @error('confirmation')
+        <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-danger">
+          <i class="bi bi-trash3 me-1"></i>Hapus Permanen
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+@endpush
+
+@if($errors->has('confirmation'))
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  bootstrap.Modal.getOrCreateInstance(document.getElementById('clearAllRawMaterialsModal')).show();
+});
+</script>
+@endpush
+@endif
+@endif

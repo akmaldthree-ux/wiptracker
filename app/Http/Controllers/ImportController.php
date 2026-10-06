@@ -217,10 +217,4 @@ class ImportController extends Controller
         return back()->with('success', 'Semua data supplier berhasil dihapus.');
     }
 
-    public function clearRawMaterials()
-    {
-        DB::table('bom_items')->delete();
-        DB::table('raw_materials')->delete();
-        return back()->with('success', 'Semua data bahan baku dan BOM berhasil dihapus.');
-    }
 }

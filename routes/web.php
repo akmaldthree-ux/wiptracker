@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/procurement/{order}/revoke', [ProcurementController::class, 'revoke'])->name('procurement.revoke');
     Route::post('/procurement/{order}/regenerate', [ProcurementController::class, 'regenerate'])->name('procurement.regenerate');
 
+    Route::delete('bahan-baku/clear-all', [RawMaterialController::class, 'clearAll'])->name('bahan-baku.clear-all');
     Route::resource('bahan-baku', RawMaterialController::class)->parameters(['bahan-baku' => 'rawMaterial']);
     Route::get('bahan-baku/{rawMaterial}/receipt', [RawMaterialController::class, 'receiptForm'])->name('bahan-baku.receipt');
     Route::post('bahan-baku/{rawMaterial}/receipt', [RawMaterialController::class, 'storeReceipt'])->name('bahan-baku.receipt.store');
@@ -127,7 +128,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('ukuran/clear-all',           [ImportController::class, 'clearSizes'])->name('ukuran.clear-all');
         Route::delete('sewing-location/clear-all',  [ImportController::class, 'clearSewingLocations'])->name('sewing-location.clear-all');
         Route::delete('supplier/clear-all',         [ImportController::class, 'clearSuppliers'])->name('supplier.clear-all');
-        Route::delete('bahan-baku/clear-all',       [ImportController::class, 'clearRawMaterials'])->name('bahan-baku.clear-all');
     });
 
     // Import routes
@@ -179,4 +179,3 @@ Route::middleware('auth')->prefix('api')->group(function() {
         return response()->json($result);
     });
 });
-
